@@ -1,0 +1,69 @@
+#version: '3.8'
+
+services:
+  mongo:
+    image: mongo:4.4
+    container_name: luminaview-core-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
+    restart: always
+
+  backend:
+    build:
+      context: ./backend
+    container_name: luminaview-core-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/luminaview_core
+      - JWT_SECRET=changeThisSecretLuminaView123!
+      - PORT=3000
+    volumes:
+      - ./data/uploads:/app/uploads
+      - ./backend/scripts:/app/scripts
+    depends_on:
+      - mongo
+    restart: always
+
+  manager:
+    build:
+      context: ./apps/luminaview-manager
+    container_name: luminaview-manager-front
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: always
+
+  blog:
+    build:
+      context: ./apps/luminaview-blog
+    container_name: luminaview-blog-front
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+    restart: always
+
+  chambrenoire:
+    build:
+      context: ./apps/chambre-noire
+    container_name: luminaview-chambrenoire-front
+    ports:
+      - "8082:80"
+    depends_on:
+      - backend
+    restart: always
+
+  portfolio:
+    build:
+      context: ./apps/luminaview-portfolio
+    container_name: luminaview-portfolio-front
+    ports:
+      - "8090:80"
+    depends_on:
+      - backend
+    restart: always
+

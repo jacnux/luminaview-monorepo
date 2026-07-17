@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Base de données historique de LuminaView & Helioscope Blogs
+  mongo-old-luminaview:
+    image: mongo:4.4
+    container_name: mongo-old-luminaview
+    ports:
+      - "27018:27017"
+    # IMPORTANT: Assurez-vous que le chemin ci-dessous pointe bien vers
+    # le dossier data/mongo de votre ancien projet luminaview
+    volumes:
+      - /Users/jac/docker/luminaview/blog-luminaview/data/mongo:/data/db
+    restart: "no"
+
+  # Base de données historique de Chambre Noire
+  mongo-old-chambrenoire:
+    image: mongo:4.4
+    container_name: mongo-old-chambrenoire
+    ports:
+      - "27019:27017"
+    # IMPORTANT: Assurez-vous que le chemin ci-dessous pointe bien vers
+    # le dossier data/mongo de votre ancien projet chambre noire
+    volumes:
+      - /Users/jac/docker/hi3/chambre noire/data/mongo:/data/db
+    restart: "no"
+
+# Note: Le nouveau backend MongoDB tourne déjà sur le port 27017 
+# grâce à votre docker-compose.yml principal.

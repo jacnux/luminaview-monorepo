@@ -1,0 +1,27 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build outputs
+build/
+dist/
+
+# Environnement
+.env
+.env.prod
+.env.local
+
+# Mac
+.DS_Store
+
+# Data / Uploads
+data/
+uploads/
+
+# User exclusions
+bugs/
+documentation/
+patch/
+patch*/
+copy_data.sh

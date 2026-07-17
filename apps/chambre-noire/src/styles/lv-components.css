@@ -1,0 +1,80 @@
+@tailwind components;
+
+@layer components {
+  /* ----- Cartes de page (plat : surface + hairline, pas de dégradé) ----- */
+  .lv-page-card-footer {
+    @apply p-5 md:p-6 bg-surface border-t border-line;
+  }
+
+  .lv-page-card-kicker {
+    @apply text-[11px] uppercase tracking-[0.24em] mb-2 text-muted;
+  }
+
+  .lv-page-card-title {
+    @apply text-lg md:text-xl font-semibold text-fg leading-snug tracking-tightest;
+  }
+
+  .lv-page-card-meta {
+    @apply text-[11px] uppercase tracking-[0.18em] text-muted whitespace-nowrap pt-1 shrink-0;
+    opacity: 0.84;
+  }
+
+  .lv-page-card-excerpt {
+    @apply text-sm text-muted leading-6;
+    min-height: 3rem;
+    max-width: 42ch;
+  }
+
+  .lv-page-card-bottom {
+    @apply mt-6 pt-4 border-t border-line flex items-center justify-between;
+  }
+
+  .lv-page-card-label {
+    @apply text-[11px] uppercase tracking-[0.18em] text-muted;
+    opacity: 0.88;
+  }
+
+  .lv-page-card-link {
+    @apply text-sm text-accent font-medium tracking-tightest;
+  }
+
+  /* ----- Boutons / menus ----- */
+  .lv-menu-btn-safe {
+    @apply inline-flex items-center justify-center h-10 px-4 rounded-full text-sm font-medium transition;
+  }
+
+  .lv-menu-btn-safe-active {
+    @apply bg-fg text-bg;
+  }
+
+  .lv-menu-btn-safe-inactive {
+    @apply text-muted hover:text-fg hover:bg-surface-2;
+  }
+
+  .lv-menu-chevron-safe {
+    @apply inline-flex items-center justify-center w-8 h-8 rounded-full border border-line text-xs text-muted hover:text-fg hover:border-line-strong hover:bg-surface-2 bg-transparent transition;
+  }
+
+  /* Plat : surface opaque + hairline (pas de blur ni d'ombre portée) */
+  .lv-dropdown-safe {
+    @apply absolute top-full left-0 mt-3 w-[min(26rem,calc(100vw-2rem))] rounded-xl border border-line bg-surface overflow-hidden z-50;
+  }
+
+  .lv-input-safe {
+    @apply w-full bg-surface-2 border border-line text-fg placeholder-muted p-3 rounded-xl text-sm outline-none transition;
+  }
+
+  .lv-input-safe:focus,
+  .lv-textarea-safe:focus {
+    @apply border-line-strong ring-1 ring-accent-weak;
+  }
+
+  .lv-textarea-safe {
+    @apply w-full min-h-[8rem] bg-surface-2 border border-line text-fg placeholder-muted p-3 rounded-xl text-sm resize-none outline-none transition;
+  }
+
+  /* Bouton contact : accent uni, plat (pas d'ombre lourde) */
+  .lv-btn-contact-safe {
+    @apply fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-accent text-bg px-5 py-3 font-semibold hover:opacity-90 transition;
+  }
+}

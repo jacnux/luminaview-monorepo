@@ -1,0 +1,101 @@
+#version: '3.8'
+
+services:
+  mongo:
+    image: mongo:4.4
+    container_name: luminaview-core-mongo
+    volumes:
+      - ./data/mongo:/data/db
+    restart: always
+    networks:
+      - luminaview-network
+
+  backend:
+    build:
+      context: ./backend
+    container_name: luminaview-core-backend
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/luminaview_core
+      - JWT_SECRET=${JWT_SECRET}
+      - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB:-100}
+      # Configuration SMTP
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_FROM=${SMTP_FROM}
+    volumes:
+      - ./data/uploads:/app/uploads
+    depends_on:
+      - mongo
+    restart: always
+    networks:
+      - luminaview-network
+
+  manager:
+    build:
+      context: ./apps/luminaview-manager
+    container_name: luminaview-manager-prod
+    environment:
+      - VIRTUAL_HOST=www.helioscope.fr,admin.helioscope.fr
+      - LETSENCRYPT_HOST=www.helioscope.fr,admin.helioscope.fr
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - luminaview-network
+      - webproxy
+
+  blog:
+    build:
+      context: ./apps/luminaview-blog
+    container_name: luminaview-blog-prod
+    environment:
+      - VIRTUAL_HOST=*-blog.helioscope.fr
+      - LETSENCRYPT_HOST=*-blog.helioscope.fr
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - luminaview-network
+      - webproxy
+
+  portfolio:
+    build:
+      context: ./apps/luminaview-portfolio
+    container_name: luminaview-portfolio-prod
+    environment:
+      - VIRTUAL_HOST=*-portfolio.helioscope.fr
+      - LETSENCRYPT_HOST=*-portfolio.helioscope.fr
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - luminaview-network
+      - webproxy
+
+  chambrenoire:
+    build:
+      context: ./apps/chambre-noire
+    container_name: luminaview-chambrenoire-prod
+    environment:
+      - VIRTUAL_HOST=*-carnet.helioscope.fr
+      - LETSENCRYPT_HOST=*-carnet.helioscope.fr
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - luminaview-network
+      - webproxy
+
+networks:
+  luminaview-network:
+    driver: bridge
+  webproxy:
+    external: true
