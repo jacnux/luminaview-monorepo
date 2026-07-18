@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
+import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+dotenv.config();
 
-// Import de nos nouveaux modèles
 import User from '../src/models/User';
 import UserPage from '../src/models/UserPage';
 import Album from '../src/models/Album';
@@ -25,11 +27,11 @@ const runMigration = async () => {
 
   try {
     // 1. Connexion à la NOUVELLE base (Cible)
-    console.log(`🔌 Connexion à la nouvelle base (Cible)...`);
+    console.log('🔌 Connexion à la nouvelle base (Cible)...');
     await mongoose.connect(MIGRATION_CONFIG.NEW_CORE);
     console.log('✅ Connecté à luminaview_core');
 
-    // Optionnel : Vider la base cible (ATTENTION !)
+    // Nettoyage de la base cible
     console.log('🧹 Nettoyage de la base cible...');
     const collections = Object.values(mongoose.connection.collections);
     for (const collection of collections) {
@@ -37,150 +39,114 @@ const runMigration = async () => {
     }
     console.log('✅ Base cible vidée.');
 
-    // 2. Connexion aux ANCIENNES bases (Sources)
-    console.log(`🔌 Connexion aux anciennes bases...`);
-    const dbLumina = mongoose.createConnection(MIGRATION_CONFIG.OLD_LUMINAVIEW);
-    const dbBlog = mongoose.createConnection(MIGRATION_CONFIG.OLD_BLOG);
-    const dbChambre = mongoose.createConnection(MIGRATION_CONFIG.OLD_CHAMBRENOIRE);
+    // 2. Connexion aux ANCIENNES bases avec MongoClient
+    console.log('🔌 Connexion aux anciennes bases...');
+    const clientLumina = new MongoClient(MIGRATION_CONFIG.OLD_LUMINAVIEW);
+    const clientBlog = new MongoClient(MIGRATION_CONFIG.OLD_BLOG);
+    const clientChambre = new MongoClient(MIGRATION_CONFIG.OLD_CHAMBRENOIRE);
 
-    // Attendre que les connexions soient établies
     await Promise.all([
-      new Promise(r => dbLumina.once('open', r)),
-      new Promise(r => dbBlog.once('open', r)),
-      new Promise(r => dbChambre.once('open', r))
+      clientLumina.connect(),
+      clientBlog.connect(),
+      clientChambre.connect()
     ]);
     console.log('✅ Connecté aux anciennes bases.');
 
-    // --- A. MIGRATION UTILISATEURS (Depuis LuminaView) ---
+    const dbLumina = clientLumina.db('luminaview');
+    const dbBlog = clientBlog.db('helioscope_blogs');
+    const dbChambre = clientChambre.db('chambrenoire');
+
+    // --- A. MIGRATION UTILISATEURS ---
     console.log('\n--- 📂 Migration des Utilisateurs ---');
-    const oldUsers = await dbLumina.db.collection('users').find({}).toArray();
+    const oldUsers = await dbLumina.collection('users').find({}).toArray();
     for (const u of oldUsers) {
       await new User(u).save();
     }
-    console.log(`✅ ${oldUsers.length} utilisateurs migrés.`);
+    console.log('✅ ' + oldUsers.length + ' utilisateurs migrés.');
 
-    const oldPages = await dbLumina.db.collection('userpages').find({}).toArray();
+    const oldPages = await dbLumina.collection('userpages').find({}).toArray();
     for (const p of oldPages) {
       await new UserPage(p).save();
     }
-    console.log(`✅ ${oldPages.length} pages utilisateur migrées.`);
+    console.log('✅ ' + oldPages.length + ' pages utilisateur migrées.');
 
-    // --- B. MIGRATION LUMINAVIEW (Albums, Photos, Commentaires) ---
+    // --- B. MIGRATION LUMINAVIEW ---
     console.log('\n--- 📂 Migration LuminaView (Albums, Photos) ---');
-    const luminaAlbums = await dbLumina.db.collection('albums').find({}).toArray();
+    const luminaAlbums = await dbLumina.collection('albums').find({}).toArray();
     for (const a of luminaAlbums) {
       a.appContext = 'LUMINAVIEW';
       await new Album(a).save();
     }
-    console.log(`✅ ${luminaAlbums.length} albums LuminaView migrés.`);
+    console.log('✅ ' + luminaAlbums.length + ' albums LuminaView migrés.');
 
-    const luminaPhotos = await dbLumina.db.collection('photos').find({}).toArray();
+    const luminaPhotos = await dbLumina.collection('photos').find({}).toArray();
     for (const p of luminaPhotos) {
       p.appContext = 'LUMINAVIEW';
       await new Photo(p).save();
     }
-    console.log(`✅ ${luminaPhotos.length} photos LuminaView migrées.`);
+    console.log('✅ ' + luminaPhotos.length + ' photos LuminaView migrées.');
 
-    const luminaComments = await dbLumina.db.collection('comments').find({}).toArray();
+    const luminaComments = await dbLumina.collection('comments').find({}).toArray();
     for (const c of luminaComments) {
       await new Comment(c).save();
     }
-    console.log(`✅ ${luminaComments.length} commentaires de photos migrés.`);
+    console.log('✅ ' + luminaComments.length + ' commentaires de photos migrés.');
 
     // --- C. MIGRATION CHAMBRE NOIRE ---
     console.log('\n--- 📂 Migration Chambre Noire ---');
-    const chAlbums = await dbChambre.db.collection('albums').find({}).toArray();
-    for (const a of chAlbums) {
-      a.appContext = 'CHAMBRE_NOIRE';
-      try {
-        await new Album(a).save();
-      } catch (err: any) {
-        if (err.code === 11000) {
-          await Album.findByIdAndUpdate(a._id, { appContext: 'BOTH' });
-        } else throw err;
-      }
+    const cnAlbums = await dbChambre.collection('albums').find({}).toArray();
+    for (const a of cnAlbums) {
+      a.appContext = 'CHAMBRENOIRE';
+      const existing = await Album.findById(a._id);
+      if (!existing) await new Album(a).save();
     }
-    console.log(`✅ ${chAlbums.length} albums Chambre Noire migrés (ou fusionnés).`);
+    console.log('✅ ' + cnAlbums.length + ' albums Chambre Noire migrés (ou fusionnés).');
 
-    const chPhotos = await dbChambre.db.collection('photos').find({}).toArray();
-    for (const p of chPhotos) {
-      p.appContext = 'CHAMBRE_NOIRE';
-      try {
-        await new Photo(p).save();
-      } catch (err: any) {
-        if (err.code === 11000) {
-          await Photo.findByIdAndUpdate(p._id, { appContext: 'BOTH' });
-        } else throw err;
-      }
+    const cnPhotos = await dbChambre.collection('photos').find({}).toArray();
+    for (const p of cnPhotos) {
+      p.appContext = 'CHAMBRENOIRE';
+      const existing = await Photo.findById(p._id);
+      if (!existing) await new Photo(p).save();
     }
-    console.log(`✅ ${chPhotos.length} photos Chambre Noire migrées (ou fusionnées).`);
+    console.log('✅ ' + cnPhotos.length + ' photos Chambre Noire migrées (ou fusionnées).');
 
-    const films = await dbChambre.db.collection('films').find({}).toArray();
-    for (const f of films) await new Film(f).save();
-    console.log(`✅ ${films.length} films migrés.`);
+    const cnFilms = await dbChambre.collection('films').find({}).toArray();
+    for (const f of cnFilms) {
+      await new Film(f).save();
+    }
+    console.log('✅ ' + cnFilms.length + ' films migrés.');
 
-    const gears = await dbChambre.db.collection('gears').find({}).toArray();
-    for (const g of gears) await new Gear(g).save();
-    console.log(`✅ ${gears.length} équipements migrés.`);
+    const cnGear = await dbChambre.collection('gears').find({}).toArray();
+    for (const g of cnGear) {
+      await new Gear(g).save();
+    }
+    console.log('✅ ' + cnGear.length + ' équipements migrés.');
 
-    const projects = await dbChambre.db.collection('projects').find({}).toArray();
-    for (const p of projects) await new Project(p).save();
-    console.log(`✅ ${projects.length} projets migrés.`);
+    const cnProjects = await dbChambre.collection('projects').find({}).toArray();
+    for (const p of cnProjects) {
+      await new Project(p).save();
+    }
+    console.log('✅ ' + cnProjects.length + ' projets migrés.');
 
-    // --- D. MIGRATION BLOG ---
+    // --- D. MIGRATION BLOGS ---
     console.log('\n--- 📂 Migration du Blog ---');
-    
-    // Récupérer tous les utilisateurs de la nouvelle base pour faire le lien avec blogSlug
-    const allNewUsers = await User.find({});
-    const userMapBySlug: Record<string, mongoose.Types.ObjectId> = {};
-    for (const u of allNewUsers) {
-      userMapBySlug[u.name.toLowerCase()] = u._id;
+    const blogPosts = await dbBlog.collection('posts').find({}).toArray();
+    for (const p of blogPosts) {
+      await new Post(p).save();
     }
+    console.log('✅ ' + blogPosts.length + ' articles migrés.');
 
-    const posts = await dbBlog.db.collection('posts').find({}).toArray();
-    let postCount = 0;
-    for (const p of posts) {
-      const slug = p.blogSlug ? p.blogSlug.toLowerCase() : '';
-      const userId = userMapBySlug[slug];
-      
-      if (userId) {
-        p.userId = userId;
-        delete p.blogSlug; // On supprime l'ancien champ
-        await new Post(p).save();
-        postCount++;
-      } else {
-        console.warn(`⚠️ Article ignoré : Utilisateur ${slug} introuvable pour l'article ${p.title}`);
-      }
+    const blogSubs = await dbBlog.collection('newslettersubscribers').find({}).toArray();
+    for (const s of blogSubs) {
+      await new NewsletterSubscriber(s).save();
     }
-    console.log(`✅ ${postCount} articles migrés.`);
+    console.log('✅ ' + blogSubs.length + ' abonnés newsletter migrés.');
 
-    const subscribers = await dbBlog.db.collection('newslettersubscribers').find({}).toArray();
-    let subCount = 0;
-    for (const s of subscribers) {
-      const slug = s.blogSlug ? s.blogSlug.toLowerCase() : '';
-      const userId = userMapBySlug[slug];
-      
-      if (userId) {
-        s.userId = userId;
-        delete s.blogSlug;
-        
-        // Anti-doublons manuel (car unique index)
-        const exists = await NewsletterSubscriber.findOne({ email: s.email, userId: userId });
-        if (!exists) {
-          await new NewsletterSubscriber(s).save();
-          subCount++;
-        }
-      }
-    }
-    console.log(`✅ ${subCount} abonnés newsletter migrés.`);
-
-    const postComments = await dbBlog.db.collection('comments').find({}).toArray();
+    const postComments = await dbBlog.collection('postcomments').find({}).toArray();
     for (const c of postComments) {
-      // Les IDs de posts n'ont pas changé car on garde les mêmes _id Mongo
       await new PostComment(c).save();
     }
-    console.log(`✅ ${postComments.length} commentaires d'articles migrés.`);
-
+    console.log('✅ ' + postComments.length + ' commentaires d\'articles migrés.');
 
     console.log('\n🎉 MIGRATION TERMINÉE AVEC SUCCÈS !');
     process.exit(0);
