@@ -14,6 +14,7 @@ services:
     build:
       context: ./backend
     container_name: luminaview-core-backend
+    environment:
       - NODE_ENV=production
       - MONGO_URI=mongodb://mongo:27017/luminaview_core
       - JWT_SECRET=${JWT_SECRET}
@@ -37,6 +38,7 @@ services:
     build:
       context: ./apps/luminaview-manager
     container_name: luminaview-manager-prod
+    environment: []
     depends_on:
       - backend
     restart: always
@@ -48,6 +50,7 @@ services:
     build:
       context: ./apps/luminaview-blog
     container_name: luminaview-blog-prod
+    environment: []
     depends_on:
       - backend
     restart: always
@@ -59,6 +62,7 @@ services:
     build:
       context: ./apps/luminaview-portfolio
     container_name: luminaview-portfolio-prod
+    environment: []
     depends_on:
       - backend
     restart: always
@@ -70,6 +74,7 @@ services:
     build:
       context: ./apps/chambre-noire
     container_name: luminaview-chambrenoire-prod
+    environment: []
     depends_on:
       - backend
     restart: always
