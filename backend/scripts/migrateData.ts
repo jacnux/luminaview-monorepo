@@ -94,7 +94,7 @@ const runMigration = async () => {
     console.log('\n--- 📂 Migration Chambre Noire ---');
     const cnAlbums = await dbChambre.collection('albums').find({}).toArray();
     for (const a of cnAlbums) {
-      a.appContext = 'CHAMBRENOIRE';
+      a.appContext = 'CHAMBRE_NOIRE';
       const existing = await Album.findById(a._id);
       if (!existing) await new Album(a).save();
     }
@@ -102,7 +102,7 @@ const runMigration = async () => {
 
     const cnPhotos = await dbChambre.collection('photos').find({}).toArray();
     for (const p of cnPhotos) {
-      p.appContext = 'CHAMBRENOIRE';
+      p.appContext = 'CHAMBRE_NOIRE';
       const existing = await Photo.findById(p._id);
       if (!existing) await new Photo(p).save();
     }
