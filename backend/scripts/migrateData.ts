@@ -138,12 +138,14 @@ const runMigration = async () => {
 
     const blogSubs = await dbBlog.collection('newslettersubscribers').find({}).toArray();
     for (const s of blogSubs) {
+      if (!s.userId && defaultUserId) s.userId = defaultUserId;
       await new NewsletterSubscriber(s).save();
     }
     console.log('✅ ' + blogSubs.length + ' abonnés newsletter migrés.');
 
     const postComments = await dbBlog.collection('postcomments').find({}).toArray();
     for (const c of postComments) {
+      if (!c.userId && defaultUserId) c.userId = defaultUserId;
       await new PostComment(c).save();
     }
     console.log('✅ ' + postComments.length + ' commentaires d\'articles migrés.');
