@@ -53,13 +53,13 @@ const runMigration = async () => {
 
     // --- A. MIGRATION UTILISATEURS (Depuis LuminaView) ---
     console.log('\n--- 📂 Migration des Utilisateurs ---');
-    const oldUsers = await dbLumina.collection('users').find({}).toArray();
+    const oldUsers = await dbLumina.db.collection('users').find({}).toArray();
     for (const u of oldUsers) {
       await new User(u).save();
     }
     console.log(`✅ ${oldUsers.length} utilisateurs migrés.`);
 
-    const oldPages = await dbLumina.collection('userpages').find({}).toArray();
+    const oldPages = await dbLumina.db.collection('userpages').find({}).toArray();
     for (const p of oldPages) {
       await new UserPage(p).save();
     }
@@ -67,21 +67,21 @@ const runMigration = async () => {
 
     // --- B. MIGRATION LUMINAVIEW (Albums, Photos, Commentaires) ---
     console.log('\n--- 📂 Migration LuminaView (Albums, Photos) ---');
-    const luminaAlbums = await dbLumina.collection('albums').find({}).toArray();
+    const luminaAlbums = await dbLumina.db.collection('albums').find({}).toArray();
     for (const a of luminaAlbums) {
       a.appContext = 'LUMINAVIEW';
       await new Album(a).save();
     }
     console.log(`✅ ${luminaAlbums.length} albums LuminaView migrés.`);
 
-    const luminaPhotos = await dbLumina.collection('photos').find({}).toArray();
+    const luminaPhotos = await dbLumina.db.collection('photos').find({}).toArray();
     for (const p of luminaPhotos) {
       p.appContext = 'LUMINAVIEW';
       await new Photo(p).save();
     }
     console.log(`✅ ${luminaPhotos.length} photos LuminaView migrées.`);
 
-    const luminaComments = await dbLumina.collection('comments').find({}).toArray();
+    const luminaComments = await dbLumina.db.collection('comments').find({}).toArray();
     for (const c of luminaComments) {
       await new Comment(c).save();
     }
@@ -89,7 +89,7 @@ const runMigration = async () => {
 
     // --- C. MIGRATION CHAMBRE NOIRE ---
     console.log('\n--- 📂 Migration Chambre Noire ---');
-    const chAlbums = await dbChambre.collection('albums').find({}).toArray();
+    const chAlbums = await dbChambre.db.collection('albums').find({}).toArray();
     for (const a of chAlbums) {
       a.appContext = 'CHAMBRE_NOIRE';
       try {
@@ -102,7 +102,7 @@ const runMigration = async () => {
     }
     console.log(`✅ ${chAlbums.length} albums Chambre Noire migrés (ou fusionnés).`);
 
-    const chPhotos = await dbChambre.collection('photos').find({}).toArray();
+    const chPhotos = await dbChambre.db.collection('photos').find({}).toArray();
     for (const p of chPhotos) {
       p.appContext = 'CHAMBRE_NOIRE';
       try {
@@ -115,15 +115,15 @@ const runMigration = async () => {
     }
     console.log(`✅ ${chPhotos.length} photos Chambre Noire migrées (ou fusionnées).`);
 
-    const films = await dbChambre.collection('films').find({}).toArray();
+    const films = await dbChambre.db.collection('films').find({}).toArray();
     for (const f of films) await new Film(f).save();
     console.log(`✅ ${films.length} films migrés.`);
 
-    const gears = await dbChambre.collection('gears').find({}).toArray();
+    const gears = await dbChambre.db.collection('gears').find({}).toArray();
     for (const g of gears) await new Gear(g).save();
     console.log(`✅ ${gears.length} équipements migrés.`);
 
-    const projects = await dbChambre.collection('projects').find({}).toArray();
+    const projects = await dbChambre.db.collection('projects').find({}).toArray();
     for (const p of projects) await new Project(p).save();
     console.log(`✅ ${projects.length} projets migrés.`);
 
@@ -137,7 +137,7 @@ const runMigration = async () => {
       userMapBySlug[u.name.toLowerCase()] = u._id;
     }
 
-    const posts = await dbBlog.collection('posts').find({}).toArray();
+    const posts = await dbBlog.db.collection('posts').find({}).toArray();
     let postCount = 0;
     for (const p of posts) {
       const slug = p.blogSlug ? p.blogSlug.toLowerCase() : '';
@@ -154,7 +154,7 @@ const runMigration = async () => {
     }
     console.log(`✅ ${postCount} articles migrés.`);
 
-    const subscribers = await dbBlog.collection('newslettersubscribers').find({}).toArray();
+    const subscribers = await dbBlog.db.collection('newslettersubscribers').find({}).toArray();
     let subCount = 0;
     for (const s of subscribers) {
       const slug = s.blogSlug ? s.blogSlug.toLowerCase() : '';
@@ -174,7 +174,7 @@ const runMigration = async () => {
     }
     console.log(`✅ ${subCount} abonnés newsletter migrés.`);
 
-    const postComments = await dbBlog.collection('comments').find({}).toArray();
+    const postComments = await dbBlog.db.collection('comments').find({}).toArray();
     for (const c of postComments) {
       // Les IDs de posts n'ont pas changé car on garde les mêmes _id Mongo
       await new PostComment(c).save();
