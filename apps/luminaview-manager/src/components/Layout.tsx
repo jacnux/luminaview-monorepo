@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useComments } from '../context/CommentsContext';
+import { getAppUrl } from '../utils/urls';
 
 interface LayoutProps {
   children: React.ReactNode;
