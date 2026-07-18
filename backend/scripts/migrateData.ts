@@ -14,9 +14,9 @@ import PostComment from '../src/models/PostComment';
 import NewsletterSubscriber from '../src/models/NewsletterSubscriber';
 
 const MIGRATION_CONFIG = {
-  OLD_LUMINAVIEW: 'mongodb://mongo:27017/luminaview',
-  OLD_BLOG: 'mongodb://mongo:27017/helioscope_blogs',
-  OLD_CHAMBRENOIRE: 'mongodb://mongo:27017/chambrenoire',
+  OLD_LUMINAVIEW: 'mongodb://mongo-old-luminaview:27017/luminaview',
+  OLD_BLOG: 'mongodb://mongo-old-luminaview:27017/helioscope_blogs',
+  OLD_CHAMBRENOIRE: 'mongodb://mongo-old-chambrenoire:27017/chambrenoire',
   NEW_CORE: 'mongodb://mongo:27017/luminaview_core'
 };
 
