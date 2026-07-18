@@ -7,7 +7,7 @@ async function run() {
   try {
     await client.connect();
     const dbCore = client.db('luminaview_core');
-    const dbChambre = client.db('helioscope_chambrenoire');
+    const dbChambre = client.db('chambrenoire');
 
     console.log("Fixing Albums...");
     const cnAlbums = await dbChambre.collection('albums').find({}).toArray();
