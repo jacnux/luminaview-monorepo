@@ -10,7 +10,7 @@ services:
     # IMPORTANT: Assurez-vous que le chemin ci-dessous pointe bien vers
     # le dossier data/mongo de votre ancien projet luminaview
     volumes:
-      - /Users/jac/docker/luminaview/blog-luminaview/data/mongo:/data/db
+      - /home/jac/luminaview-prod-securite/data/mongo:/data/db
     restart: "no"
 
   # Base de données historique de Chambre Noire
@@ -22,7 +22,7 @@ services:
     # IMPORTANT: Assurez-vous que le chemin ci-dessous pointe bien vers
     # le dossier data/mongo de votre ancien projet chambre noire
     volumes:
-      - /Users/jac/docker/hi3/chambre noire/data/mongo:/data/db
+      - /home/jac/luminaview-monorepo/data/import_chambrenoire/mongo:/data/db
     restart: "no"
 
 # Note: Le nouveau backend MongoDB tourne déjà sur le port 27017 
