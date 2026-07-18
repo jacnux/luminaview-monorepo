@@ -31,7 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '' }) => 
     if (isPortfolio) {
       // Thème ARTFOLIO -> va vers le portfolio autonome
       if (isLocal) return `http://localhost:8080/portfolio/${blogName}`;
-      return `https://${blogName}.helioscope.fr`;
+      return `https://${blogName}-portfolio.helioscope.fr`;
     } else {
       // Thème HÉLIOSCOPE -> va vers le portfolio intégré dans l'app principale
       if (isLocal) return `http://localhost:8080/portfolio/${blogName}`;
