@@ -9,6 +9,7 @@ import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { getAppUrl } from '../utils/urls';
 
 type ContactStatus = 'idle' | 'sending' | 'sent' | 'error';
 type ActiveTab = 'home' | 'series' | 'exhibitions' | 'about';
@@ -865,15 +866,7 @@ const PortfolioPage = () => {
     const fetchPortfolio = async () => {
       try {
         const res = await api.get(`/albums/portfolio/${username}`);
-        if (res.data.user && res.data.user.blogTheme === 'portfolio' && username) {
-          const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-          if (isLocal) {
-            window.location.href = getAppUrl('portfolio', user?.name || 'jac');
-          } else {
-            window.location.href = `https://${username.toLowerCase()}.helioscope.fr`;
-          }
-          return;
-        }
+        // Redirect supprimé : Le portfolio reste sur la page classique helioscope.fr/portfolio/:username
         setUser(res.data.user);
         setAlbums(res.data.albums);
         api
