@@ -129,7 +129,9 @@ const runMigration = async () => {
     // --- D. MIGRATION BLOGS ---
     console.log('\n--- 📂 Migration du Blog ---');
     const blogPosts = await dbBlog.collection('posts').find({}).toArray();
+    const defaultUserId = oldUsers.length > 0 ? oldUsers[0]._id : null;
     for (const p of blogPosts) {
+      if (!p.userId && defaultUserId) p.userId = defaultUserId;
       await new Post(p).save();
     }
     console.log('✅ ' + blogPosts.length + ' articles migrés.');
