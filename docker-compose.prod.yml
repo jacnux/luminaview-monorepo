@@ -54,8 +54,8 @@ services:
       context: ./apps/luminaview-blog
     container_name: luminaview-blog-prod
     environment:
-      - VIRTUAL_HOST=blog.helioscope.fr,~^.*-blog\.helioscope\.fr$
-      - LETSENCRYPT_HOST=blog.helioscope.fr
+      - VIRTUAL_HOST=blog.helioscope.fr,jac-blog.helioscope.fr,~^.*-blog\.helioscope\.fr$
+      - LETSENCRYPT_HOST=blog.helioscope.fr,jac-blog.helioscope.fr
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     depends_on:
       - backend
@@ -84,8 +84,8 @@ services:
       context: ./apps/chambre-noire
     container_name: luminaview-chambrenoire-prod
     environment:
-      - VIRTUAL_HOST=carnet.helioscope.fr,~^.*-carnet\.helioscope\.fr$
-      - LETSENCRYPT_HOST=carnet.helioscope.fr
+      - VIRTUAL_HOST=carnet.helioscope.fr,jac-carnet.helioscope.fr,~^.*-carnet\.helioscope\.fr$
+      - LETSENCRYPT_HOST=carnet.helioscope.fr,jac-carnet.helioscope.fr
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     depends_on:
       - backend
