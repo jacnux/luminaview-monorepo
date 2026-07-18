@@ -1,13 +1,17 @@
 import { MongoClient, ObjectId } from 'mongodb';
 
 async function run() {
-  const uri = "mongodb://mongo:27017";
-  const client = new MongoClient(uri);
+  const uriCore = "mongodb://mongo:27017";
+  const uriOldChambre = "mongodb://mongo-old-chambrenoire:27017";
+  
+  const clientCore = new MongoClient(uriCore);
+  const clientChambre = new MongoClient(uriOldChambre);
 
   try {
-    await client.connect();
-    const dbCore = client.db('luminaview_core');
-    const dbChambre = client.db('chambrenoire');
+    await clientCore.connect();
+    await clientChambre.connect();
+    const dbCore = clientCore.db('luminaview_core');
+    const dbChambre = clientChambre.db('chambrenoire');
 
     console.log("Fixing Albums...");
     const cnAlbums = await dbChambre.collection('albums').find({}).toArray();
@@ -20,6 +24,7 @@ async function run() {
         }
       } else {
         await dbCore.collection('albums').updateOne({ _id: a._id }, { $set: { appContext: 'CHAMBRE_NOIRE' } });
+        console.log(`Updated album ${a._id} to CHAMBRE_NOIRE`);
       }
     }
 
@@ -34,12 +39,14 @@ async function run() {
         }
       } else {
         await dbCore.collection('photos').updateOne({ _id: p._id }, { $set: { appContext: 'CHAMBRE_NOIRE' } });
+        console.log(`Updated photo ${p._id} to CHAMBRE_NOIRE`);
       }
     }
 
     console.log("Done!");
   } finally {
-    await client.close();
+    await clientCore.close();
+    await clientChambre.close();
   }
 }
 
