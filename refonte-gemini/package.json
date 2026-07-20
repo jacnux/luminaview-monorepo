@@ -1,0 +1,15 @@
+{
+  "name": "luminaview-gemini-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "build": "npm run build --workspaces",
+    "start": "npm run start --workspaces"
+  }
+}
