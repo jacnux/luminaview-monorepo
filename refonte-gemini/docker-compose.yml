@@ -1,17 +1,15 @@
-#version: '3.8'
-
 services:
   mongo:
     image: mongo:4.4
-    container_name: luminaview-gemini-mongo
+    container_name: luminaview-mongo
     volumes:
       - ./data/mongo:/data/db
     networks:
-      - gemini-network
+      - luminaview-network
 
   backend:
     build: ./backend
-    container_name: luminaview-gemini-backend
+    container_name: luminaview-backend
     ports:
       - "3000:3000"
     volumes:
@@ -25,48 +23,48 @@ services:
       - JWT_SECRET=changeThisSecretLuminaView123!
       - PORT=3000
     networks:
-      - gemini-network
+      - luminaview-network
 
   manager:
     build: ./apps/manager
-    container_name: luminaview-gemini-manager
+    container_name: luminaview-manager
     ports:
       - "7080:80"
     depends_on:
       - backend
     networks:
-      - gemini-network
+      - luminaview-network
 
   blog:
     build: ./apps/blog
-    container_name: luminaview-gemini-blog
+    container_name: luminaview-blog
     ports:
       - "7081:80"
     depends_on:
       - backend
     networks:
-      - gemini-network
+      - luminaview-network
 
   portfolio:
     build: ./apps/portfolio
-    container_name: luminaview-gemini-portfolio
+    container_name: luminaview-portfolio
     ports:
       - "7090:80"
     depends_on:
       - backend
     networks:
-      - gemini-network
+      - luminaview-network
 
   chambrenoire:
     build: ./apps/chambrenoire
-    container_name: luminaview-gemini-chambrenoire
+    container_name: luminaview-chambrenoire
     ports:
       - "7082:80"
     depends_on:
       - backend
     networks:
-      - gemini-network
+      - luminaview-network
 
 networks:
-  gemini-network:
+  luminaview-network:
     driver: bridge

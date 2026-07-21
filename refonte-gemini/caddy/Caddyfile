@@ -8,15 +8,15 @@
 lumina.fr, www.lumina.fr, jac-photo.fr, www.jac-photo.fr {
     # API Express Backend & Fichiers Uploads (conserve le préfixe /api et /uploads)
     handle /api/* {
-        reverse_proxy luminaview-gemini-backend:3000
+        reverse_proxy luminaview-backend:3000
     }
     handle /uploads/* {
-        reverse_proxy luminaview-gemini-backend:3000
+        reverse_proxy luminaview-backend:3000
     }
 
     # Frontend Studio Manager
     handle {
-        reverse_proxy luminaview-gemini-manager:80
+        reverse_proxy luminaview-manager:80
     }
 }
 
@@ -26,24 +26,24 @@ lumina.fr, www.lumina.fr, jac-photo.fr, www.jac-photo.fr {
 *.helioscope.fr {
     # Routage /blog et /blog/* vers le conteneur Blog (nettoie le préfixe pour l'application SPA)
     handle_path /blog* {
-        reverse_proxy luminaview-gemini-blog:80
+        reverse_proxy luminaview-blog:80
     }
 
     # Routage /carnet et /carnet/* vers le conteneur Chambre Noire (nettoie le préfixe pour l'application SPA)
     handle_path /carnet* {
-        reverse_proxy luminaview-gemini-chambrenoire:80
+        reverse_proxy luminaview-chambrenoire:80
     }
 
     # Proxification API & Fichiers Uploadés pour l'accès public (conserve le préfixe)
     handle /api/* {
-        reverse_proxy luminaview-gemini-backend:3000
+        reverse_proxy luminaview-backend:3000
     }
     handle /uploads/* {
-        reverse_proxy luminaview-gemini-backend:3000
+        reverse_proxy luminaview-backend:3000
     }
 
     # Par défaut : Portfolio public de l'utilisateur (ex: jac.helioscope.fr)
     handle {
-        reverse_proxy luminaview-gemini-portfolio:80
+        reverse_proxy luminaview-portfolio:80
     }
 }
