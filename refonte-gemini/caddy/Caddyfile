@@ -6,11 +6,11 @@
 # 1. STUDIO MANAGER (lumina.fr - Administration Privée)
 # -------------------------------------------------------------
 lumina.fr, www.lumina.fr {
-    # API Express Backend
-    handle_path /api/* {
+    # API Express Backend & Fichiers Uploads (conserve le préfixe /api et /uploads)
+    handle /api/* {
         reverse_proxy luminaview-gemini-backend:3000
     }
-    handle_path /uploads/* {
+    handle /uploads/* {
         reverse_proxy luminaview-gemini-backend:3000
     }
 
@@ -24,21 +24,21 @@ lumina.fr, www.lumina.fr {
 # 2. ECOSYSTÈME PUBLIC HÉLIOSCOPE (*.helioscope.fr)
 # -------------------------------------------------------------
 *.helioscope.fr {
-    # Routage /blog et /blog/* vers le conteneur Blog
+    # Routage /blog et /blog/* vers le conteneur Blog (nettoie le préfixe pour l'application SPA)
     handle_path /blog* {
         reverse_proxy luminaview-gemini-blog:80
     }
 
-    # Routage /carnet et /carnet/* vers le conteneur Chambre Noire
+    # Routage /carnet et /carnet/* vers le conteneur Chambre Noire (nettoie le préfixe pour l'application SPA)
     handle_path /carnet* {
         reverse_proxy luminaview-gemini-chambrenoire:80
     }
 
-    # Proxification API & Fichiers Uploadés pour l'accès public
-    handle_path /api/* {
+    # Proxification API & Fichiers Uploadés pour l'accès public (conserve le préfixe)
+    handle /api/* {
         reverse_proxy luminaview-gemini-backend:3000
     }
-    handle_path /uploads/* {
+    handle /uploads/* {
         reverse_proxy luminaview-gemini-backend:3000
     }
 
