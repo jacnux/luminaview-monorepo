@@ -159,7 +159,20 @@ router.post('/login', async (req: Request, res: Response) => {
     if (!isMatch) return res.status(400).json({ error: 'Identifiants incorrects' });
 
     const token = jwt.sign({ userId: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET!, { expiresIn: '7d' });
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin } });
+    res.json({ 
+      token, 
+      user: { 
+        _id: user._id,
+        id: user._id, 
+        name: user.name, 
+        email: user.email, 
+        isAdmin: user.isAdmin,
+        hasBlog: user.hasBlog,
+        hasCarnet: user.hasCarnet,
+        blogTheme: user.blogTheme,
+        avatar: user.avatar
+      } 
+    });
   } catch (error) {
     console.error('ERREUR LOGIN:', error); // <--- AJOUTE CETTE LIGNE
     res.status(500).json({ error: 'Erreur serveur' });
