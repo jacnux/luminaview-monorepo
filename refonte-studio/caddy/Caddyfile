@@ -21,13 +21,9 @@ luminaview.fr, www.luminaview.fr {
 }
 
 # -------------------------------------------------------------
-# 2. ECOSYSTÈME PUBLIC HÉLIOSCOPE (*.helioscope.fr)
+# 2. ECOSYSTÈME PUBLIC HÉLIOSCOPE (helioscope.fr & *.helioscope.fr)
 # -------------------------------------------------------------
-*.helioscope.fr {
-    tls {
-        on_demand
-    }
-
+helioscope.fr, *.helioscope.fr {
     # Routage /blog et /blog/* vers le conteneur Blog (nettoie le préfixe pour l'application SPA)
     handle_path /blog* {
         reverse_proxy luminaview-blog:80
