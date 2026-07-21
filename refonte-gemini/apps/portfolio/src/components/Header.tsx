@@ -190,8 +190,6 @@ const Header: React.FC<HeaderProps> = ({
               <li>
                 <a 
                   href={getBlogUrl(profile?.name)}
-                  target="_blank"
-                  rel="noopener noreferrer"
                 >
                   Actualités
                 </a>
@@ -202,8 +200,6 @@ const Header: React.FC<HeaderProps> = ({
               <li>
                 <a 
                   href={getCarnetUrl(profile?.name, profile?.chambreNoireUrl)}
-                  target="_blank"
-                  rel="noopener noreferrer"
                 >
                   Carnet de route
                 </a>
