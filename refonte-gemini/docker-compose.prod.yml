@@ -29,7 +29,7 @@ services:
     container_name: luminaview-mongo
     restart: always
     volumes:
-      - ./data/mongo:/data/db
+      - ../data/mongo:/data/db
     networks:
       - luminaview-network
 
@@ -40,7 +40,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data/uploads:/app/uploads
+      - ../data/uploads:/app/uploads
     depends_on:
       - mongo
     environment:

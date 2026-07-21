@@ -3,7 +3,7 @@ services:
     image: mongo:4.4
     container_name: luminaview-mongo
     volumes:
-      - ./data/mongo:/data/db
+      - ../data/mongo:/data/db
     networks:
       - luminaview-network
 
@@ -15,7 +15,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
-      - ./data/uploads:/app/uploads
+      - ../data/uploads:/app/uploads
     depends_on:
       - mongo
     environment:
