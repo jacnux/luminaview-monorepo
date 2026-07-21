@@ -3,9 +3,9 @@
 }
 
 # -------------------------------------------------------------
-# 1. STUDIO MANAGER (jac-photo.fr - Administration Privée)
+# 1. STUDIO MANAGER PRINCIPAL (luminaview.fr)
 # -------------------------------------------------------------
-jac-photo.fr, www.jac-photo.fr {
+luminaview.fr, www.luminaview.fr {
     # API Express Backend & Fichiers Uploads (conserve le préfixe /api et /uploads)
     handle /api/* {
         reverse_proxy luminaview-backend:3000
@@ -20,17 +20,9 @@ jac-photo.fr, www.jac-photo.fr {
     }
 }
 
-# Domaine alternatif Studio (luminaview.fr)
-luminaview.fr, www.luminaview.fr {
-    handle /api/* {
-        reverse_proxy luminaview-backend:3000
-    }
-    handle /uploads/* {
-        reverse_proxy luminaview-backend:3000
-    }
-    handle {
-        reverse_proxy luminaview-manager:80
-    }
+# Redirection automatique de jac-photo.fr vers luminaview.fr
+jac-photo.fr, www.jac-photo.fr {
+    redir https://luminaview.fr{uri} permanent
 }
 
 # -------------------------------------------------------------
