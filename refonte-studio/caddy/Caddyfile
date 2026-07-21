@@ -1,5 +1,9 @@
 {
     email {$LETSENCRYPT_EMAIL:admin@luminaview.fr}
+    on_demand_tls {
+        interval 2m
+        burst 5
+    }
 }
 
 # -------------------------------------------------------------
@@ -21,29 +25,37 @@ luminaview.fr, www.luminaview.fr {
 }
 
 # -------------------------------------------------------------
-# 2. ECOSYSTÈME PUBLIC HÉLIOSCOPE (helioscope.fr & *.helioscope.fr)
+# 2. ECOSYSTÈME PUBLIC MULTI-UTILISATEURS DYNAMIQUE (*.helioscope.fr)
 # -------------------------------------------------------------
-helioscope.fr, *.helioscope.fr {
-    # Routage /blog et /blog/* vers le conteneur Blog (nettoie le préfixe pour l'application SPA)
-    handle_path /blog* {
-        reverse_proxy luminaview-blog:80
+https:// {
+    tls {
+        on_demand
     }
 
-    # Routage /carnet et /carnet/* vers le conteneur Chambre Noire (nettoie le préfixe pour l'application SPA)
-    handle_path /carnet* {
-        reverse_proxy luminaview-chambrenoire:80
-    }
+    @helioscope host *.helioscope.fr helioscope.fr
 
-    # Proxification API & Fichiers Uploadés pour l'accès public (conserve le préfixe)
-    handle /api/* {
-        reverse_proxy luminaview-backend:3000
-    }
-    handle /uploads/* {
-        reverse_proxy luminaview-backend:3000
-    }
+    handle @helioscope {
+        # Routage /blog et /blog/* vers le conteneur Blog (nettoie le préfixe pour l'application SPA)
+        handle_path /blog* {
+            reverse_proxy luminaview-blog:80
+        }
 
-    # Par défaut : Portfolio public de l'utilisateur (ex: jac.helioscope.fr)
-    handle {
-        reverse_proxy luminaview-portfolio:80
+        # Routage /carnet et /carnet/* vers le conteneur Chambre Noire (nettoie le préfixe pour l'application SPA)
+        handle_path /carnet* {
+            reverse_proxy luminaview-chambrenoire:80
+        }
+
+        # Proxification API & Fichiers Uploadés pour l'accès public (conserve le préfixe)
+        handle /api/* {
+            reverse_proxy luminaview-backend:3000
+        }
+        handle /uploads/* {
+            reverse_proxy luminaview-backend:3000
+        }
+
+        # Par défaut : Portfolio public de l'utilisateur (ex: jac.helioscope.fr)
+        handle {
+            reverse_proxy luminaview-portfolio:80
+        }
     }
 }
