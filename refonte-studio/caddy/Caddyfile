@@ -1,11 +1,11 @@
 {
-    email {$LETSENCRYPT_EMAIL:admin@luminastudio.fr}
+    email {$LETSENCRYPT_EMAIL:admin@luminaview.fr}
 }
 
 # -------------------------------------------------------------
-# 1. STUDIO MANAGER (luminastudio.fr & jac-photo.fr - Administration Privée)
+# 1. STUDIO MANAGER (luminaview.fr & jac-photo.fr - Administration Privée)
 # -------------------------------------------------------------
-luminastudio.fr, www.luminastudio.fr, jac-photo.fr, www.jac-photo.fr {
+luminaview.fr, www.luminaview.fr, jac-photo.fr, www.jac-photo.fr {
     # API Express Backend & Fichiers Uploads (conserve le préfixe /api et /uploads)
     handle /api/* {
         reverse_proxy luminaview-backend:3000
