@@ -1,21 +1,23 @@
+# Stack Docker Compose pour le Développement Local (Isolé pour tourner en parallèle de la V1)
+
 services:
   mongo:
     image: mongo:4.4
-    container_name: luminaview-mongo
+    container_name: luminaview-gemini-mongo
     volumes:
-      - ../data/mongo:/data/db
+      - ./data/mongo:/data/db
     networks:
-      - luminaview-network
+      - gemini-local-network
 
   backend:
     build: ./backend
-    container_name: luminaview-backend
+    container_name: luminaview-gemini-backend
     ports:
-      - "3000:3000"
+      - "7000:3000"
     volumes:
       - ./backend:/app
       - /app/node_modules
-      - ../data/uploads:/app/uploads
+      - ./data/uploads:/app/uploads
     depends_on:
       - mongo
     environment:
@@ -23,48 +25,48 @@ services:
       - JWT_SECRET=changeThisSecretLuminaView123!
       - PORT=3000
     networks:
-      - luminaview-network
+      - gemini-local-network
 
   manager:
     build: ./apps/manager
-    container_name: luminaview-manager
+    container_name: luminaview-gemini-manager
     ports:
       - "7080:80"
     depends_on:
       - backend
     networks:
-      - luminaview-network
+      - gemini-local-network
 
   blog:
     build: ./apps/blog
-    container_name: luminaview-blog
+    container_name: luminaview-gemini-blog
     ports:
       - "7081:80"
     depends_on:
       - backend
     networks:
-      - luminaview-network
+      - gemini-local-network
 
   portfolio:
     build: ./apps/portfolio
-    container_name: luminaview-portfolio
+    container_name: luminaview-gemini-portfolio
     ports:
       - "7090:80"
     depends_on:
       - backend
     networks:
-      - luminaview-network
+      - gemini-local-network
 
   chambrenoire:
     build: ./apps/chambrenoire
-    container_name: luminaview-chambrenoire
+    container_name: luminaview-gemini-chambrenoire
     ports:
       - "7082:80"
     depends_on:
       - backend
     networks:
-      - luminaview-network
+      - gemini-local-network
 
 networks:
-  luminaview-network:
+  gemini-local-network:
     driver: bridge
