@@ -1,0 +1,49 @@
+{
+    email admin@lumina.fr
+}
+
+# -------------------------------------------------------------
+# 1. STUDIO MANAGER (lumina.fr - Administration Privée)
+# -------------------------------------------------------------
+lumina.fr, www.lumina.fr {
+    # API Express Backend
+    handle_path /api/* {
+        reverse_proxy luminaview-gemini-backend:3000
+    }
+    handle_path /uploads/* {
+        reverse_proxy luminaview-gemini-backend:3000
+    }
+
+    # Frontend Studio Manager
+    handle {
+        reverse_proxy luminaview-gemini-manager:80
+    }
+}
+
+# -------------------------------------------------------------
+# 2. ECOSYSTÈME PUBLIC HÉLIOSCOPE (*.helioscope.fr)
+# -------------------------------------------------------------
+*.helioscope.fr {
+    # Routage /blog et /blog/* vers le conteneur Blog
+    handle_path /blog* {
+        reverse_proxy luminaview-gemini-blog:80
+    }
+
+    # Routage /carnet et /carnet/* vers le conteneur Chambre Noire
+    handle_path /carnet* {
+        reverse_proxy luminaview-gemini-chambrenoire:80
+    }
+
+    # Proxification API & Fichiers Uploadés pour l'accès public
+    handle_path /api/* {
+        reverse_proxy luminaview-gemini-backend:3000
+    }
+    handle_path /uploads/* {
+        reverse_proxy luminaview-gemini-backend:3000
+    }
+
+    # Par défaut : Portfolio public de l'utilisateur (ex: jac.helioscope.fr)
+    handle {
+        reverse_proxy luminaview-gemini-portfolio:80
+    }
+}
