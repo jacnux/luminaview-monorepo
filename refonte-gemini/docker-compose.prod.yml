@@ -8,6 +8,10 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    env_file:
+      - .env
+    environment:
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@lumina.fr}
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -33,13 +37,23 @@ services:
     build: ./backend
     container_name: luminaview-gemini-backend
     restart: always
+    env_file:
+      - .env
     volumes:
       - ./data/uploads:/app/uploads
     depends_on:
       - mongo
     environment:
-      - MONGO_URI=mongodb://mongo:27017/luminaview_core
-      - JWT_SECRET=changeThisSecretLuminaView123!
+      - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017/luminaview_core}
+      - JWT_SECRET=${JWT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_FROM=${SMTP_FROM}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
       - PORT=3000
       - FRONTEND_URL=https://lumina.fr
     networks:

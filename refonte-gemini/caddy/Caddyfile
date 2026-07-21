@@ -1,5 +1,5 @@
 {
-    email admin@lumina.fr
+    email {$LETSENCRYPT_EMAIL:admin@lumina.fr}
 }
 
 # -------------------------------------------------------------
