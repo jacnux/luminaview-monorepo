@@ -12,6 +12,8 @@ const EditProfile: React.FC = () => {
   const [tagline, setTagline] = useState('');
   const [blogTheme, setBlogTheme] = useState('classic');
   const [chambreNoireUrl, setChambreNoireUrl] = useState('');
+  const [hasBlog, setHasBlog] = useState(false);
+  const [hasCarnet, setHasCarnet] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [currentAvatar, setCurrentAvatar] = useState<string>('');
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -31,6 +33,8 @@ const EditProfile: React.FC = () => {
       setTagline(profileRes.data.tagline || '');
       setBlogTheme(profileRes.data.blogTheme || 'classic');
       setChambreNoireUrl(profileRes.data.chambreNoireUrl || '');
+      setHasBlog(!!profileRes.data.hasBlog);
+      setHasCarnet(!!profileRes.data.hasCarnet);
       setCurrentAvatar(profileRes.data.avatar || '');
       setCurrentBanner(profileRes.data.bannerImage || '');
     } catch (error) {
@@ -49,6 +53,8 @@ const EditProfile: React.FC = () => {
       formData.append('tagline', tagline);
       formData.append('blogTheme', blogTheme);
       formData.append('chambreNoireUrl', chambreNoireUrl);
+      formData.append('hasBlog', String(hasBlog));
+      formData.append('hasCarnet', String(hasCarnet));
       if (avatarFile) formData.append('avatar', avatarFile);
       if (bannerFile) formData.append('banner', bannerFile);
 
@@ -288,6 +294,66 @@ const EditProfile: React.FC = () => {
                     className={inputClass}
                     placeholder="Décrivez vos offres, tarifs, séances... Ce texte est affiché dans l'onglet Services du portfolio."
                   />
+                </div>
+              </div>
+
+              {/* CARD 5 : MODULES & EXTENSIONS */}
+              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
+                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                  <span className="text-yellow-500">⚙️</span> Modules & Extensions
+                </h3>
+                <p className={`text-xs ${subtleTextClass}`}>
+                  Activez ou désactivez les applications additionnelles associées à votre compte. Les menus de navigation s'adapteront automatiquement.
+                </p>
+
+                <div className="space-y-4 pt-2">
+                  {/* Switch Blog */}
+                  <div className={`flex items-center justify-between p-4 rounded-xl border ${sectionBorderClass} transition duration-200`}>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">✍️</span>
+                      <div>
+                        <div className="font-bold text-sm">Module Blog (Hélioscope)</div>
+                        <div className={`text-xs ${subtleTextClass}`}>Permet d'écrire des articles et de recevoir des commentaires publics.</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setHasBlog(!hasBlog)}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        hasBlog ? 'bg-amber-500' : theme === 'dark' ? 'bg-gray-800' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          hasBlog ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Switch Carnet */}
+                  <div className={`flex items-center justify-between p-4 rounded-xl border ${sectionBorderClass} transition duration-200`}>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📖</span>
+                      <div>
+                        <div className="font-bold text-sm">Module Carnet (Chambre Noire)</div>
+                        <div className={`text-xs ${subtleTextClass}`}>Permet de publier des récits de voyage et journaux visuels.</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setHasCarnet(!hasCarnet)}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        hasCarnet ? 'bg-teal-500' : theme === 'dark' ? 'bg-gray-800' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          hasCarnet ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

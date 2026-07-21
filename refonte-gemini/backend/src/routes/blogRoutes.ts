@@ -49,6 +49,8 @@ router.get('/user/:slug', async (req: Request, res: Response) => {
       servicesDescription: user.servicesDescription,
       tagline:             user.tagline,
       blogTheme:           user.blogTheme || 'classic',
+      hasBlog:             (user as any).hasBlog ?? false,
+      hasCarnet:           (user as any).hasCarnet ?? false,
       chambreNoireUrl:     (user as any).chambreNoireUrl || '',
       showcaseAlbums:      pages
     });

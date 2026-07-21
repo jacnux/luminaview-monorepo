@@ -24,9 +24,9 @@ interface ContactForm {
 const getBlogUrl = (userName: string): string => {
   const name = userName.toLowerCase();
   const host = window.location.hostname;
-  return host === 'localhost'
-    ? `http://localhost:8081/?user=${name}`
-    : `https://${name}-blog.helioscope.fr`;
+  return host === 'localhost' || host === '127.0.0.1'
+    ? `http://localhost:7081/?user=${name}`
+    : `https://${name}.helioscope.fr/blog`;
 };
 
 const stripMarkdownAndHtml = (value: string = '') => {

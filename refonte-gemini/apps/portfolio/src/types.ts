@@ -6,6 +6,9 @@ export interface UserProfile {
   portfolioIntro?: string;
   bannerImage?: string;
   tagline?: string;
+  hasBlog?: boolean;
+  hasCarnet?: boolean;
+  chambreNoireUrl?: string;
 }
 
 export interface Album {

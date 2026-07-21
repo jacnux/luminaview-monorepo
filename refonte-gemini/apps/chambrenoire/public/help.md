@@ -63,8 +63,8 @@ Dans un album ou un projet, vous pouvez éditer les métadonnées de chaque clic
 
 Chambre Noire propose des adresses épurées, sans barre de navigation ni menus, parfaites pour être intégrées (via iframe) sur un autre site (WordPress, blog, portfolio personnel) :
 
-*   **Carnet de routes complet** : `http://localhost:8081/embed/carnet-de-routes`
-*   **Projet spécifique** : `http://localhost:8081/embed/project/:slug` (remplacez `:slug` par le slug du projet, ex: `voyageurs`).
+*   **Carnet de routes complet** : `http://localhost:7082/?user=jac`
+*   **Projet spécifique** : `http://localhost:7082/?user=jac`
 
 ---
 

@@ -23,8 +23,19 @@ const getBlogUrl = (name?: string): string => {
   if (!name) return '#';
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   return isLocal
-    ? `http://localhost:9081/?user=${name.toLowerCase()}`
-    : `https://${name.toLowerCase()}-blog.helioscope.fr`;
+    ? `http://localhost:7081/?user=${name.toLowerCase()}`
+    : `https://${name.toLowerCase()}.helioscope.fr/blog`;
+};
+
+const getCarnetUrl = (name?: string, customUrl?: string): string => {
+  if (customUrl && customUrl.trim() && !customUrl.includes('808') && !customUrl.includes('/embed/')) {
+    return customUrl;
+  }
+  if (!name) return '#';
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  return isLocal
+    ? `http://localhost:7082/?user=${name.toLowerCase()}`
+    : `https://${name.toLowerCase()}.helioscope.fr/carnet`;
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -175,13 +186,29 @@ const Header: React.FC<HeaderProps> = ({
               </li>
             )}
 
-            <li>
-              <a 
-                href={getBlogUrl(profile?.name)}
-              >
-                Actualités
-              </a>
-            </li>
+            {profile?.hasBlog && (
+              <li>
+                <a 
+                  href={getBlogUrl(profile?.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Actualités
+                </a>
+              </li>
+            )}
+
+            {profile?.hasCarnet && (
+              <li>
+                <a 
+                  href={getCarnetUrl(profile?.name, profile?.chambreNoireUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Carnet de route
+                </a>
+              </li>
+            )}
             
             <li>
               <a 

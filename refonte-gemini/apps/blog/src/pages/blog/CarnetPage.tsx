@@ -8,10 +8,10 @@ const CarnetPage: React.FC = () => {
     const hostname = window.location.hostname;
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
     if (isLocal) {
-      return 'http://localhost:8082/embed/carnet-de-routes';
+      return 'http://localhost:7082/';
     } else {
       const rootDomain = hostname.replace(/^(blog\.|.*?-blog\.)/, '');
-      return `https://${rootDomain}/embed/carnet-de-routes`;
+      return `https://${rootDomain}/carnet`;
     }
   };
 

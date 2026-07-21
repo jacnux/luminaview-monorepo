@@ -78,6 +78,8 @@ router.post('/register', async (req: Request, res: Response) => {
       password: hashedPassword,
       quotaLimit: 1 * 1024 * 1024 * 1024,
       isAdmin: isFirstUser, // On utilise la variable ici
+      hasBlog: false,
+      hasCarnet: false,
       isVerified: false,
       verificationToken,
       verificationTokenExpires

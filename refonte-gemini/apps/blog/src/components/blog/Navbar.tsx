@@ -7,9 +7,10 @@ import DarkModeToggle from './DarkModeToggle';
 interface NavbarProps {
   themeClass?: string;
   chambreNoireUrl?: string;
+  hasCarnet?: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '' }) => {
+const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCarnet = false }) => {
   const location = useLocation();
   const blogName = getBlogSlug(location.search);
   const s = location.search; // raccourci pour les query strings
@@ -27,16 +28,18 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '' }) => 
   const getPortfolioUrl = () => {
     const hostname = window.location.hostname;
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
-    
-    if (isPortfolio) {
-      // Thème ARTFOLIO -> va vers le portfolio autonome
-      if (isLocal) return `http://localhost:9090/${blogName}`;
-      return `https://${blogName}-portfolio.helioscope.fr`;
-    } else {
-      // Thème HÉLIOSCOPE -> va vers le portfolio intégré dans l'app principale
-      if (isLocal) return `http://localhost:9090/${blogName}`;
-      return `${getMainAppUrl()}/portfolio/${blogName}`;
+    if (isLocal) return `http://localhost:7090/${blogName}`;
+    return `https://${blogName}.helioscope.fr`;
+  };
+
+  const getCarnetUrl = () => {
+    if (chambreNoireUrl && !chambreNoireUrl.includes('808') && !chambreNoireUrl.includes('/embed/')) {
+      return chambreNoireUrl;
     }
+    const hostname = window.location.hostname;
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+    if (isLocal) return `http://localhost:7082/?user=${blogName}`;
+    return `https://${blogName}.helioscope.fr/carnet`;
   };
 
   return (
@@ -49,8 +52,8 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '' }) => 
           <Link to={`/${s}`} className={getLinkClass('/')}>Articles</Link>
           <Link to={`/nouveautes${s}`} className={getLinkClass('/nouveautes')}>Nouveautés</Link>
           <Link to={`/gallery${s}`} className={getLinkClass('/gallery')}>Galeries</Link>
-          {chambreNoireUrl && (
-            <a href={chambreNoireUrl} className={getLinkClass('/carnet')}>Carnet de route</a>
+          {hasCarnet && (
+            <a href={getCarnetUrl()} target="_blank" rel="noopener noreferrer" className={getLinkClass('/carnet')}>Carnet de route</a>
           )}
           <a href={getPortfolioUrl()} className="nav-link px-3.5 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition duration-200">Portfolio</a>
           <Link to={`/contact${s}`} className={getLinkClass('/contact')}>Contact</Link>

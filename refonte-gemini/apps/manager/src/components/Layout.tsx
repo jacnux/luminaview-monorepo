@@ -134,19 +134,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </Link>
 
                 <Link
-                  to="/manage-blog"
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
-                    location.pathname === '/manage-blog'
-                      ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/25'
-                      : theme === 'dark'
-                      ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                      : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
-                  }`}
-                >
-                  <span>📝</span> Blog
-                </Link>
-
-                <Link
                   to="/dashboard/pages"
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
                     location.pathname.startsWith('/dashboard/pages')
@@ -159,18 +146,35 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <span>📄</span> Pages
                 </Link>
 
-                <Link
-                  to="/dashboard/carnet-routes"
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
-                    location.pathname.startsWith('/dashboard/carnet-routes')
-                      ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/25'
-                      : theme === 'dark'
-                      ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                      : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
-                  }`}
-                >
-                  <span>📓</span> Carnets
-                </Link>
+                {user?.hasBlog && (
+                  <Link
+                    to="/manage-blog"
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
+                      location.pathname === '/manage-blog'
+                        ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/25'
+                        : theme === 'dark'
+                        ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
+                        : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                    }`}
+                  >
+                    <span>📝</span> Blog
+                  </Link>
+                )}
+
+                {user?.hasCarnet && (
+                  <Link
+                    to="/dashboard/carnet-routes"
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
+                      location.pathname.startsWith('/dashboard/carnet-routes')
+                        ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/25'
+                        : theme === 'dark'
+                        ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
+                        : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                    }`}
+                  >
+                    <span>📓</span> Carnets
+                  </Link>
+                )}
               </nav>
 
               <hr className={theme === 'dark' ? 'border-white/[0.06]' : 'border-gray-200'} />
@@ -198,8 +202,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </Link>
 
                 <a
-                  href={getAppUrl('portfolio', user.name, { edit: true })}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
+                  href={getAppUrl('portfolio', user.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
                     theme === 'dark'
                       ? 'text-amber-400 hover:text-amber-300 hover:bg-white/[0.04]'
                       : 'text-amber-600 hover:text-amber-700 hover:bg-black/[0.04]'
@@ -207,6 +213,34 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 >
                   <span>🌍</span> Voir ma vitrine
                 </a>
+                {user?.hasBlog && (
+                  <a
+                    href={getAppUrl('blog', user.name)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
+                      theme === 'dark'
+                        ? 'text-indigo-400 hover:text-indigo-300 hover:bg-white/[0.04]'
+                        : 'text-indigo-600 hover:text-indigo-700 hover:bg-black/[0.04]'
+                    }`}
+                  >
+                    <span>✍️</span> Voir mon blog
+                  </a>
+                )}
+                {user?.hasCarnet && (
+                  <a
+                    href={getAppUrl('carnet', user.name)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
+                      theme === 'dark'
+                        ? 'text-teal-400 hover:text-teal-300 hover:bg-white/[0.04]'
+                        : 'text-teal-600 hover:text-teal-700 hover:bg-black/[0.04]'
+                    }`}
+                  >
+                    <span>📖</span> Voir mon carnet
+                  </a>
+                )}
               </div>
             </div>
 
@@ -365,19 +399,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     </Link>
 
                     <Link
-                      to="/manage-blog"
-                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
-                        location.pathname === '/manage-blog'
-                          ? 'bg-orange-600 text-white shadow-[0_4px_12px_rgba(234,88,12,0.3)]'
-                          : theme === 'dark'
-                          ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                          : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
-                      }`}
-                    >
-                      <span>📝</span> Blog
-                    </Link>
-
-                    <Link
                       to="/dashboard/pages"
                       className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
                         location.pathname.startsWith('/dashboard/pages')
@@ -390,18 +411,35 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       <span>📄</span> Pages
                     </Link>
 
-                    <Link
-                      to="/dashboard/carnet-routes"
-                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
-                        location.pathname.startsWith('/dashboard/carnet-routes')
-                          ? 'bg-amber-600 text-white shadow-[0_4px_12px_rgba(217,119,6,0.3)]'
-                          : theme === 'dark'
-                          ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                          : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
-                      }`}
-                    >
-                      <span>📓</span> Carnets
-                    </Link>
+                    {user?.hasBlog && (
+                      <Link
+                        to="/manage-blog"
+                        className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
+                          location.pathname === '/manage-blog'
+                            ? 'bg-orange-600 text-white shadow-[0_4px_12px_rgba(234,88,12,0.3)]'
+                            : theme === 'dark'
+                            ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
+                            : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                        }`}
+                      >
+                        <span>📝</span> Blog
+                      </Link>
+                    )}
+
+                    {user?.hasCarnet && (
+                      <Link
+                        to="/dashboard/carnet-routes"
+                        className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+                          location.pathname.startsWith('/dashboard/carnet-routes')
+                            ? 'bg-amber-600 text-white shadow-[0_4px_12px_rgba(217,119,6,0.3)]'
+                            : theme === 'dark'
+                            ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
+                            : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                        }`}
+                      >
+                        <span>📓</span> Carnets
+                      </Link>
+                    )}
                   </div>
 
                   <Link
@@ -424,15 +462,45 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </Link>
 
                   <a
-                    href={getAppUrl('portfolio', user.name, { edit: true })}
+                    href={getAppUrl('portfolio', user.name)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
                       theme === 'dark'
                         ? 'text-amber-400 hover:text-amber-300 hover:bg-white/[0.04]'
                         : 'text-amber-600 hover:text-amber-700 hover:bg-black/[0.04]'
                     }`}
                   >
-                    <span>🌍</span> Voir ma vitrine
+                    <span>🌍</span> Vitrine
                   </a>
+                  {user?.hasBlog && (
+                    <a
+                      href={getAppUrl('blog', user.name)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
+                        theme === 'dark'
+                          ? 'text-indigo-400 hover:text-indigo-300 hover:bg-white/[0.04]'
+                          : 'text-indigo-600 hover:text-indigo-700 hover:bg-black/[0.04]'
+                      }`}
+                    >
+                      <span>✍️</span> Blog
+                    </a>
+                  )}
+                  {user?.hasCarnet && (
+                    <a
+                      href={getAppUrl('carnet', user.name)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
+                        theme === 'dark'
+                          ? 'text-teal-400 hover:text-teal-300 hover:bg-white/[0.04]'
+                          : 'text-teal-600 hover:text-teal-700 hover:bg-black/[0.04]'
+                      }`}
+                    >
+                      <span>📖</span> Carnet
+                    </a>
+                  )}
 
                   {/* Bouton créer */}
                   <Link

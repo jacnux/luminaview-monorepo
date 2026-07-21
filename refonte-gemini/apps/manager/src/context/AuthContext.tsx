@@ -9,6 +9,8 @@ interface User {
   isAdmin?: boolean;
   avatar?: string;
   blogTheme?: string;
+  hasBlog?: boolean;
+  hasCarnet?: boolean;
 }
 
 interface AuthContextType {

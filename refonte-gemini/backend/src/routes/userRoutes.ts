@@ -75,7 +75,7 @@ router.put('/me', authenticateToken, upload.fields([
 ]), async (req: Request, res: Response) => {
   try {
     // Récupération des champs textuels
-    const { bio, showcaseAlbums, portfolioIntro, servicesDescription, tagline, blogTheme, chambreNoireUrl } = req.body;
+    const { bio, showcaseAlbums, portfolioIntro, servicesDescription, tagline, blogTheme, chambreNoireUrl, hasBlog, hasCarnet } = req.body;
 
     const updates: any = {};
 
@@ -88,6 +88,8 @@ router.put('/me', authenticateToken, upload.fields([
     if (tagline !== undefined) updates.tagline = tagline;
     if (blogTheme !== undefined) updates.blogTheme = blogTheme;
     if (chambreNoireUrl !== undefined) updates.chambreNoireUrl = chambreNoireUrl;
+    if (hasBlog !== undefined) updates.hasBlog = hasBlog === 'true' || hasBlog === true;
+    if (hasCarnet !== undefined) updates.hasCarnet = hasCarnet === 'true' || hasCarnet === true;
     // ---------------------------
 
     // Gestion des fichiers uploadés
@@ -118,7 +120,7 @@ router.put('/me', authenticateToken, upload.fields([
 router.get('/public/:id', async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.params.id)
-      .select('name bio avatar bannerImage showcaseAlbums tagline blogTheme createdAt chambreNoireUrl') // Ajout de bannerImage
+      .select('name bio avatar bannerImage showcaseAlbums tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet')
       .populate({
         path: 'showcaseAlbums',
         match: { isPublic: true }

@@ -3,11 +3,13 @@ export const getAppUrl = (app: 'blog' | 'portfolio' | 'carnet', username: string
   const name = username.toLowerCase();
 
   if (isLocal) {
-    if (app === 'blog') return `http://localhost:9081/?user=${name}`;
-    if (app === 'portfolio') return `http://localhost:9090/?user=${name}`;
-    if (app === 'carnet') return `http://localhost:9082/?user=${name}`;
+    if (app === 'blog') return `http://localhost:7081/?user=${name}`;
+    if (app === 'portfolio') return `http://localhost:7090/?user=${name}`;
+    if (app === 'carnet') return `http://localhost:7082/?user=${name}`;
   }
 
   // En production
-  return `https://${name}-${app}.helioscope.fr`;
+  if (app === 'blog') return `https://${name}.helioscope.fr/blog`;
+  if (app === 'carnet') return `https://${name}.helioscope.fr/carnet`;
+  return `https://${name}.helioscope.fr`;
 };

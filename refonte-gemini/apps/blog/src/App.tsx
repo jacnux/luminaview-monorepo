@@ -19,6 +19,7 @@ const AppContent: React.FC = () => {
   const blogSlug = getBlogSlug(location.search);
   const [themeClass, setThemeClass] = useState('theme-classic');
   const [chambreNoireUrl, setChambreNoireUrl] = useState('');
+  const [hasCarnet, setHasCarnet] = useState(false);
 
   useEffect(() => {
     if (!blogSlug) return;
@@ -31,6 +32,7 @@ const AppContent: React.FC = () => {
           } else {
             setThemeClass('theme-classic');
           }
+          setHasCarnet(!!data.hasCarnet);
           setChambreNoireUrl(data.chambreNoireUrl || '');
         }
       })
@@ -42,7 +44,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className={themeClass} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar themeClass={themeClass} chambreNoireUrl={chambreNoireUrl} />
+      <Navbar themeClass={themeClass} chambreNoireUrl={chambreNoireUrl} hasCarnet={hasCarnet} />
       <main style={{ flex: 1, width: '100%' }}>
         <Routes>
           <Route path="/"          element={<PostList />}    />
