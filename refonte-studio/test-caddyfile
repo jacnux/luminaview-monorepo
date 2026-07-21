@@ -1,0 +1,17 @@
+{
+    email admin@luminaview.fr
+    on_demand_tls {
+        ask http://127.0.0.1:5555
+    }
+}
+
+:5555 {
+    respond 200
+}
+
+https:// {
+    tls {
+        on_demand
+    }
+    respond "Hello"
+}

@@ -36,30 +36,29 @@ https:// {
         on_demand
     }
 
+    # API & Uploads pour tout l'écosystème
+    handle /api/* {
+        reverse_proxy luminaview-backend:3000
+    }
+    handle /uploads/* {
+        reverse_proxy luminaview-backend:3000
+    }
+
+    # Sous-domaine spécifique pour le BLOG
+    @blog host *-blog.helioscope.fr
+    handle @blog {
+        reverse_proxy luminaview-blog:80
+    }
+
+    # Sous-domaine spécifique pour le CARNET
+    @carnet host *-carnet.helioscope.fr
+    handle @carnet {
+        reverse_proxy luminaview-chambrenoire:80
+    }
+
+    # Par défaut : Portfolio (*.helioscope.fr ou helioscope.fr)
     @helioscope host *.helioscope.fr helioscope.fr
-
     handle @helioscope {
-        # Routage /blog et /blog/* vers le conteneur Blog (nettoie le préfixe pour l'application SPA)
-        handle_path /blog* {
-            reverse_proxy luminaview-blog:80
-        }
-
-        # Routage /carnet et /carnet/* vers le conteneur Chambre Noire (nettoie le préfixe pour l'application SPA)
-        handle_path /carnet* {
-            reverse_proxy luminaview-chambrenoire:80
-        }
-
-        # Proxification API & Fichiers Uploadés pour l'accès public (conserve le préfixe)
-        handle /api/* {
-            reverse_proxy luminaview-backend:3000
-        }
-        handle /uploads/* {
-            reverse_proxy luminaview-backend:3000
-        }
-
-        # Par défaut : Portfolio public de l'utilisateur (ex: jac.helioscope.fr)
-        handle {
-            reverse_proxy luminaview-portfolio:80
-        }
+        reverse_proxy luminaview-portfolio:80
     }
 }

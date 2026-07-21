@@ -9,7 +9,7 @@ export const getAppUrl = (app: 'blog' | 'portfolio' | 'carnet', username: string
   }
 
   // En production
-  if (app === 'blog') return `https://${name}.helioscope.fr/blog`;
-  if (app === 'carnet') return `https://${name}.helioscope.fr/carnet`;
+  if (app === 'blog') return `https://${name}-blog.helioscope.fr`;
+  if (app === 'carnet') return `https://${name}-carnet.helioscope.fr`;
   return `https://${name}.helioscope.fr`;
 };

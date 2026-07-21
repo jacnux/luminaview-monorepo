@@ -1,0 +1,47 @@
+{
+    email {$LETSENCRYPT_EMAIL:admin@luminaview.fr}
+    on_demand_tls {
+        ask http://127.0.0.1:5555
+    }
+}
+
+:5555 {
+    respond 200
+}
+
+luminaview.fr, www.luminaview.fr {
+    handle /api/* {
+        reverse_proxy luminaview-backend:3000
+    }
+    handle /uploads/* {
+        reverse_proxy luminaview-backend:3000
+    }
+    handle {
+        reverse_proxy luminaview-manager:80
+    }
+}
+
+https:// {
+    tls {
+        on_demand
+    }
+
+    @helioscope host *.helioscope.fr helioscope.fr
+    handle @helioscope {
+        handle_path /blog* {
+            reverse_proxy luminaview-blog:80
+        }
+        handle_path /carnet* {
+            reverse_proxy luminaview-chambrenoire:80
+        }
+        handle /api/* {
+            reverse_proxy luminaview-backend:3000
+        }
+        handle /uploads/* {
+            reverse_proxy luminaview-backend:3000
+        }
+        handle {
+            reverse_proxy luminaview-portfolio:80
+        }
+    }
+}

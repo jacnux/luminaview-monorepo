@@ -24,7 +24,7 @@ const getBlogUrl = (name?: string): string => {
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   return isLocal
     ? `http://localhost:7081/?user=${name.toLowerCase()}`
-    : `https://${name.toLowerCase()}.helioscope.fr/blog`;
+    : `https://${name.toLowerCase()}-blog.helioscope.fr`;
 };
 
 const getCarnetUrl = (name?: string, customUrl?: string): string => {
@@ -35,7 +35,7 @@ const getCarnetUrl = (name?: string, customUrl?: string): string => {
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   return isLocal
     ? `http://localhost:7082/?user=${name.toLowerCase()}`
-    : `https://${name.toLowerCase()}.helioscope.fr/carnet`;
+    : `https://${name.toLowerCase()}-carnet.helioscope.fr`;
 };
 
 const Header: React.FC<HeaderProps> = ({

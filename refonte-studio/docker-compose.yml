@@ -1,4 +1,4 @@
-# Stack Docker Compose pour le Développement Local (Isolé pour tourner en parallèle de la V1)
+# Stack Docker Compose pour le Développement Local
 
 services:
   mongo:
@@ -13,7 +13,7 @@ services:
     build: ./backend
     container_name: luminaview-gemini-backend
     ports:
-      - "7000:3000"
+      - "7099:3000"
     volumes:
       - ./backend:/app
       - /app/node_modules
