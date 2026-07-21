@@ -1,0 +1,31 @@
+{
+    email admin@luminaview.fr
+    on_demand_tls {
+        ask http://127.0.0.1:5555
+    }
+}
+
+:5555 {
+    respond 200
+}
+
+https:// {
+    tls {
+        on_demand
+    }
+
+    @blog header_regexp Host ^([a-zA-Z0-9-]+)-blog\.helioscope\.fr$
+    handle @blog {
+        respond "blog"
+    }
+
+    @carnet header_regexp Host ^([a-zA-Z0-9-]+)-carnet\.helioscope\.fr$
+    handle @carnet {
+        respond "carnet"
+    }
+
+    @helioscope host *.helioscope.fr helioscope.fr
+    handle @helioscope {
+        respond "portfolio"
+    }
+}

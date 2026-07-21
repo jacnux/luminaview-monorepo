@@ -45,13 +45,13 @@ https:// {
     }
 
     # Sous-domaine spécifique pour le BLOG
-    @blog host *-blog.helioscope.fr
+    @blog header_regexp Host ^([a-zA-Z0-9-]+)-blog\.helioscope\.fr$
     handle @blog {
         reverse_proxy luminaview-blog:80
     }
 
     # Sous-domaine spécifique pour le CARNET
-    @carnet host *-carnet.helioscope.fr
+    @carnet header_regexp Host ^([a-zA-Z0-9-]+)-carnet\.helioscope\.fr$
     handle @carnet {
         reverse_proxy luminaview-chambrenoire:80
     }
