@@ -24,7 +24,7 @@ const LandingPage = () => {
         </div>
 
         <h1 className="text-5xl md:text-7xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500 drop-shadow-lg tracking-tighter">
-          Hélioscope
+          LuminaView
         </h1>
 
         <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
@@ -88,8 +88,8 @@ const LandingPage = () => {
             <div className="md:col-span-2 bg-gradient-to-r from-purple-900/20 to-blue-900/20 p-8 rounded-2xl border border-purple-500/20 hover:border-purple-500/40 transition duration-500 backdrop-blur-md flex flex-col md:flex-row gap-6 items-center group">
                 <div className="flex-1">
                     <div className="inline-block bg-purple-500/10 text-purple-400 p-2 rounded mb-3 text-xs font-bold border border-purple-500/20">NOUVEAU</div>
-                    <h3 className="text-xl font-bold mb-2 text-white">Votre Blog Intégré</h3>
-                    <p className="text-gray-400 text-sm">Partagez vos actualités, tutoriels ou coulisses de shooting. Chaque utilisateur possède son propre espace blog indépendant.</p>
+                    <h3 className="text-xl font-bold mb-2 text-white">Votre Blog & Carnet de Route</h3>
+                    <p className="text-gray-400 text-sm">Partagez vos actualités, vos projets et vos récits photographiques. Chaque utilisateur possède ses propres espaces indépendants.</p>
                 </div>
                 <div className="text-5xl opacity-50 group-hover:opacity-100 transition">📝</div>
             </div>
@@ -100,7 +100,7 @@ const LandingPage = () => {
 
       {/* FOOTER */}
       <footer className="relative z-10 py-8 text-center text-gray-600 text-sm border-t border-white/5 bg-black/20 backdrop-blur-sm">
-        <p>© 2026 Hélioscope. Tous droits réservés.</p>
+        <p>© 2026 LuminaView. Tous droits réservés.</p>
         <Link to="/legal" className="hover:text-white underline mt-2 inline-block text-gray-500 hover:text-gray-300 transition">Mentions Légales</Link>
       </footer>
     </div>
