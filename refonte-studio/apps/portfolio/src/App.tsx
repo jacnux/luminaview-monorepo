@@ -154,8 +154,24 @@ const App: React.FC = () => {
   };
 
   const handleSendReport = async (reason: string) => {
-    if (!selectedAlbumId) {
-      setReportError("Impossible de signaler cette image car l'album est introuvable.");
+    let type = 'album';
+    let targetId = selectedAlbumId;
+    
+    // Si on n'a pas d'album, on tente de récupérer depuis la page personnalisée
+    if (!targetId && currentPage === 'page' && currentPageData) {
+      type = 'user_page';
+      targetId = currentPageData._id;
+    }
+    
+    // Si on n'a toujours pas de cible, on tente depuis la photo elle-même
+    if (!targetId && lightboxIndex !== null && photos[lightboxIndex]) {
+       const photo = photos[lightboxIndex] as any;
+       targetId = photo.albumId || photo.album;
+       type = 'album';
+    }
+
+    if (!targetId) {
+      setReportError("Impossible de signaler cette image car la source est introuvable.");
       return;
     }
     
@@ -165,8 +181,8 @@ const App: React.FC = () => {
       setReportError(null);
       
       await axios.post('/api/reports', {
-        type: 'album',
-        targetId: selectedAlbumId,
+        type,
+        targetId,
         reason: reason.trim()
       });
       
