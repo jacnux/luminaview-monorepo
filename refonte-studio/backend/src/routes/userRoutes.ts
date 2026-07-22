@@ -5,6 +5,7 @@
 
 import express, { Request, Response } from 'express';
 import User from '../models/User';
+import bcrypt from 'bcryptjs';
 import Album from '../models/Album';
 import { authenticateToken } from '../middleware/auth';
 import multer from 'multer';
@@ -178,6 +179,27 @@ router.post('/contact', async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Erreur envoi contact:", error);
     res.status(500).json({ error: 'Erreur envoi email' });
+  }
+});
+
+// --- PUT /me/password ---
+router.put('/me/password', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = (req as any).user?.userId;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(400).json({ error: 'Mot de passe actuel incorrect' });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.json({ message: 'Mot de passe mis à jour avec succès' });
+  } catch (error) {
+    console.error('Password update error:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
   }
 });
 

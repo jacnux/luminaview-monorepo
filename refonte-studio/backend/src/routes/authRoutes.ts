@@ -2,7 +2,7 @@ import crypto from 'crypto'; // <--- AJOUTE CETTE LIGNE
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { sendVerificationEmail } from '../utils/emailService'; // Ajouter cet import
+import { sendVerificationEmail, sendPasswordResetEmail } from '../utils/emailService'; // Ajouter cet import
 import User from '../models/User';
 
 const router = express.Router();
@@ -175,6 +175,31 @@ router.post('/login', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('ERREUR LOGIN:', error); // <--- AJOUTE CETTE LIGNE
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// --- NOUVEAU : POST /forgot-password ---
+router.post('/forgot-password', async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    // Pour ne pas révéler si un email existe, on renvoie un succès de toute façon
+    if (!user) return res.status(200).json({ message: 'Email envoyé' });
+
+    // Génération du mot de passe temporaire
+    const tempPassword = crypto.randomBytes(4).toString('hex');
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    await sendPasswordResetEmail(user.email, tempPassword);
+
+    res.json({ message: 'Email envoyé' });
+  } catch (error) {
+    console.error('ERREUR FORGOT PASSWORD:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });

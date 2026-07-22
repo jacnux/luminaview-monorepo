@@ -59,7 +59,6 @@ services:
       - backend
     networks:
       - luminaview-local-network
-
   chambrenoire:
     build: ./apps/chambrenoire
     container_name: luminaview-chambrenoire

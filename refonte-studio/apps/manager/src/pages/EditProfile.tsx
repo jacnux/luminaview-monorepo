@@ -18,6 +18,11 @@ const EditProfile: React.FC = () => {
   const [currentAvatar, setCurrentAvatar] = useState<string>('');
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [currentBanner, setCurrentBanner] = useState<string>('');
+  
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -71,6 +76,25 @@ const EditProfile: React.FC = () => {
       fetchData();
     } catch (error) {
       alert('Erreur lors de la sauvegarde');
+    }
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      return alert('Les nouveaux mots de passe ne correspondent pas');
+    }
+    if (!currentPassword || !newPassword) {
+      return alert('Veuillez remplir tous les champs');
+    }
+    try {
+      await api.put('/users/me/password', { currentPassword, newPassword });
+      alert('Mot de passe mis à jour avec succès !');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Erreur lors de la mise à jour du mot de passe');
     }
   };
 
@@ -354,6 +378,54 @@ const EditProfile: React.FC = () => {
                       />
                     </button>
                   </div>
+                </div>
+              </div>
+
+              {/* CARD 6 : SÉCURITÉ */}
+              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
+                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                  <span className="text-yellow-500">🔒</span> Sécurité
+                </h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className={labelClass}>Mot de passe actuel</label>
+                    <input
+                      type="password"
+                      value={currentPassword}
+                      onChange={e => setCurrentPassword(e.target.value)}
+                      className={inputClass}
+                      placeholder="Votre mot de passe actuel"
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Nouveau mot de passe</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      className={inputClass}
+                      placeholder="Nouveau mot de passe (min 6 caractères)"
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Confirmer le nouveau mot de passe</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={e => setConfirmPassword(e.target.value)}
+                      className={inputClass}
+                      placeholder="Confirmez le nouveau mot de passe"
+                    />
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={handlePasswordSubmit}
+                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-xl shadow hover:shadow-lg transition duration-200 mt-2"
+                  >
+                    Modifier le mot de passe
+                  </button>
                 </div>
               </div>
             </div>
