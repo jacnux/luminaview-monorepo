@@ -9,7 +9,6 @@ import { useParams, useSearchParams, Link, useNavigate, useLocation } from 'reac
 import api from '../utils/api';
 import { getSubdomain } from '../utils/domain';
 import Lightbox from '../components/Lightbox';
-import EditPhotoModal from '../components/EditPhotoModal';
 import PhotoInfoModal from '../components/PhotoInfoModal';
 
 // ============================================================
@@ -707,7 +706,6 @@ const AlbumView = () => {
         )}
 
         {/* MODALES */}
-        {editingPhoto && <EditPhotoModal photo={editingPhoto} onClose={() => setEditingPhoto(null)} onSave={handleSavePhoto} />}
         {infoPhoto && <PhotoInfoModal photo={infoPhoto} onClose={() => setInfoPhoto(null)} />}
         {lightboxIndex !== null && <Lightbox photos={sortedPhotos} initialIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} />}
         {commentPhoto && <CommentModal photo={commentPhoto} onClose={() => setCommentPhoto(null)} />}
