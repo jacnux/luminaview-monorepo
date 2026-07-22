@@ -87,7 +87,10 @@ app.use('/uploads', express.static('/app/uploads'));
 mongoose
   .connect(process.env.MONGO_URI || 'mongodb://mongo:27017/luminaview')
   .then(() => console.log('✅ MongoDB connecté'))
-  .catch(err => console.error('❌ MongoDB erreur:', err));
+  .catch(err => {
+    console.error('❌ MongoDB erreur:', err);
+    process.exit(1); // Force le redémarrage du conteneur via Docker restart: always
+  });
 
 
 // ============================================================
