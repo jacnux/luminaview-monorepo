@@ -46,6 +46,13 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page'>('home');
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   
+  // Theme State
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('portfolio-theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+    return 'light';
+  });
+
   // États de données
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -127,14 +134,29 @@ const App: React.FC = () => {
     fetchData();
   }, []);
 
-  // Appliquer le thème sombre "portfolio" sur le body si nécessaire
+  // Initialiser le thème en fonction du profil utilisateur
   useEffect(() => {
     if (profile?.blogTheme === 'portfolio') {
+      const saved = localStorage.getItem('portfolio-theme');
+      if (!saved) {
+        setTheme('dark');
+      }
+    }
+  }, [profile]);
+
+  // Appliquer le thème sur le body
+  useEffect(() => {
+    if (theme === 'dark') {
       document.body.classList.add('theme-portfolio');
     } else {
       document.body.classList.remove('theme-portfolio');
     }
-  }, [profile?.blogTheme]);
+    localStorage.setItem('portfolio-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
 
   // Charger les photos quand un album est sélectionné
   useEffect(() => {
@@ -266,6 +288,8 @@ const App: React.FC = () => {
           setMenuOpen={setMenuOpen}
           navigateTo={navigateTo}
           navigateToPage={navigateToPage}
+          theme={theme}
+          toggleTheme={toggleTheme}
         />
       )}
 

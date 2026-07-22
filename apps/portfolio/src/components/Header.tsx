@@ -10,6 +10,8 @@ interface HeaderProps {
   setMenuOpen: (open: boolean) => void;
   navigateTo: (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page', albumId?: string | null) => void;
   navigateToPage: (slug: string) => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 const formatName = (name?: string): string => {
@@ -47,6 +49,8 @@ const Header: React.FC<HeaderProps> = ({
   setMenuOpen,
   navigateTo,
   navigateToPage,
+  theme,
+  toggleTheme,
 }) => {
   const [seriesExpanded, setSeriesExpanded] = useState(false);
   const [exhibitionsExpanded, setExhibitionsExpanded] = useState(false);
@@ -223,6 +227,29 @@ const Header: React.FC<HeaderProps> = ({
               >
                 Contact
               </a>
+            </li>
+            <li style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--color-border)' }}>
+              <button
+                onClick={toggleTheme}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-text-dark)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontFamily: 'var(--font-title)',
+                  fontSize: '0.85rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  padding: '4px 0',
+                  opacity: 0.8
+                }}
+                className="hover:opacity-100 transition duration-200"
+              >
+                {theme === 'light' ? '🌙 Mode Sombre' : '☀️ Mode Clair'}
+              </button>
             </li>
           </ul>
         </nav>
