@@ -21,9 +21,9 @@ export const sendNewPostNotification = async (subscribers: any[], post: any) => 
   console.log(`[NEWSLETTER SERVICE] Début de l'envoi à ${subscribers.length} abonnés...`);
 
   // URL dynamique
-  // En local: process.env.FRONTEND_URL est vide -> 'http://localhost:8080'
+  // En local: process.env.FRONTEND_URL est vide -> 'http://localhost:7081'
   // En prod: process.env.FRONTEND_URL vaut 'https://helioscope.fr'
-  const baseUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+  const baseUrl = process.env.FRONTEND_URL || 'http://localhost:7081';
   const postUrl = `${baseUrl}/post/${post.slug}`;
   console.log(`[URL]  Url utilisee  ${postUrl}`);
 

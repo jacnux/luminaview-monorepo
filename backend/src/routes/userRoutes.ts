@@ -5,6 +5,7 @@
 
 import express, { Request, Response } from 'express';
 import User from '../models/User';
+import bcrypt from 'bcryptjs';
 import Album from '../models/Album';
 import { authenticateToken } from '../middleware/auth';
 import multer from 'multer';
@@ -75,7 +76,7 @@ router.put('/me', authenticateToken, upload.fields([
 ]), async (req: Request, res: Response) => {
   try {
     // Récupération des champs textuels
-    const { bio, showcaseAlbums, portfolioIntro, servicesDescription, tagline, blogTheme, chambreNoireUrl } = req.body;
+    const { bio, showcaseAlbums, portfolioIntro, servicesDescription, tagline, blogTheme, chambreNoireUrl, hasBlog, hasCarnet } = req.body;
 
     const updates: any = {};
 
@@ -88,6 +89,8 @@ router.put('/me', authenticateToken, upload.fields([
     if (tagline !== undefined) updates.tagline = tagline;
     if (blogTheme !== undefined) updates.blogTheme = blogTheme;
     if (chambreNoireUrl !== undefined) updates.chambreNoireUrl = chambreNoireUrl;
+    if (hasBlog !== undefined) updates.hasBlog = hasBlog === 'true' || hasBlog === true;
+    if (hasCarnet !== undefined) updates.hasCarnet = hasCarnet === 'true' || hasCarnet === true;
     // ---------------------------
 
     // Gestion des fichiers uploadés
@@ -118,7 +121,7 @@ router.put('/me', authenticateToken, upload.fields([
 router.get('/public/:id', async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.params.id)
-      .select('name bio avatar bannerImage showcaseAlbums tagline blogTheme createdAt chambreNoireUrl') // Ajout de bannerImage
+      .select('name bio avatar bannerImage showcaseAlbums tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet')
       .populate({
         path: 'showcaseAlbums',
         match: { isPublic: true }
@@ -132,15 +135,18 @@ router.get('/public/:id', async (req: Request, res: Response) => {
 });
 
 // --- CONFIGURATION EMAIL (identique à reportRoutes) ---
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
+const transporterOptions: any = {
+  host: process.env.SMTP_HOST || 'luminaview-mailhog',
+  port: parseInt(process.env.SMTP_PORT || '1025'),
+  secure: process.env.SMTP_SECURE === 'true'
+};
+if (process.env.SMTP_USER) {
+  transporterOptions.auth = {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+    pass: process.env.SMTP_PASS
+  };
+}
+const transporter = nodemailer.createTransport(transporterOptions);
 
 // 6. POST CONTACT (Public — envoie un email au propriétaire du portfolio)
 router.post('/contact', async (req: Request, res: Response) => {
@@ -173,6 +179,27 @@ router.post('/contact', async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Erreur envoi contact:", error);
     res.status(500).json({ error: 'Erreur envoi email' });
+  }
+});
+
+// --- PUT /me/password ---
+router.put('/me/password', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = (req as any).user?.userId;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(400).json({ error: 'Mot de passe actuel incorrect' });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.json({ message: 'Mot de passe mis à jour avec succès' });
+  } catch (error) {
+    console.error('Password update error:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
   }
 });
 

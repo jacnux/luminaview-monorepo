@@ -11,15 +11,18 @@ import nodemailer from 'nodemailer';
 const router = express.Router();
 
 // Configuration email
-const adminTransporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
+const transporterOptions: any = {
+  host: process.env.SMTP_HOST || 'luminaview-mailhog',
+  port: parseInt(process.env.SMTP_PORT || '1025'),
+  secure: process.env.SMTP_SECURE === 'true'
+};
+if (process.env.SMTP_USER) {
+  transporterOptions.auth = {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+    pass: process.env.SMTP_PASS
+  };
+}
+const adminTransporter = nodemailer.createTransport(transporterOptions);
 
 router.post('/', async (req: Request, res: Response) => {
   try {

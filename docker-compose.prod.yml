@@ -1,89 +1,104 @@
-#version: '3.8'
+# Stack Docker Compose pour la Production (avec Caddy Reverse Proxy & SSL Auto)
 
 services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: luminaview-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    environment:
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@luminaview.fr}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - luminaview-network
+    depends_on:
+      - manager
+      - portfolio
+      - blog
+      - chambrenoire
+
   mongo:
     image: mongo:4.4
-    container_name: luminaview-core-mongo
+    container_name: luminaview-mongo
+    restart: always
     volumes:
       - ./data/mongo:/data/db
-    restart: always
     networks:
       - luminaview-network
 
   backend:
-    build:
-      context: ./backend
-    container_name: luminaview-core-backend
+    build: ./backend
+    container_name: luminaview-backend
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./data/uploads:/app/uploads
+    depends_on:
+      - mongo
     environment:
-      - NODE_ENV=production
-      - MONGO_URI=mongodb://mongo:27017/luminaview_core
+      - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017/luminaview_core}
       - JWT_SECRET=${JWT_SECRET}
-      - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB:-100}
-      # Configuration SMTP
+      - SESSION_SECRET=${SESSION_SECRET}
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_SECURE=${SMTP_SECURE}
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASS=${SMTP_PASS}
       - SMTP_FROM=${SMTP_FROM}
-    volumes:
-      - ./data/uploads:/app/uploads
-    depends_on:
-      - mongo
-    restart: always
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - PORT=3000
+      - FRONTEND_URL=https://luminaview.fr
     networks:
       - luminaview-network
 
   manager:
-    build:
-      context: ./apps/luminaview-manager
-    container_name: luminaview-manager-prod
-    environment: []
+    build: ./apps/manager
+    container_name: luminaview-manager
+    restart: always
     depends_on:
       - backend
-    restart: always
     networks:
       - luminaview-network
-      - webproxy
 
   blog:
-    build:
-      context: ./apps/luminaview-blog
-    container_name: luminaview-blog-prod
-    environment: []
+    build: ./apps/blog
+    container_name: luminaview-blog
+    restart: always
     depends_on:
       - backend
-    restart: always
     networks:
       - luminaview-network
-      - webproxy
 
   portfolio:
-    build:
-      context: ./apps/luminaview-portfolio
-    container_name: luminaview-portfolio-prod
-    environment: []
+    build: ./apps/portfolio
+    container_name: luminaview-portfolio
+    restart: always
     depends_on:
       - backend
-    restart: always
     networks:
       - luminaview-network
-      - webproxy
 
   chambrenoire:
-    build:
-      context: ./apps/chambre-noire
-    container_name: luminaview-chambrenoire-prod
-    environment: []
+    build: ./apps/chambrenoire
+    container_name: luminaview-chambrenoire
+    restart: always
     depends_on:
       - backend
-    restart: always
     networks:
       - luminaview-network
-      - webproxy
+
+volumes:
+  caddy_data:
+  caddy_config:
 
 networks:
   luminaview-network:
     driver: bridge
-  webproxy:
-    external: true

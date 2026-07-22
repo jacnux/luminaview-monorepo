@@ -31,6 +31,15 @@ const UserSchema = new mongoose.Schema({
     type: String
   },
 
+  hasBlog: {
+    type: Boolean,
+    default: false
+  },
+  hasCarnet: {
+    type: Boolean,
+    default: false
+  },
+
   isAdmin: {
     type: Boolean,
     default: false

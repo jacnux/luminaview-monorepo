@@ -1,69 +1,84 @@
-#version: '3.8'
+# Stack Docker Compose pour le Développement Local
 
 services:
   mongo:
     image: mongo:4.4
-    container_name: luminaview-core-mongo
-    ports:
-      - "27017:27017"
+    container_name: luminaview-mongo
     volumes:
       - ./data/mongo:/data/db
-    restart: always
+    networks:
+      - luminaview-local-network
 
   backend:
-    build:
-      context: ./backend
-    container_name: luminaview-core-backend
+    build: ./backend
+    container_name: luminaview-backend
     ports:
-      - "3000:3000"
+      - "7099:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./data/uploads:/app/uploads
+    depends_on:
+      - mongo
     environment:
       - MONGO_URI=mongodb://mongo:27017/luminaview_core
       - JWT_SECRET=changeThisSecretLuminaView123!
       - PORT=3000
-    volumes:
-      - ./data/uploads:/app/uploads
-      - ./backend/scripts:/app/scripts
-    depends_on:
-      - mongo
-    restart: always
+      - SMTP_HOST=mailhog
+      - SMTP_PORT=1025
+      - SMTP_FROM=test@helioscope.fr
+    networks:
+      - luminaview-local-network
 
   manager:
-    build:
-      context: ./apps/luminaview-manager
-    container_name: luminaview-manager-front
+    build: ./apps/manager
+    container_name: luminaview-manager
     ports:
-      - "8080:80"
+      - "7080:80"
     depends_on:
       - backend
-    restart: always
+    networks:
+      - luminaview-local-network
 
   blog:
-    build:
-      context: ./apps/luminaview-blog
-    container_name: luminaview-blog-front
+    build: ./apps/blog
+    container_name: luminaview-blog
     ports:
-      - "8081:80"
+      - "7081:80"
     depends_on:
       - backend
-    restart: always
-
-  chambrenoire:
-    build:
-      context: ./apps/chambre-noire
-    container_name: luminaview-chambrenoire-front
-    ports:
-      - "8082:80"
-    depends_on:
-      - backend
-    restart: always
+    networks:
+      - luminaview-local-network
 
   portfolio:
-    build:
-      context: ./apps/luminaview-portfolio
-    container_name: luminaview-portfolio-front
+    build: ./apps/portfolio
+    container_name: luminaview-portfolio
     ports:
-      - "8090:80"
+      - "7090:80"
     depends_on:
       - backend
-    restart: always
+    networks:
+      - luminaview-local-network
+  chambrenoire:
+    build: ./apps/chambrenoire
+    container_name: luminaview-chambrenoire
+    ports:
+      - "7082:80"
+    depends_on:
+      - backend
+    networks:
+      - luminaview-local-network
 
+  # --- MAILHOG ---
+  mailhog:
+    image: mailhog/mailhog
+    container_name: luminaview-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - luminaview-local-network
+
+networks:
+  luminaview-local-network:
+    driver: bridge

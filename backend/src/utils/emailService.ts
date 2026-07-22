@@ -1,15 +1,18 @@
 import nodemailer from 'nodemailer';
 
 // Configuration du transporteur
-const transporterOptions = {
+const transporterOptions: any = {
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false, // true for 465, false for other ports
-  auth: {
+  secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+};
+
+if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+  transporterOptions.auth = {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
-  },
-};
+  };
+}
 
 // Fonction pour l'envoi de l'email de vérification
 export const sendVerificationEmail = async (email: string, token: string) => {
