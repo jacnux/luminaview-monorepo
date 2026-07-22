@@ -18,6 +18,14 @@ import exifr from 'exifr';
 
 const router = express.Router();
 
+const formatShutterSpeed = (exposureTime: number): string => {
+  if (exposureTime >= 1) {
+    return `${Math.round(exposureTime)}s`;
+  }
+  // Arrondir pour éviter les valeurs comme 1/249s
+  return `1/${Math.round(1 / exposureTime)}s`;
+};
+
 // --- CONFIGURATION MULTER ---
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -189,13 +197,14 @@ router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Re
         let exifKeywords: string[] = [];
         let exifTitle = '';
         let exifDescription = '';
+        let exifExposureSettings: any = {};
+        let exifCaptureDate: Date | undefined = undefined;
 
         try {
           const exif = await exifr.parse(inputPath, {
             iptc: true,
             xmp: true,
-            tiff: false,
-            icc: false,
+            tiff: true,
           });
 
           if (exif) {
@@ -209,6 +218,23 @@ router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Re
             exifDescription = normalizeStringField(
               (exif as any).Caption ?? (exif as any).Description ?? ''
             );
+
+            const fNumber = (exif as any).FNumber;
+            const exposureTime = (exif as any).ExposureTime;
+            const iso = (exif as any).ISO ?? (exif as any).ISOSpeedRatings;
+            const focalLength = (exif as any).FocalLength;
+            
+            exifExposureSettings = {
+              aperture: fNumber ? `f/${fNumber}`.replace('.', ',') : undefined,
+              shutterSpeed: exposureTime ? formatShutterSpeed(exposureTime) : undefined,
+              iso: iso ? Number(iso) : undefined,
+              focalLength: focalLength ? `${focalLength} mm` : undefined,
+            };
+
+            const captureDateRaw = (exif as any).DateTimeOriginal ?? (exif as any).CreateDate;
+            if (captureDateRaw) {
+              exifCaptureDate = new Date(captureDateRaw);
+            }
           }
         } catch (e) {
           console.error('Erreur lecture EXIF:', e);
@@ -282,7 +308,9 @@ router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Re
           title: normalizeStringField(data.title || exifTitle || file.originalname),
           description: normalizeStringField(data.description || exifDescription || ''),
           tags: tagsArray,
-          size: file.size
+          size: file.size,
+          exposureSettings: Object.keys(exifExposureSettings).length > 0 ? exifExposureSettings : undefined,
+          captureDate: exifCaptureDate
         };
       })
     );
