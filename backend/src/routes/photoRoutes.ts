@@ -370,7 +370,25 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Interdit' });
     }
 
-    const { index, title, description, tags } = req.body;
+    const {
+      index,
+      title,
+      description,
+      tags,
+      projectId,
+      isAnalog,
+      gearCameraId,
+      gearLensId,
+      filmId,
+      filmFrameNumber,
+      showOnBlog,
+      exposureSettings,
+      developmentSettings,
+      shootingIntent,
+      location,
+      captureDate,
+      makingOf
+    } = req.body;
     const normalizedTags = tags !== undefined ? normalizeTags(tags) : undefined;
 
     const updatedPhoto = await Photo.findByIdAndUpdate(
@@ -379,7 +397,20 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
         index,
         title: title !== undefined ? normalizeStringField(title) : photo.title,
         description: description !== undefined ? normalizeStringField(description) : photo.description,
-        tags: normalizedTags
+        tags: normalizedTags,
+        projectId: projectId !== undefined ? projectId : photo.projectId,
+        isAnalog: isAnalog !== undefined ? isAnalog : photo.isAnalog,
+        gearCameraId: gearCameraId !== undefined ? gearCameraId : photo.gearCameraId,
+        gearLensId: gearLensId !== undefined ? gearLensId : photo.gearLensId,
+        filmId: filmId !== undefined ? filmId : photo.filmId,
+        filmFrameNumber: filmFrameNumber !== undefined ? filmFrameNumber : photo.filmFrameNumber,
+        showOnBlog: showOnBlog !== undefined ? showOnBlog : photo.showOnBlog,
+        exposureSettings: exposureSettings !== undefined ? exposureSettings : photo.exposureSettings,
+        developmentSettings: developmentSettings !== undefined ? developmentSettings : photo.developmentSettings,
+        shootingIntent: shootingIntent !== undefined ? shootingIntent : photo.shootingIntent,
+        location: location !== undefined ? location : photo.location,
+        captureDate: captureDate !== undefined ? captureDate : photo.captureDate,
+        makingOf: makingOf !== undefined ? makingOf : photo.makingOf
       },
       { new: true }
     );
