@@ -45,7 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
   return (
     <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-950/85 backdrop-blur-md border-b border-black/[0.06] dark:border-white/[0.06] shadow-sm transition-colors duration-300">
       <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-3.5">
-        <Link to={`/${s}`} className="blog-logo text-lg font-bold tracking-wider text-gray-950 dark:text-white hover:opacity-85 transition duration-200">
+        <Link to={`/${s}`} className="blog-logo text-lg font-bold tracking-wider text-black dark:text-white hover:opacity-85 transition duration-200">
           HELIOSCOPE <span style={{ color: 'var(--primary)' }} className="text-amber-600 dark:text-amber-500 font-medium">/ {blogName.toUpperCase()}</span>
         </Link>
         <div className="flex items-center gap-1">

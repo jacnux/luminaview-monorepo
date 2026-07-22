@@ -84,7 +84,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               className="flex items-center gap-2 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200"
             >
               <img
-                src={`${process.env.PUBLIC_URL}/logo.svg`}
+                src="/logo.svg"
                 alt="Chambre Noire"
                 className="h-8 w-auto drop-shadow-[0_2px_8px_rgba(232,176,75,0.25)]"
               />
@@ -112,7 +112,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {/* FOOTER */}
         <footer className="relative z-10 py-6 text-center text-muted text-sm border-t border-line bg-surface-2">
           <img
-            src={`${process.env.PUBLIC_URL}/brand-logo.svg`}
+            src="/brand-logo.svg"
             alt="Chambre Noire"
             className="h-14 w-auto mx-auto mb-3 drop-shadow-[0_2px_10px_rgba(232,176,75,0.25)]"
           />

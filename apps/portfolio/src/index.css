@@ -20,6 +20,17 @@
   --max-width: 1192px;
 }
 
+/* --- THEME PORTFOLIO (ARTFOLIO SOMBRE) --- */
+body.theme-portfolio {
+  --color-bg: #0a0a0a;
+  --color-bg-alt: #121212;
+  --color-text-dark: #f3f4f6;
+  --color-text-gray: #9ca3af;
+  --color-text-light: #d1d5db;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-accent-menu: #d9c58a; /* Lighter gold for high contrast on dark background */
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

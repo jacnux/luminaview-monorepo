@@ -127,6 +127,15 @@ const App: React.FC = () => {
     fetchData();
   }, []);
 
+  // Appliquer le thème sombre "portfolio" sur le body si nécessaire
+  useEffect(() => {
+    if (profile?.blogTheme === 'portfolio') {
+      document.body.classList.add('theme-portfolio');
+    } else {
+      document.body.classList.remove('theme-portfolio');
+    }
+  }, [profile?.blogTheme]);
+
   // Charger les photos quand un album est sélectionné
   useEffect(() => {
     if (!selectedAlbumId) return;

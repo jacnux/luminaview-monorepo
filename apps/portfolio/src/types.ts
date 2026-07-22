@@ -10,6 +10,7 @@ export interface UserProfile {
   hasBlog?: boolean;
   hasCarnet?: boolean;
   chambreNoireUrl?: string;
+  blogTheme?: string;
 }
 
 export interface Album {
