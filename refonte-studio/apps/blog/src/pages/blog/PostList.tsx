@@ -5,7 +5,11 @@ import { API_PREFIX } from '../../utils/blogApi';
 
 const extractFirstImage = (content: string): string | null => {
   const match = content.match(/!\[.*?\]\((.*?)\)/);
-  return match ? match[1] : null;
+  let url = match ? match[1] : null;
+  if (url) {
+    url = url.replace(/https?:\/\/(www\.)?jac-photo\.fr(\/uploads)/g, '$2');
+  }
+  return url;
 };
 
 const PostList: React.FC = () => {

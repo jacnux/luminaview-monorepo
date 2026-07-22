@@ -24,6 +24,9 @@ services:
       - MONGO_URI=mongodb://mongo:27017/luminaview_core
       - JWT_SECRET=changeThisSecretLuminaView123!
       - PORT=3000
+      - SMTP_HOST=mailhog
+      - SMTP_PORT=1025
+      - SMTP_FROM=test@helioscope.fr
     networks:
       - luminaview-local-network
 
@@ -64,6 +67,16 @@ services:
       - "7082:80"
     depends_on:
       - backend
+    networks:
+      - luminaview-local-network
+
+  # --- MAILHOG ---
+  mailhog:
+    image: mailhog/mailhog
+    container_name: luminaview-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
     networks:
       - luminaview-local-network
 

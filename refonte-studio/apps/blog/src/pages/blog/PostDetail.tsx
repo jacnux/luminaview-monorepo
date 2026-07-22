@@ -76,8 +76,10 @@ const PostDetail: React.FC = () => {
           </div>
         </header>
         
-        <div className="prose dark:prose-invert max-w-none">
-          <MarkdownRenderer className="prose">{post.content}</MarkdownRenderer>
+        <div className="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed md:text-lg">
+          <MarkdownRenderer className="prose">
+            {post.content ? post.content.replace(/https?:\/\/(www\.)?jac-photo\.fr(\/uploads)/g, '$2') : ''}
+          </MarkdownRenderer>
         </div>
       </article>
     </div>

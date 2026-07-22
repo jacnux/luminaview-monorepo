@@ -15,6 +15,7 @@ import Layout from './components/Layout';
 // ── Pages publiques ─────────────────────────────────────────
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 import Register from './pages/Register';
 import VerifyEmail from './pages/VerifyEmail';
 import AlbumView from './pages/AlbumView';
@@ -67,6 +68,7 @@ const MainRoutes: React.FC = () => {
         {/* Public */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/legal" element={<LegalPage />} />

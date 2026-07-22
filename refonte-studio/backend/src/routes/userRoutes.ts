@@ -134,15 +134,18 @@ router.get('/public/:id', async (req: Request, res: Response) => {
 });
 
 // --- CONFIGURATION EMAIL (identique à reportRoutes) ---
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
+const transporterOptions: any = {
+  host: process.env.SMTP_HOST || 'luminaview-mailhog',
+  port: parseInt(process.env.SMTP_PORT || '1025'),
+  secure: process.env.SMTP_SECURE === 'true'
+};
+if (process.env.SMTP_USER) {
+  transporterOptions.auth = {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+    pass: process.env.SMTP_PASS
+  };
+}
+const transporter = nodemailer.createTransport(transporterOptions);
 
 // 6. POST CONTACT (Public — envoie un email au propriétaire du portfolio)
 router.post('/contact', async (req: Request, res: Response) => {

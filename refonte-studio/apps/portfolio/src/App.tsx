@@ -52,6 +52,7 @@ const App: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [pages, setPages] = useState<UserPage[]>([]);
   const [currentPageData, setCurrentPageData] = useState<UserPage | null>(null);
+  const isEmbedMode = new URLSearchParams(window.location.search).get('embed') === 'true';
   
   // États UI
   const [loadingPageDetail, setLoadingPageDetail] = useState(false);
@@ -85,6 +86,31 @@ const App: React.FC = () => {
         setProfile(profileRes.data.user);
         setAlbums(profileRes.data.albums || []);
         setPages(pagesRes.data || []);
+
+        // Auto-navigation si URL param ?page=xxx
+        const pageSlug = new URLSearchParams(window.location.search).get('page');
+        if (pageSlug) {
+          // On essaie d'abord de la trouver dans le menu (pagesRes.data)
+          const targetPage = pagesRes.data && pagesRes.data.find((p: any) => p.slug === pageSlug);
+          if (targetPage) {
+            setCurrentPageData(targetPage);
+            setCurrentPage('page');
+          } else {
+            // Si pas dans le menu (ex: page de blog), on la fetch dynamiquement
+            // On déclare une fonction async autoFetch pour l'appeler immédiatement
+            const autoFetch = async () => {
+              try {
+                const res = await axios.get(`/api/user-pages/${USERNAME}/${pageSlug}`);
+                setCurrentPageData(res.data);
+                setCurrentPage('page');
+              } catch (e) {
+                console.error("Page introuvable:", e);
+                setCurrentPage('home');
+              }
+            };
+            autoFetch();
+          }
+        }
       } catch (err: any) {
         console.error("Erreur lors de la récupération du portfolio:", err);
         setProfile({
@@ -219,21 +245,51 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="page-container">
+    <div className={`page-container ${isEmbedMode ? 'embed-mode' : ''}`}>
       {/* Sidebar Navigation */}
-      <Header
-        profile={profile}
-        pages={pages}
-        currentPage={currentPage}
-        currentPageData={currentPageData}
-        menuOpen={menuOpen}
-        setMenuOpen={setMenuOpen}
-        navigateTo={navigateTo}
-        navigateToPage={navigateToPage}
-      />
+      {!isEmbedMode && (
+        <Header
+          profile={profile}
+          pages={pages}
+          currentPage={currentPage}
+          currentPageData={currentPageData}
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
+          navigateTo={navigateTo}
+          navigateToPage={navigateToPage}
+        />
+      )}
 
       {/* Main Content Area */}
-      <main className="content-wrapper">
+      <main className="content-wrapper" style={isEmbedMode ? { marginLeft: 0, width: '100%', position: 'relative' } : {}}>
+        {isEmbedMode && (
+          <button 
+            onClick={() => window.history.back()}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              zIndex: 50,
+              background: 'rgba(0,0,0,0.5)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '20px',
+              padding: '8px 16px',
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backdropFilter: 'blur(4px)'
+            }}
+          >
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Retour au Blog
+          </button>
+        )}
+
         {loadingProfile ? (
           <div className="loader-container">
             <div className="spinner"></div>
@@ -293,7 +349,7 @@ const App: React.FC = () => {
           </>
         )}
 
-        <Footer profile={profile} />
+        {!isEmbedMode && <Footer profile={profile} />}
       </main>
 
       {/* Fullscreen Lightbox Modal */}

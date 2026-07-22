@@ -62,6 +62,11 @@ const Login = () => {
                 {showPassword ? '🙈' : '👁️'}
               </button>
             </div>
+            <div className="flex justify-end mt-2">
+              <Link to="/forgot-password" className="text-sm text-yellow-400 hover:underline">
+                Mot de passe oublié ?
+              </Link>
+            </div>
           </div>
 
           <button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 rounded-lg transition">

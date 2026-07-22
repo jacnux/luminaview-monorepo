@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getBlogSlug } from '../../utils/getBlogSlug';
-import { API_PREFIX, getMainAppUrl } from '../../utils/blogApi';
+import { API_PREFIX, getPortfolioGalleryUrl } from '../../utils/blogApi';
 
 const GalleryPage: React.FC = () => {
   const [pages, setPages] = useState<any[]>([]);
@@ -38,10 +38,8 @@ const GalleryPage: React.FC = () => {
         )}
         {pages.map((page: any) => (
           <a key={page._id}
-            href={`${getMainAppUrl()}/portfolio/${blogSlug}/${page.slug}`}
+            href={getPortfolioGalleryUrl(blogSlug, page.slug)}
             className="group block bg-white dark:bg-slate-900/60 border border-black/[0.06] dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" 
-            target="_blank" 
-            rel="noopener noreferrer"
           >
             <div className="h-56 overflow-hidden relative bg-gray-100 dark:bg-slate-950">
               {page.coverImage ? (

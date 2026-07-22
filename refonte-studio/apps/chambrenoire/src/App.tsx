@@ -12,7 +12,6 @@ import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
 
 // ── Pages publiques ─────────────────────────────────────────
-import Login from './pages/Login';
 import Register from './pages/Register';
 import VerifyEmail from './pages/VerifyEmail';
 import AlbumView from './pages/AlbumView';
@@ -60,7 +59,6 @@ const MainRoutes: React.FC = () => {
         {/* Public Chambre Noire */}
         <Route path="/" element={<CarnetDeRoutesPage />} />
         <Route path="/project/:slug" element={<ProjectDetailPage />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/legal" element={<LegalPage />} />
