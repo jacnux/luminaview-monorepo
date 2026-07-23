@@ -1,0 +1,16 @@
+- 🎨 1. Thèmes. hélioscope
+  - Portfolio : [OK/KO] - Détail :
+  - Blog : [OK/KO] - Détail :
+- 🎛️ 2. Boutons On/Off (Profil Studio)
+  - Toggle Blog : [OK/KO] - Détail :
+  - Toggle Carnet : [OK/KO] - Détail :
+- 🖥️ 3. Menus Studio (Manager)
+  - Lien Voir ma vitrine : [OK/KO] - Détail : OK
+  - Lien Voir mon blog : [OK/KO] - Détail : OK
+  - Lien Voir mon carnet : [OK/KO] - Détail : OK
+- 🖼️ 4. Menus Portfolio
+  - Lien Actualités (Blog) : [OK/KO] - Détail : KO
+  - Lien Carnet : [OK/KO] - Détail : KO
+- ✍️ 5. Menus Blog
+  - Lien Portfolio : [OK/KO] - Détail :
+  - Lien Carnet de route : [OK/KO] - Détail :

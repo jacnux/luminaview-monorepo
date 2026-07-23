@@ -1,45 +1,61 @@
-# LuminaView
+# LuminaView & Lumina Studio
 
-## La plateforme éditoriale et portfolio pour les photographes
+## La plateforme d'édition photographique et de mémoire technique tout-en-un
 
 ![LuminaView](/uploads/Helioscope_ecran.jpg)
 
-**La photographie mérite une présence en ligne à la fois sobre, élégante et vivante.**
+**La photographie mérite un espace sobre, élégant, vivant et techniquement rigoureux.**
 
-LuminaView n’est pas seulement un hébergeur d’images. C’est un environnement complet pensé pour les photographes qui veulent à la fois organiser leurs images, construire un portfolio public cohérent, publier des textes, présenter des séries, annoncer des expositions et garder la main sur leur univers sans entrer dans une logique technique lourde.
-
-**Un portfolio structuré comme une véritable ligne éditoriale**  
-Avec LuminaView, le portfolio ne se limite plus à une succession de galeries. Il s’organise autour d’un menu public clair — **Accueil**, **Séries**, **Expositions**, **Actualités**, **À propos** — qui permet de distinguer les travaux photographiques, les projets d’exposition, les textes et les pages de contexte. Cette structure donne au visiteur une lecture plus stable et plus lisible de l’ensemble du travail présenté.
-
-**Des pages riches, hiérarchisées et personnalisables**  
-Chaque page peut devenir un véritable espace éditorial. Vous pouvez créer des pages indépendantes, des pages parent, des sous-pages, et même des niveaux hiérarchiques supplémentaires lorsque le travail l’exige. Les séries et les expositions peuvent ainsi être organisées avec une logique parent / enfant, tout en conservant une image de couverture, une introduction dans l’en-tête et des blocs de contenu détaillés dans le corps de page.
-
-**Une écriture visuelle plus souple**  
-Les pages prennent en charge plusieurs types de contenus : blocs texte, galeries et blocs mixtes texte + images. Le premier bloc texte peut servir d’introduction éditoriale dans l’en-tête, tandis que les autres blocs permettent de développer le propos dans la page elle-même. Cette logique donne plus de tenue aux séries, aux expositions et aux présentations de travaux en cours.
-
-**Des galeries intelligentes pour un travail vivant**  
-Avec les galeries virtuelles, LuminaView permet de constituer des ensembles d’images dynamiques sans dupliquer les fichiers. Les photos peuvent être regroupées selon des tags, réorganisées dans des albums, puis réutilisées dans le portfolio, dans les pages éditoriales ou dans les présentations publiques. La plateforme accompagne ainsi un usage photographique réel, où un même corpus peut nourrir plusieurs formes de publication.
-
-**Un blog intégré au portfolio**  
-Le blog n’est pas un module séparé ajouté à la fin. Il fait partie du même espace public et prolonge naturellement le portfolio. Il permet de publier des textes, des notes, des actualités, des récits de travail ou des articles liés aux images, dans une continuité éditoriale avec les séries et les expositions.
-
-**Commentaires, partage et continuité de travail**  
-LuminaView intègre aussi les commentaires sur les photos, la gestion des albums et le choix d’images de couverture pour les pages. La plateforme peut servir à la fois de site principal, de portfolio éditorial et d’outil de présentation évolutif, avec une structure pensée pour accompagner un travail photographique dans la durée.
-
-**LuminaView donne aux photographes un outil pour montrer, organiser et faire vivre leur travail, avec davantage de profondeur éditoriale qu’une simple galerie en ligne.**
+**LuminaView** dépasse la simple fonction de galerie d'images. C'est un écosystème numérique complet conçu pour les photographes d'aujourd'hui, qu'ils travaillent en numérique, en argentique (135, 120, plan-film) ou en procédé mixte. La plateforme permet d'organiser ses séries, d'enrichir ses travaux d'une écriture éditoriale, d'archiver la mémoire technique de ses prises de vue et de diffuser des espaces publics autonomes et personnalisables.
 
 ---
 
-## Nouveautés de la Refonte (LuminaView Studio)
+## 🚀 Les 4 Espaces de l'Écosystème `refonte-gemini`
 
-- **Architecture Multi-Domaines** : Le système repose désormais sur une architecture claire et performante avec des sous-domaines dédiés :
-  - **Studio Manager** : Votre espace d'administration sécurisé est centralisé sur `luminaview.fr`.
-  - **Portfolio** : Votre portfolio public autonome est accessible sur `votre-nom.helioscope.fr`.
-  - **Blog & Carnet** : Les applications annexes sont déployées sur `votre-nom-blog.helioscope.fr` et `votre-nom-carnet.helioscope.fr`.
-- **Génération SSL Automatique** : Grâce au nouveau moteur Caddy, tous vos sous-domaines publics (`*.helioscope.fr`) sont sécurisés dynamiquement et automatiquement en HTTPS.
-- **Moteur de Thèmes & Identité** : Personnalisez l'ambiance de votre blog et de votre portfolio (Hélioscope Classic ou Artfolio). Les liens entre vos différentes plateformes (Portfolio, Actualités, Carnet) se mettent à jour automatiquement.
-- **Rubrique « Nouveautés »** : Intégration d'un fil d'actualité enrichi lisant vos prestations et actualités en Markdown pour informer vos visiteurs en un clin d'œil.
-- **Moteur de Recherche Administratif** : Filtrage et recherche instantanée de vos albums, galeries virtuelles et pages personnalisées directement depuis votre tableau de bord.
-- **Espace d'Édition Premium** :
-  - **Profil repensé** : Une interface moderne avec sélection de thème visuelle et zones d'uploader d'images cliquables avec prévisualisation immédiate.
-  - **Éditeur type Notebook** : Une page d'écriture épurée sans cadre avec une barre d'outils de formatage Markdown interactive et un système d'enveloppement intelligent de votre sélection de texte.
+LuminaView repose sur une architecture découplée organisée autour de 4 piliers principaux :
+
+### 1. ⚡ Lumina Studio (Manager & Administration)
+* **Adresse Production** : `https://lumina.fr` *(Port dev local : 7080)*
+* **Rôle** : Votre tableau de bord privé et centralisé. Il permet de gérer l'intégralité de votre travail :
+  * Gestion des albums photo et galeries virtuelles basées sur des tags.
+  * Création de pages éditoriales (Séries, Expositions, À propos).
+  * Rédaction d'articles de blog et modération des commentaires.
+  * Gestion du matériel photo (boîtiers, objectifs) et des rouleaux de pellicules.
+  * Activation / Désactivation des modules optionnels (**Blog** et **Carnet de route**) via de simples interrupteurs On/Off.
+
+### 2. 🖼️ Portfolio Public (Artfolio)
+* **Adresse Production** : `https://[votre-pseudo].helioscope.fr` *(Port dev local : 7090)*
+* **Rôle** : Votre vitrine d'exposition principale, autonome et épurée.
+  * Thèmes visuels personnalisables (**Hélioscope Classic** avec menu horizontal ou **Artfolio** avec sidebar latérale fixe).
+  * Mise en valeur de vos séries photographiques, expositions, biographie et coordonnées.
+  * Liens automatiques vers votre Blog et votre Carnet de route lorsque ces modules sont activés dans votre profil.
+
+### 3. ✍️ Blog Public (Hélioscope)
+* **Adresse Production** : `https://[votre-pseudo]-blog.helioscope.fr` *(Port dev local : 7081)*
+* **Rôle** : Votre journal d'actualités et d'écriture photographique.
+  * Publication d'articles, récits de prises de vue, coulisses et nouveautés de votre activité.
+  * Éditeur type **Notebook** épuré et puissant avec mise en forme Markdown interactive.
+  * Espace de commentaires pour interagir directement avec votre public.
+
+### 4. 🎞️ Chambre Noire (Carnets de Route & Mémoire Technique)
+* **Adresse Production** : `https://[votre-pseudo]-carnet.helioscope.fr` *(Port dev local : 7082)*
+* **Rôle** : Votre carnet de terrain et mémoire de laboratoire.
+  * Fiches détaillées pour chaque cliché : boîtier, objectif, ouverture, vitesse, focale, filtre physique et parasoleil.
+  * Fiches de chimie et de laboratoire : type de film (135, 120, plan-film 4x5), ISO nominal/exposé, révélateur (produit, dilution, temps, température, agitation, push/pull) et fixateur.
+  * Planches-contacts virtuelles correspondant exactement à la taille de vos rouleaux (Vue #1 à #36 ou plan-film).
+  * Modes d'intégration iframe épurés (`/embed/carnet-de-routes` et `/embed/project/:slug`) sans barre de navigation pour incruster vos carnets sur n'importe quel site tiers.
+
+---
+
+## 🎛️ Nouveautés de la Refonte
+
+* **Modules On/Off configurables** : Activer ou désactiver les modules **Blog** (`hasBlog`) et **Carnet** (`hasCarnet`) d'un simple clic dans votre profil. Les menus de navigation du Studio, du Portfolio et du Blog s'adaptent instantanément sans temps de latence.
+* **Architecture multi-domaines & Caddy SSL Auto** : Routage automatique des sous-domaines (`*.helioscope.fr`) avec certificats HTTPS délivrés dynamiquement par Let's Encrypt.
+* **Moteur Vite + React 18 & Docker Compose** : Compilation ultra-rapide et déploiement containerisé réactif.
+* **Éditeur Markdown Notebook** : Un espace de rédaction minimaliste et immersif avec barre d'outils flottante et enveloppement intelligent de sélection.
+* **Hiérarchie parent/enfant des pages** : Organisez vos séries et expositions en sous-rubriques complexes (niveaux n-1 et n-2) avec images de couverture et accroches d'en-tête.
+* **Génération et partage Iframe** : Générateur de code `<iframe>` propre pour exporter vos projets et planches-contacts sur vos autres sites web.
+
+---
+
+LuminaView offre aux photographes un outil sur-mesure pour montrer, documenter et faire vivre leur travail avec une tenue éditoriale et technique exceptionnelle.

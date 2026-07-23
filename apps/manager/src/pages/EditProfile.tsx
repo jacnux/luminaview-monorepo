@@ -259,69 +259,59 @@ const EditProfile: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* CARD 6 : SÉCURITÉ (Déplacé dans la colonne de gauche) */}
+              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
+                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                  <span className="text-yellow-500">🔒</span> Sécurité & Mot de passe
+                </h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className={labelClass}>Mot de passe actuel</label>
+                    <input
+                      type="password"
+                      value={currentPassword}
+                      onChange={e => setCurrentPassword(e.target.value)}
+                      className={inputClass}
+                      placeholder="Votre mot de passe actuel"
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Nouveau mot de passe</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      className={inputClass}
+                      placeholder="Nouveau mot de passe (min 6 caractères)"
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Confirmer le nouveau mot de passe</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={e => setConfirmPassword(e.target.value)}
+                      className={inputClass}
+                      placeholder="Confirmez le nouveau mot de passe"
+                    />
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={handlePasswordSubmit}
+                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-xl shadow hover:shadow-lg transition duration-200 mt-2"
+                  >
+                    Modifier le mot de passe
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* COLONNE DROITE (60%) : FORMULAIRES TEXTES HAUTS */}
             <div className="lg:col-span-6 space-y-8">
-              {/* CARD 3 : IDENTITÉ & TEXTES */}
-              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
-                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                  <span className="text-yellow-500">✦</span> Informations & Textes de présentation
-                </h3>
-
-                <div>
-                  <label className={labelClass}>Phrase choc (Slogan)</label>
-                  <input
-                    type="text"
-                    value={tagline}
-                    onChange={e => setTagline(e.target.value)}
-                    className={inputClass}
-                    placeholder="Ex. Capturer l'essence de l'instant..."
-                  />
-                </div>
-
-                <div>
-                  <label className={labelClass}>Biographie (À propos) (8 lignes visibles)</label>
-                  <textarea
-                    value={bio}
-                    onChange={e => setBio(e.target.value)}
-                    rows={8}
-                    className={inputClass}
-                    placeholder="Racontez votre parcours, votre passion..."
-                  />
-                </div>
-
-                <div>
-                  <label className={labelClass}>Introduction du Portfolio (4 lignes visibles)</label>
-                  <textarea
-                    value={portfolioIntro}
-                    onChange={e => setPortfolioIntro(e.target.value)}
-                    rows={4}
-                    className={inputClass}
-                    placeholder="Un court message de bienvenue en haut de la page principale..."
-                  />
-                </div>
-              </div>
-
-              {/* CARD 4 : OFFRES & PRESTATIONS */}
-              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
-                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                  <span className="text-yellow-500">✦</span> Projets & Services
-                </h3>
-
-                <div>
-                  <label className={labelClass}>Description des Prestations (Markdown supporté - 12 lignes visibles)</label>
-                  <textarea
-                    value={servicesDescription}
-                    onChange={e => setServicesDescription(e.target.value)}
-                    rows={12}
-                    className={inputClass}
-                    placeholder="Décrivez vos offres, tarifs, séances... Ce texte est affiché dans l'onglet Services du portfolio."
-                  />
-                </div>
-              </div>
-
-              {/* CARD 5 : MODULES & EXTENSIONS */}
+              {/* CARD 5 : MODULES & EXTENSIONS (Remonté tout en haut de la colonne droite) */}
               <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
                 <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
                   <span className="text-yellow-500">⚙️</span> Modules & Extensions
@@ -381,51 +371,61 @@ const EditProfile: React.FC = () => {
                 </div>
               </div>
 
-              {/* CARD 6 : SÉCURITÉ */}
+              {/* CARD 3 : IDENTITÉ & TEXTES */}
               <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
                 <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                  <span className="text-yellow-500">🔒</span> Sécurité
+                  <span className="text-yellow-500">✦</span> Informations & Textes de présentation
                 </h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className={labelClass}>Mot de passe actuel</label>
-                    <input
-                      type="password"
-                      value={currentPassword}
-                      onChange={e => setCurrentPassword(e.target.value)}
-                      className={inputClass}
-                      placeholder="Votre mot de passe actuel"
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Nouveau mot de passe</label>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={e => setNewPassword(e.target.value)}
-                      className={inputClass}
-                      placeholder="Nouveau mot de passe (min 6 caractères)"
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Confirmer le nouveau mot de passe</label>
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={e => setConfirmPassword(e.target.value)}
-                      className={inputClass}
-                      placeholder="Confirmez le nouveau mot de passe"
-                    />
-                  </div>
-                  
-                  <button
-                    type="button"
-                    onClick={handlePasswordSubmit}
-                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-xl shadow hover:shadow-lg transition duration-200 mt-2"
-                  >
-                    Modifier le mot de passe
-                  </button>
+
+                <div>
+                  <label className={labelClass}>Phrase choc (Slogan)</label>
+                  <input
+                    type="text"
+                    value={tagline}
+                    onChange={e => setTagline(e.target.value)}
+                    className={inputClass}
+                    placeholder="Ex. Capturer l'essence de l'instant..."
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass}>Biographie (À propos) (8 lignes visibles)</label>
+                  <textarea
+                    value={bio}
+                    onChange={e => setBio(e.target.value)}
+                    rows={8}
+                    className={inputClass}
+                    placeholder="Racontez votre parcours, votre passion..."
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass}>Introduction du Portfolio (4 lignes visibles)</label>
+                  <textarea
+                    value={portfolioIntro}
+                    onChange={e => setPortfolioIntro(e.target.value)}
+                    rows={4}
+                    className={inputClass}
+                    placeholder="Un court message de bienvenue en haut de la page principale..."
+                  />
+                </div>
+              </div>
+
+              {/* CARD 4 : OFFRES & PRESTATIONS */}
+              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
+                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                  <span className="text-yellow-500">✦</span> Projets & Services
+                </h3>
+
+                <div>
+                  <label className={labelClass}>Description des Prestations (Markdown supporté - 12 lignes visibles)</label>
+                  <textarea
+                    value={servicesDescription}
+                    onChange={e => setServicesDescription(e.target.value)}
+                    rows={12}
+                    className={inputClass}
+                    placeholder="Décrivez vos offres, tarifs, séances... Ce texte est affiché dans l'onglet Services du portfolio."
+                  />
                 </div>
               </div>
             </div>

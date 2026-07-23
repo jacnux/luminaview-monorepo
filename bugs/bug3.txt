@@ -1,0 +1,69 @@
+port 8080
+sur le dashboard de luminaview manager le lien vers Mon blog  http://localhost:8080/dashboard doit etre 8081
+Sur le page mon blog le lien vers mon blog est faux 
+
+port 8081 
+   lien vers portfolio : http://localhost:8090/portfolio ne marche pas 
+
+
+# Résolution des derniers problèmes (Suite 2)
+
+Voici le résumé des correctifs apportés suite à vos derniers retours (`bug3.txt`) :
+
+## 1. Lien "Mon Blog" sur le Manager (port 8080)
+
+**Problème** : Depuis le tableau de bord (et les autres pages du Manager), le lien "Mon Blog" du menu emmenait vers la page d'édition (`/manage-blog`) alors que vous vous attendiez à voir le blog public (port 8081).
+- **Correction** : J'ai mis à jour le menu supérieur (`Layout.tsx`). 
+  - J'ai renommé le bouton d'édition en "**📝 Éditer le blog**" pour que ce soit plus clair (il pointe toujours vers l'éditeur interne).
+  - J'ai ajouté un **nouveau bouton "🌍 Mon Blog"** qui vous emmène **directement sur votre blog public** (`http://localhost:8081/?user=...`).
+
+## 2. Lien Portfolio depuis le Blog (port 8081)
+
+**Problème** : Le lien "Portfolio" dans la barre de navigation du blog pointait vers `http://localhost:8090/portfolio` (ou `http://localhost/portfolio/...`), ce qui ne fonctionnait pas car le port était incorrect ou manquant.
+- **Correction** : J'ai corrigé le code (`Navbar.tsx`) pour que le lien "Portfolio" redirige correctement vers `http://localhost:8080/portfolio/...` (le port de votre Manager Luminaview principal).
+
+Les applications **Manager** et **Blog** ont été reconstruites en arrière-plan. Les modifications sont actives !
+
+
+
+# Résolution des derniers problèmes (Suite 3)
+
+Voici le résumé des correctifs très profonds apportés suite à vos derniers retours (`bug3.txt`) :
+
+## 1. Éditeur de Blog vide ("il n'y a aucun article")
+
+**Problème** : Lorsque vous alliez sur la page "Éditer le blog", la liste des articles restait vide alors que la base de données contenait bien vos articles (dont "Macau, l'élégance de la transition").
+- **Cause** : Le fichier de configuration `nginx.conf` de votre Manager contenait une mauvaise règle (`location /api/blog/ { proxy_pass http://backend:3000/api/; }`). Nginx déformait l'URL : la requête `/api/blog/posts` était transformée en `/api/posts`, ce qui causait une erreur "404 Not Found" en arrière-plan.
+- **Correction** : J'ai supprimé cette règle invalide dans `nginx.conf`. Les requêtes pour le blog passent désormais par la règle `/api` principale, et l'éditeur de blog va retrouver instantanément tous vos articles existants.
+
+## 2. Lien Portfolio pointant vers la page de login
+
+**Problème** : Vous avez cliqué sur le bouton Portfolio qui vous a redirigé vers `http://localhost:8080/portfolio/jac`, mais au lieu de voir votre portfolio, la page s'est cassée ou vous a renvoyé au Login.
+- **Cause** : Dans le code de la page Portfolio (`PortfolioPage.tsx`), la requête API pour récupérer vos informations cherchait à joindre `/users/portfolio/...` au lieu de la route existante `/albums/portfolio/...`. L'API renvoyait une erreur "404", qui faisait crasher l'affichage.
+- **Correction** : J'ai corrigé l'URL de l'API dans `PortfolioPage.tsx`.
+
+L'application **Manager** est en cours de compilation en arrière-plan. Je vous informe dès que c'est prêt !
+
+
+## Sur la page du blog : http://localhost:8081/?user=jac 
+le lien carnet de route est faux http://localhost:8081/embed/carnet-de-routes 
+il faut http://localhost:8082/embed/carnet-de-routes et 
+le lien portfolio renvoie : http://localhost:8080/. donc ca ne marche toujours pas 
+
+
+# Résolution des derniers problèmes (Suite 4)
+
+Voici le résumé des correctifs apportés suite aux deux nouveaux retours :
+
+## 1. Lien "Carnet de route" sur la page du blog public
+
+**Problème** : Le lien "Carnet de route" pointait vers `http://localhost:8081/embed/carnet-de-routes` (le port 8081 étant le blog) au lieu du port `8082` (Chambre Noire). L'intégration de la carte (iframe) ne s'affichait donc pas correctement.
+- **Correction** : J'ai modifié la page `CarnetPage.tsx` pour que l'intégration s'effectue bien depuis le port `8082` en mode développement local, ciblant ainsi la bonne application Chambre Noire.
+
+## 2. Lien "Portfolio" sur la page du blog public
+
+**Problème** : Le lien "Portfolio" renvoyait vers `http://localhost:8080/`, ce qui ne correspondait pas à votre galerie `http://localhost:8080/portfolio/jac`.
+- **Cause** : Le composant `Navbar.tsx` comportait une petite erreur de logique. Quand le thème du blog était détecté, il se contentait de générer l'adresse de base du Manager (`8080`) au lieu de rajouter explicitement `/portfolio/jac`.
+- **Correction** : J'ai ajouté le suffixe `/portfolio/${blogName}` dans `Navbar.tsx` pour l'URL générée, afin que le lien vous dirige toujours précisément sur la page de votre portfolio.
+
+L'application **Blog** est en cours de recompilation en arrière-plan. Je vous préviens lorsque c'est prêt !

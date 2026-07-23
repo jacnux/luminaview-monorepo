@@ -1,17 +1,14 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
+  const theme = 'dark';
 
   // Zone connectée large (albums, galeries, carnet-routes, etc.)
   const isAuthenticatedArea = [
@@ -94,16 +91,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Link>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-3">
-            <button
-              onClick={toggleTheme}
-              className={`p-2 rounded-full transition text-xl ${
-                theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-200'
-              }`}
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-          </div>
         </div>
 
         {/* Contenu page */}
@@ -117,7 +104,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             className="h-14 w-auto mx-auto mb-3 drop-shadow-[0_2px_10px_rgba(232,176,75,0.25)]"
           />
           <p>© 2026 Chambre Noire. Tous droits réservés.</p>
-          <Link to="/legal" className="hover:text-fg underline mt-2 inline-block text-muted transition">Mentions Légales</Link>
         </footer>
       </div>
     </div>

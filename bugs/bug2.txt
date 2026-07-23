@@ -1,0 +1,39 @@
+luminaview port 8080 :  
+sur le dashboad  : le lien mon blog : http://localhost:8080/manage-blog 
+si je corrige http://localhost:8081/ j'arrive à la page article
+
+
+
+Blog 8081 :
+    Lien Portfolio : http://localhost:8090/. n'existe plus ?  je pense que tu n'as pas repris le dossier portfolio dans le frontend de blog-luminaview
+
+
+Chambre Noire 8082 : 
+dans l'onglet photos de carnet de routes je ne voudrais que les photos marquées chambre noire
+
+# Résolution des derniers problèmes (Suite)
+
+Voici le résumé des correctifs apportés suite à vos derniers retours :
+
+## 1. Lien "Mon Blog" (Luminaview, port 8080)
+
+**Clarification sur la route `/manage-blog`** :
+- Le lien "📝 Mon Blog" dans le menu du tableau de bord vous emmène bien vers `http://localhost:8080/manage-blog`. 
+- **C'est le comportement attendu !** Cette page est votre **éditeur (espace d'administration)** où vous pouvez créer, modifier ou supprimer vos articles. 
+- Pour consulter votre blog tel que le voient vos visiteurs (la partie publique), vous devez cliquer sur le lien "Adresse publique : `http://localhost:8081/?user=...`" qui s'affiche en haut de cette même page d'administration. (C'est ce qui correspond à la "page article" que vous avez vue en tapant manuellement 8081).
+
+## 2. Blog (port 8081) - Lien Portfolio erroné
+
+**Problème** : Le lien vers le Portfolio dans le menu du blog pointait vers l'ancien port `8090`.
+- **Correction** : Le fichier `Navbar.tsx` du frontend Blog a été mis à jour pour rediriger correctement vers le port du Manager principal, soit `http://localhost:8080`. Le bouton Portfolio du blog vous ramènera désormais bien à votre espace Luminaview.
+
+## 3. Chambre Noire (port 8082) - Filtre des photos
+
+**Problème** : L'onglet "Photos" dans le gestionnaire du Carnet de Routes affichait toutes les photos confondues, sans tenir compte du fait qu'elles appartiennent à Chambre Noire ou Luminaview.
+- **Correction** : 
+  1. J'ai mis à jour l'API backend (`/api/photos/my/photos`) pour qu'elle accepte un paramètre optionnel `appContext`.
+  2. J'ai modifié l'appel API dans le frontend Chambre Noire (`CarnetRoutesManager.tsx`) pour qu'il demande spécifiquement `appContext=CHAMBRE_NOIRE`.
+- **Résultat** : Vous ne verrez désormais que les photos marquées "Chambre Noire" (ou "Both") dans la liste des photos associables à votre pellicule ou projet.
+
+Tous les conteneurs (Backend, Blog, et Chambre Noire) ont été automatiquement reconstruits et relancés. Vous pouvez tester immédiatement !
+

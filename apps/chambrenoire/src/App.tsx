@@ -6,8 +6,6 @@
 
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
 
 // ── Pages publiques ─────────────────────────────────────────
@@ -15,7 +13,6 @@ import AlbumView from './pages/AlbumView';
 import EmbedAlbumView from './pages/EmbedAlbumView';
 import CarnetDeRoutesPage from './pages/CarnetDeRoutesPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
-import LegalPage from './pages/LegalPage';
 
 // ============================================================
 // ROUTES APP PRINCIPALE
@@ -29,7 +26,6 @@ const MainRoutes: React.FC = () => {
         {/* Public Chambre Noire */}
         <Route path="/" element={<CarnetDeRoutesPage />} />
         <Route path="/project/:slug" element={<ProjectDetailPage />} />
-        <Route path="/legal" element={<LegalPage />} />
         <Route path="/album/:id" element={<AlbumView />} />
         <Route path="/embed/album/:id" element={<EmbedAlbumView />} />
         <Route path="/embed/carnet-de-routes" element={<CarnetDeRoutesPage />} />
@@ -51,11 +47,7 @@ const MainRoutes: React.FC = () => {
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <MainRoutes />
-        </AuthProvider>
-      </ThemeProvider>
+      <MainRoutes />
     </BrowserRouter>
   );
 };

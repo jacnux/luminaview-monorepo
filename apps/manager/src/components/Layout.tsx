@@ -302,6 +302,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 >
                   {theme === 'light' ? '🌙' : '☀️'}
                 </button>
+                <Link
+                  to="/dashboard/about"
+                  className={`p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
+                    theme === 'dark'
+                      ? 'hover:bg-white/[0.06] text-gray-300 hover:text-white'
+                      : 'hover:bg-black/[0.06] text-gray-600 hover:text-black'
+                  }`}
+                  title="À propos"
+                >
+                  ℹ️
+                </Link>
+                <Link
+                  to="/dashboard/help"
+                  className={`p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
+                    theme === 'dark'
+                      ? 'hover:bg-white/[0.06] text-gray-300 hover:text-white'
+                      : 'hover:bg-black/[0.06] text-gray-600 hover:text-black'
+                  }`}
+                  title="Aide"
+                >
+                  ❓
+                </Link>
                 <button
                   onClick={() => navigate('/edit-profile')}
                   className={`p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${

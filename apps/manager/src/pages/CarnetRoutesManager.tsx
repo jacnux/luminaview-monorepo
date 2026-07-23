@@ -43,7 +43,7 @@ const CarnetRoutesManager: React.FC = () => {
   const [editingPhoto, setEditingPhoto] = useState<any | null>(null);
   const [selectedFilmRoll, setSelectedFilmRoll] = useState<any | null>(null); // Pour afficher la planche-contact
   const [showPhotoPickerForSlot, setShowPhotoPickerForSlot] = useState<number | null>(null); // Slot en attente d'association
-  const [shareItem, setShareItem] = useState<{ type: 'project' | 'photo'; title: string; url: string; htmlCode: string } | null>(null);
+  const [shareItem, setShareItem] = useState<{ type: 'project' | 'photo'; title: string; url: string; embedUrl?: string; htmlCode: string } | null>(null);
   const [pickerTab, setPickerTab] = useState<'gallery' | 'upload'>('gallery');
   const [selectedUploadAlbumId, setSelectedUploadAlbumId] = useState('');
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -477,7 +477,21 @@ const CarnetRoutesManager: React.FC = () => {
   };
 
   const getProjectPublicUrl = (project: any) => {
-    return `/project/${project.slug}`;
+    const name = (user?.name || 'jac').toLowerCase();
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isLocal) {
+      return `http://localhost:7082/project/${project.slug}?user=${name}`;
+    }
+    return `https://${name}-carnet.helioscope.fr/project/${project.slug}`;
+  };
+
+  const getProjectEmbedUrl = (project: any) => {
+    const name = (user?.name || 'jac').toLowerCase();
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isLocal) {
+      return `http://localhost:7082/embed/project/${project.slug}?user=${name}`;
+    }
+    return `https://${name}-carnet.helioscope.fr/embed/project/${project.slug}`;
   };
 
   const resetForm = () => {
@@ -1101,12 +1115,14 @@ const CarnetRoutesManager: React.FC = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
-                              const projectUrl = `${window.location.origin}/project/${p.slug}`;
+                              const projectUrl = getProjectPublicUrl(p);
+                              const embedUrl = getProjectEmbedUrl(p);
                               setShareItem({
                                 type: 'project',
                                 title: p.name,
                                 url: projectUrl,
-                                htmlCode: `<a href="${projectUrl}" target="_blank">${p.name}</a>`
+                                embedUrl: embedUrl,
+                                htmlCode: `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0"></iframe>`
                               });
                             }}
                             className="text-xs font-semibold text-purple-400 hover:text-purple-300 bg-purple-500/10 px-3 py-1.5 rounded-lg transition"
@@ -1115,6 +1131,8 @@ const CarnetRoutesManager: React.FC = () => {
                           </button>
                           <a
                             href={getProjectPublicUrl(p)}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="text-xs font-semibold text-blue-400 hover:text-blue-300 bg-blue-500/10 px-3 py-1.5 rounded-lg transition"
                           >
                             Voir
@@ -2087,7 +2105,7 @@ onChange={e => setFilmTypeColor(e.target.value as any)}
                     readOnly
                     value={
                       shareItem.type === 'project'
-                        ? `<iframe src="${shareItem.url}" width="100%" height="600" frameborder="0"></iframe>`
+                        ? `<iframe src="${shareItem.embedUrl || shareItem.url}" width="100%" height="600" frameborder="0"></iframe>`
                         : `<img src="${shareItem.url}" alt="${shareItem.title}" />`
                     }
                     className="flex-1 bg-black/40 border border-white/10 rounded-lg p-2 text-white text-xs select-all focus:outline-none"
@@ -2095,7 +2113,7 @@ onChange={e => setFilmTypeColor(e.target.value as any)}
                   <button
                     onClick={() => {
                       const embedCode = shareItem.type === 'project'
-                        ? `<iframe src="${shareItem.url}" width="100%" height="600" frameborder="0"></iframe>`
+                        ? `<iframe src="${shareItem.embedUrl || shareItem.url}" width="100%" height="600" frameborder="0"></iframe>`
                         : `<img src="${shareItem.url}" alt="${shareItem.title}" />`;
                       navigator.clipboard.writeText(embedCode);
                       alert("Code d'intégration copié !");
