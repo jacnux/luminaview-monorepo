@@ -2,7 +2,7 @@
 
 ## La plateforme d'édition photographique et de mémoire technique tout-en-un
 
-![LuminaView](/uploads/1784901834681.png)
+![LuminaView](/uploads/luminaview.png)
 
 **La photographie mérite un espace sobre, élégant, vivant et techniquement rigoureux.**
 

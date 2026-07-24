@@ -338,12 +338,7 @@ const AlbumView = () => {
   };
 
   const handleShare = (photo: any) => {
-    const origin = window.location.origin;
-    const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
-    const shareUrl = isLocalhost 
-      ? `${origin}/uploads/${photo.filename}` 
-      : `http://localhost/${origin}/uploads/${photo.filename}`;
-    
+    const shareUrl = `${window.location.origin}/uploads/${photo.filename}`;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(shareUrl).then(() => alert('Lien copié !'));
     } else {
