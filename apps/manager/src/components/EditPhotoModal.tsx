@@ -190,17 +190,19 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
     // Vérifier si des surcharges de développement ont été saisies
     const hasSurcharges = developer || dilution || time || temperature || agitation || pushPull || fixerBrand || fixerDilution || fixerTime;
 
+    const computedIsAnalog = isAnalog || Boolean(filmId) || Boolean(hasSurcharges);
+
     onSave({
       title,
       description,
       tags: tagsArray,
       index: Number(index),
       projectId: projectId || null,
-      isAnalog,
+      isAnalog: computedIsAnalog,
       gearCameraId: gearCameraId || null,
       gearLensId: gearLensId || null,
-      filmId: isAnalog && filmId ? filmId : null,
-      filmFrameNumber: isAnalog && filmFrameNumber ? Number(filmFrameNumber) : null,
+      filmId: filmId || null,
+      filmFrameNumber: filmFrameNumber ? Number(filmFrameNumber) : null,
       showOnBlog,
       exposureSettings: {
         aperture,
@@ -212,7 +214,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
         ndFilter,
         lensHood
       },
-      developmentSettings: isAnalog && hasSurcharges
+      developmentSettings: hasSurcharges
         ? {
             developer,
             dilution,
@@ -224,7 +226,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
             fixerDilution,
             fixerTime
           }
-        : undefined,
+        : photo.developmentSettings || undefined,
       shootingIntent,
       location,
       captureDate: captureDate ? new Date(captureDate) : null,

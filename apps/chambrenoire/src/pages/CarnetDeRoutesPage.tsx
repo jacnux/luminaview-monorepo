@@ -137,11 +137,35 @@ const CarnetDeRoutesPage: React.FC = () => {
                   <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.focalLength}</span>
                 </div>
               )}
+              {lightboxPhoto.exposureSettings?.light && (
+                <div>
+                  <span className="text-xs text-gray-500 block">Lumière</span>
+                  <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.light}</span>
+                </div>
+              )}
+              {lightboxPhoto.exposureSettings?.filter && lightboxPhoto.exposureSettings.filter !== 'Aucun' && (
+                <div>
+                  <span className="text-xs text-gray-500 block">Filtre</span>
+                  <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.filter}</span>
+                </div>
+              )}
+              {lightboxPhoto.exposureSettings?.ndFilter && lightboxPhoto.exposureSettings.ndFilter !== 'Aucun' && (
+                <div>
+                  <span className="text-xs text-gray-500 block">Filtre ND</span>
+                  <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.ndFilter}</span>
+                </div>
+              )}
+              {lightboxPhoto.exposureSettings?.lensHood && (
+                <div>
+                  <span className="text-xs text-gray-500 block">Parasoleil</span>
+                  <span className="font-medium text-gray-200">Oui</span>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Chimie si argentique */}
-          {lightboxPhoto.isAnalog && (
+          {(lightboxPhoto.isAnalog || lightboxPhoto.filmId || lightboxPhoto.developmentSettings?.developer) && (
             <div className="space-y-3">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-500 border-b border-white/10 pb-1">Chimie & Labo</h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -445,11 +469,35 @@ const CarnetDeRoutesPage: React.FC = () => {
                       <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.focalLength}</span>
                     </div>
                   )}
+                  {lightboxPhoto.exposureSettings?.light && (
+                    <div>
+                      <span className="text-xs text-gray-500 block">Lumière</span>
+                      <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.light}</span>
+                    </div>
+                  )}
+                  {lightboxPhoto.exposureSettings?.filter && lightboxPhoto.exposureSettings.filter !== 'Aucun' && (
+                    <div>
+                      <span className="text-xs text-gray-500 block">Filtre</span>
+                      <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.filter}</span>
+                    </div>
+                  )}
+                  {lightboxPhoto.exposureSettings?.ndFilter && lightboxPhoto.exposureSettings.ndFilter !== 'Aucun' && (
+                    <div>
+                      <span className="text-xs text-gray-500 block">Filtre ND</span>
+                      <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.ndFilter}</span>
+                    </div>
+                  )}
+                  {lightboxPhoto.exposureSettings?.lensHood && (
+                    <div>
+                      <span className="text-xs text-gray-500 block">Parasoleil</span>
+                      <span className="font-medium text-gray-200">Oui</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Chemical block for analog */}
-              {lightboxPhoto.isAnalog && (
+              {(lightboxPhoto.isAnalog || lightboxPhoto.filmId || lightboxPhoto.developmentSettings?.developer) && (
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-500 border-b border-white/10 pb-1">Chimie & Labo</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">

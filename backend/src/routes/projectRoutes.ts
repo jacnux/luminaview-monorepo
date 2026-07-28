@@ -74,7 +74,11 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Action non autorisée' });
     }
 
-    const photos = await Photo.find({ projectId: project._id }).sort({ index: 1, createdAt: 1 });
+    const photos = await Photo.find({ projectId: project._id })
+      .populate('gearCameraId')
+      .populate('gearLensId')
+      .populate('filmId')
+      .sort({ index: 1, createdAt: 1 });
     res.json({ project, photos });
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération du détail du projet' });

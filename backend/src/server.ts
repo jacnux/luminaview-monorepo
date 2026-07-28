@@ -40,7 +40,9 @@ app.set('trust proxy', 1);
 // SÉCURITÉ
 // ============================================================
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
 app.use(hpp());
 app.use(mongoSanitize());
 
