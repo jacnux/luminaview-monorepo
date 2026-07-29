@@ -19,11 +19,12 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   const transporter = nodemailer.createTransport(transporterOptions);
 
   // Construction de l'URL de vérification
-  // En local : http://localhost/verify-email?token=...
-  // En prod : https://helioscope.fr/verify-email?token=...
-  const baseUrl = process.env.NODE_ENV === 'production'
-    ? 'https://helioscope.fr'
-    : 'http://localhost';
+  // Utilise FRONTEND_URL si défini, sinon fallback selon l'environnement
+  const baseUrl = process.env.FRONTEND_URL || (
+    process.env.NODE_ENV === 'production'
+      ? 'https://luminaview.fr'
+      : 'http://localhost:7080'
+  );
 
   const verificationUrl = `${baseUrl}/verify-email?token=${token}`;
 

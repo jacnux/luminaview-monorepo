@@ -24,6 +24,7 @@ services:
       - MONGO_URI=mongodb://mongo:27017/luminaview_core
       - JWT_SECRET=changeThisSecretLuminaView123!
       - PORT=3000
+      - FRONTEND_URL=http://localhost:7080
       - SMTP_HOST=mailhog
       - SMTP_PORT=1025
       - SMTP_FROM=test@helioscope.fr
