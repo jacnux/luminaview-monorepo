@@ -76,7 +76,7 @@ router.put('/me', authenticateToken, upload.fields([
 ]), async (req: Request, res: Response) => {
   try {
     // Récupération des champs textuels
-    const { bio, showcaseAlbums, portfolioIntro, servicesDescription, tagline, blogTheme, chambreNoireUrl, hasBlog, hasCarnet } = req.body;
+    const { bio, showcaseAlbums, portfolioIntro, servicesDescription, tagline, blogTheme, chambreNoireUrl, hasBlog, hasCarnet, carnetIntro } = req.body;
 
     const updates: any = {};
 
@@ -85,6 +85,7 @@ router.put('/me', authenticateToken, upload.fields([
 
     // --- AJOUT INDISPENSABLE ---
     if (portfolioIntro !== undefined) updates.portfolioIntro = portfolioIntro;
+    if (carnetIntro !== undefined) updates.carnetIntro = carnetIntro;
     if (servicesDescription !== undefined) updates.servicesDescription = servicesDescription;
     if (tagline !== undefined) updates.tagline = tagline;
     if (blogTheme !== undefined) updates.blogTheme = blogTheme;
@@ -118,14 +119,42 @@ router.put('/me', authenticateToken, upload.fields([
 
 
 // 5. GET PROFIL PUBLIC
+router.get('/public/profile', async (req: Request, res: Response) => {
+  try {
+    const userParam = req.query.user as string;
+    let user = null;
+    if (userParam) {
+      user = await User.findOne({ name: new RegExp('^' + userParam + '$', 'i') })
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+    }
+    if (!user) {
+      user = await User.findOne({ isAdmin: true })
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+    }
+    if (!user) {
+      user = await User.findOne()
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+    }
+
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+    res.json(user);
+  } catch (error) {
+    console.error("Erreur GET /public/profile:", error);
+    res.status(500).json({ error: 'Erreur lors de la récupération du profil' });
+  }
+});
+
 router.get('/public/:id', async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.params.id)
-      .select('name bio avatar bannerImage showcaseAlbums tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet')
-      .populate({
-        path: 'showcaseAlbums',
-        match: { isPublic: true }
-      });
+    const { id } = req.params;
+    let user = null;
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      user = await User.findById(id)
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+    } else {
+      user = await User.findOne({ name: new RegExp('^' + id + '$', 'i') })
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+    }
 
     if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
     res.json(user);

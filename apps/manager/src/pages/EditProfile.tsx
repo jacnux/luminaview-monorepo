@@ -8,6 +8,7 @@ const EditProfile: React.FC = () => {
   const { updateUser } = useAuth();
   const [bio, setBio] = useState('');
   const [portfolioIntro, setPortfolioIntro] = useState('');
+  const [carnetIntro, setCarnetIntro] = useState('');
   const [servicesDescription, setServicesDescription] = useState('');
   const [tagline, setTagline] = useState('');
   const [blogTheme, setBlogTheme] = useState('classic');
@@ -34,6 +35,7 @@ const EditProfile: React.FC = () => {
       const profileRes = await api.get('/users/me');
       setBio(profileRes.data.bio || '');
       setPortfolioIntro(profileRes.data.portfolioIntro || '');
+      setCarnetIntro(profileRes.data.carnetIntro || '');
       setServicesDescription(profileRes.data.servicesDescription || '');
       setTagline(profileRes.data.tagline || '');
       setBlogTheme(profileRes.data.blogTheme || 'classic');
@@ -54,6 +56,7 @@ const EditProfile: React.FC = () => {
       const formData = new FormData();
       formData.append('bio', bio);
       formData.append('portfolioIntro', portfolioIntro);
+      formData.append('carnetIntro', carnetIntro);
       formData.append('servicesDescription', servicesDescription);
       formData.append('tagline', tagline);
       formData.append('blogTheme', blogTheme);
@@ -407,6 +410,17 @@ const EditProfile: React.FC = () => {
                     rows={4}
                     className={inputClass}
                     placeholder="Un court message de bienvenue en haut de la page principale..."
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass}>Introduction du Carnet de Routes (4 lignes visibles - Markdown supporté)</label>
+                  <textarea
+                    value={carnetIntro}
+                    onChange={e => setCarnetIntro(e.target.value)}
+                    rows={4}
+                    className={inputClass}
+                    placeholder="Saisissez un message d'introduction pour les visiteurs de votre carnet de routes..."
                   />
                 </div>
               </div>
