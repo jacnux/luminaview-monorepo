@@ -55,20 +55,34 @@ const authLimiter = rateLimit({
 });
 app.use('/api/auth/', authLimiter);
 
+// ── Rate limiter Commentaires & Signalements : Anti-Spam ──
+const commentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  message: { error: 'Trop de commentaires envoyés depuis cette adresse IP. Veuillez réessayez dans 15 minutes.' }
+});
+
+const reportLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Trop de signalements envoyés depuis cette adresse IP. Veuillez réessayez dans 15 minutes.' }
+});
+
 // ── Rate limiter API général : photos, albums, pages... ──
 // 200 req/15min — suffisant pour les opérations en masse (déplacements)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
-  message: 'Trop de requêtes depuis cette IP, réessayez plus tard.'
+  message: { error: 'Trop de requêtes depuis cette IP, réessayez plus tard.' }
 });
+
+app.use('/api/comments',   commentLimiter);
+app.use('/api/reports',    reportLimiter);
 app.use('/api/albums',     apiLimiter);
 app.use('/api/photos',     apiLimiter);
 app.use('/api/admin',      apiLimiter);
 app.use('/api/users',      apiLimiter);
-app.use('/api/reports',    apiLimiter);
 app.use('/api/user-pages', apiLimiter);
-app.use('/api/comments', apiLimiter);
 
 
 // ============================================================

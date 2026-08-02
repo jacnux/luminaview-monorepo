@@ -94,8 +94,10 @@ router.post('/:id/reply', authenticateToken, async (req: any, res) => {
   }
 });
 
+import { validateBody, commentSchema } from '../middleware/validate';
+
 // ── POST /api/comments/:photoId — PUBLIC, depuis portfolio/blog ──
-router.post('/:photoId', async (req, res) => {
+router.post('/:photoId', validateBody(commentSchema), async (req, res) => {
   try {
     const { authorName, authorEmail, message } = req.body;
     if (!authorName || !message) {

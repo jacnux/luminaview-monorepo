@@ -24,7 +24,9 @@ if (process.env.SMTP_USER) {
 }
 const adminTransporter = nodemailer.createTransport(transporterOptions);
 
-router.post('/', async (req: Request, res: Response) => {
+import { validateBody, reportSchema } from '../middleware/validate';
+
+router.post('/', validateBody(reportSchema), async (req: Request, res: Response) => {
   try {
     const { type, targetId, reason } = req.body;
     if (!type || !targetId || !reason) return res.status(400).json({ error: 'Informations manquantes' });
