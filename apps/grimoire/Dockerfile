@@ -3,22 +3,20 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# On copie package.json et on installe les dépendances
+# On copie le package.json racine et les packages partagés
 COPY package*.json ./
+COPY packages/ ./packages/
+COPY apps/grimoire/ ./apps/grimoire/
+
+WORKDIR /app/apps/grimoire
 RUN npm install
-
-# On copie le code source à jour
-ARG CACHEBUST=2
-COPY . .
-
-# On construit le build de production
 RUN npm run build
 
 # Étape 2 : Serveur Nginx pour distribuer les fichiers statiques
 FROM nginx:alpine
 
 # Copie des fichiers générés vers le dossier Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/apps/grimoire/dist /usr/share/nginx/html
 
 # Configuration pour SPA et proxy /api
 RUN rm /etc/nginx/conf.d/default.conf

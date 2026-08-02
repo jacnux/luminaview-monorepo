@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Maximize2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import Lightbox from './Lightbox';
+import { Lightbox } from '@luminaview/ui';
 import { Album, Photo } from '../types';
 
 interface ProjectDetailViewProps {

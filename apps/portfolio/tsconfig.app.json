@@ -13,7 +13,11 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@luminaview/types": ["../../packages/types/src/index.ts"],
+      "@luminaview/ui": ["../../packages/ui/src/index.ts"]
+    },
     "jsx": "react-jsx",
 
     /* Linting */

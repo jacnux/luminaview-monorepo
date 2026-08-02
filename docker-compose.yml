@@ -71,7 +71,9 @@ services:
       - luminaview-local-network
 
   grimoire:
-    build: ./apps/grimoire
+    build:
+      context: .
+      dockerfile: ./apps/grimoire/Dockerfile
     container_name: luminaview-grimoire
     ports:
       - "7091:80"
