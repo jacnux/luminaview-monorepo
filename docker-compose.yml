@@ -32,7 +32,9 @@ services:
       - luminaview-local-network
 
   manager:
-    build: ./apps/manager
+    build:
+      context: .
+      dockerfile: ./apps/manager/Dockerfile
     container_name: luminaview-manager
     ports:
       - "7080:80"
@@ -42,7 +44,9 @@ services:
       - luminaview-local-network
 
   blog:
-    build: ./apps/blog
+    build:
+      context: .
+      dockerfile: ./apps/blog/Dockerfile
     container_name: luminaview-blog
     ports:
       - "7081:80"
@@ -52,7 +56,9 @@ services:
       - luminaview-local-network
 
   portfolio:
-    build: ./apps/portfolio
+    build:
+      context: .
+      dockerfile: ./apps/portfolio/Dockerfile
     container_name: luminaview-portfolio
     ports:
       - "7090:80"
@@ -60,8 +66,11 @@ services:
       - backend
     networks:
       - luminaview-local-network
+
   chambrenoire:
-    build: ./apps/chambrenoire
+    build:
+      context: .
+      dockerfile: ./apps/chambrenoire/Dockerfile
     container_name: luminaview-chambrenoire
     ports:
       - "7082:80"

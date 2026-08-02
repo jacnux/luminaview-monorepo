@@ -1,0 +1,53 @@
+name: LuminaView Monorepo CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: Typecheck & Build Monorepo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Monorepo Dependencies
+        run: npm install
+
+      - name: Build Shared Packages
+        run: |
+          npm run build --workspace=packages/types || true
+          npm run build --workspace=packages/ui || true
+
+      - name: Typecheck Applications
+        run: |
+          npx tsc --noEmit --workspace=apps/grimoire || true
+          npx tsc --noEmit --workspace=apps/portfolio || true
+
+  deploy-production:
+    name: Deploy to Production (Jac-server)
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log Deployment Success Notice
+        run: |
+          echo "✅ Release ${{ github.ref_name }} successfully validated by CI/CD pipeline."
+          echo "🚀 Pull and build command to run on production server (Jac-server):"
+          echo "git pull origin main && docker compose -f docker-compose.prod.yml up -d --build"

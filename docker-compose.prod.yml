@@ -23,6 +23,7 @@ services:
       - portfolio
       - blog
       - chambrenoire
+      - grimoire
 
   mongo:
     image: mongo:4.4
@@ -60,7 +61,9 @@ services:
       - luminaview-network
 
   manager:
-    build: ./apps/manager
+    build:
+      context: .
+      dockerfile: ./apps/manager/Dockerfile
     container_name: luminaview-manager
     restart: always
     depends_on:
@@ -69,7 +72,9 @@ services:
       - luminaview-network
 
   blog:
-    build: ./apps/blog
+    build:
+      context: .
+      dockerfile: ./apps/blog/Dockerfile
     container_name: luminaview-blog
     restart: always
     depends_on:
@@ -78,7 +83,9 @@ services:
       - luminaview-network
 
   portfolio:
-    build: ./apps/portfolio
+    build:
+      context: .
+      dockerfile: ./apps/portfolio/Dockerfile
     container_name: luminaview-portfolio
     restart: always
     depends_on:
@@ -87,7 +94,9 @@ services:
       - luminaview-network
 
   chambrenoire:
-    build: ./apps/chambrenoire
+    build:
+      context: .
+      dockerfile: ./apps/chambrenoire/Dockerfile
     container_name: luminaview-chambrenoire
     restart: always
     depends_on:
@@ -96,7 +105,9 @@ services:
       - luminaview-network
 
   grimoire:
-    build: ./apps/grimoire
+    build:
+      context: .
+      dockerfile: ./apps/grimoire/Dockerfile
     container_name: luminaview-grimoire
     restart: always
     depends_on:

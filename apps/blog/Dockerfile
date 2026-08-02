@@ -3,21 +3,20 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# On copie les package.json (on utilise npm standard pour le build)
+# On copie le package.json racine et les packages partagés
 COPY package*.json ./
+COPY packages/ ./packages/
+COPY apps/blog/ ./apps/blog/
+
+WORKDIR /app/apps/blog
 RUN npm install
-
-# On copie le code source
-COPY . .
-
-# On construit le build de production
 RUN npm run build
 
 # Étape 2 : Serveur Nginx pour distribuer les fichiers statiques
 FROM nginx:alpine
 
-# Copie des fichiers générés vers le dossier de Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copie des fichiers générés vers le dossier Nginx
+COPY --from=build /app/apps/blog/dist /usr/share/nginx/html
 
 # Configuration pour rediriger toutes les routes vers index.html (SPA) et proxy /api
 RUN rm /etc/nginx/conf.d/default.conf
