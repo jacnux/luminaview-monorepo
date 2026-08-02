@@ -122,13 +122,48 @@ export const Lightbox: React.FC<LightboxProps> = ({
   const photoUrl = getPhotoUrl(currentPhoto);
 
   const getBgStyle = () => {
-    if (lightboxBgColor === 'white') return 'rgba(255,255,255,0.98)';
-    if (lightboxBgColor === 'gray') return 'rgba(40,40,48,0.96)';
-    return 'rgba(7,7,9,0.96)';
+    if (lightboxBgColor === 'white') return '#ffffff';
+    if (lightboxBgColor === 'gray') return '#282830';
+    return '#070709';
   };
 
   const getTextColor = () => {
     return lightboxBgColor === 'white' ? '#111827' : '#ffffff';
+  };
+
+  const getNavArrowStyle = (): React.CSSProperties => {
+    if (lightboxBgColor === 'white') {
+      return {
+        color: '#111827',
+        backgroundColor: 'rgba(0, 0, 0, 0.08)',
+        borderColor: 'rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+      };
+    }
+    return {
+      color: '#ffffff',
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: 'rgba(255, 255, 255, 0.2)',
+    };
+  };
+
+  const getBtnStyle = (customColor?: string): React.CSSProperties => {
+    if (lightboxBgColor === 'white') {
+      return {
+        width: '36px',
+        height: '36px',
+        color: customColor || '#111827',
+        backgroundColor: 'rgba(0, 0, 0, 0.06)',
+        borderColor: customColor ? 'rgba(239, 68, 68, 0.4)' : 'rgba(0, 0, 0, 0.2)',
+      };
+    }
+    return {
+      width: '36px',
+      height: '36px',
+      color: customColor || '#ffffff',
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: customColor ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255, 255, 255, 0.2)',
+    };
   };
 
   return (
@@ -145,14 +180,21 @@ export const Lightbox: React.FC<LightboxProps> = ({
       onWheel={handleWheel}
     >
       {/* Header Lightbox */}
-      <div className="grimoire-lightbox-header">
+      <div
+        className="grimoire-lightbox-header"
+        style={{
+          background: lightboxBgColor === 'white'
+            ? 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%)'
+            : 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
+        }}
+      >
         <div className="grimoire-lightbox-title" style={{ color: getTextColor() }}>
           {currentPhoto.title || `Photographie ${currentIndex + 1}`}
         </div>
 
         <div className="grimoire-lightbox-controls">
           {/* Sélection de couleur de fond (Noir / Gris / Blanc) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginRight: '8px', background: 'rgba(0,0,0,0.2)', padding: '4px 8px', borderRadius: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginRight: '8px', background: lightboxBgColor === 'white' ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '20px' }}>
             <button
               onClick={() => setLightboxBgColor('black')}
               style={{
@@ -193,7 +235,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
 
           <button
             className="grimoire-arrow-btn"
-            style={{ width: '36px', height: '36px' }}
+            style={getBtnStyle()}
             onClick={toggleFullscreen}
             title={isFullscreen ? 'Quitter plein écran' : 'Plein écran'}
           >
@@ -202,7 +244,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
 
           <button
             className="grimoire-arrow-btn"
-            style={{ width: '36px', height: '36px', background: 'rgba(255,255,255,0.15)' }}
+            style={getBtnStyle()}
             onClick={() => {
               onClose();
               if (document.fullscreenElement) {
@@ -228,6 +270,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
         {photos.length > 1 && (
           <button
             className="grimoire-lightbox-nav prev"
+            style={getNavArrowStyle()}
             onClick={() => setCurrentIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1))}
             title="Image précédente (Flèche Gauche)"
           >
@@ -254,6 +297,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
         {photos.length > 1 && (
           <button
             className="grimoire-lightbox-nav next"
+            style={getNavArrowStyle()}
             onClick={() => setCurrentIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1))}
             title="Image suivante (Flèche Droite)"
           >
@@ -264,7 +308,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
 
       {/* Footer avec compteur et actions (Commentaire, Signalement drapeau rouge, Description) */}
       <div className="grimoire-lightbox-footer">
-        <div style={{ color: getTextColor() }}>
+        <div style={{ color: getTextColor(), fontWeight: 500 }}>
           <span>{currentIndex + 1}</span> / <span>{photos.length}</span>
         </div>
 
@@ -272,7 +316,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
           {(currentPhoto.caption || currentPhoto.description) && (
             <button
               className="grimoire-arrow-btn"
-              style={{ width: '34px', height: '34px' }}
+              style={getBtnStyle()}
               onClick={() => setShowDescription(!showDescription)}
               title="Description"
             >
@@ -283,7 +327,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
           {onComment && (
             <button
               className="grimoire-arrow-btn"
-              style={{ width: '34px', height: '34px' }}
+              style={getBtnStyle()}
               onClick={() => onComment(currentIndex)}
               title="Ajouter un commentaire"
             >
@@ -294,7 +338,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
           {onReport && (
             <button
               className="grimoire-arrow-btn"
-              style={{ width: '34px', height: '34px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.4)' }}
+              style={getBtnStyle('#ef4444')}
               onClick={() => onReport(currentIndex)}
               title="Signaler l'image (Drapeau rouge)"
             >
@@ -305,7 +349,13 @@ export const Lightbox: React.FC<LightboxProps> = ({
       </div>
 
       {showDescription && (currentPhoto.caption || currentPhoto.description) && (
-        <div className="grimoire-lightbox-description">
+        <div
+          className="grimoire-lightbox-description"
+          style={{
+            color: getTextColor(),
+            backgroundColor: lightboxBgColor === 'white' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.08)',
+          }}
+        >
           {currentPhoto.caption || currentPhoto.description}
         </div>
       )}
