@@ -287,20 +287,23 @@ html, body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 2.4rem;
-  flex-wrap: wrap;
+  gap: 2rem;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .grimoire-project-link {
   font-family: var(--font-heading);
   font-weight: 300;
-  font-size: 1.75rem;
-  letter-spacing: 0.12em;
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   padding: 4px 10px;

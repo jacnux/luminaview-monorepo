@@ -9,7 +9,7 @@ interface HeroSliderProps {
   onSelectAlbum: (albumId: string) => void;
 }
 
-const ITEMS_PER_SLIDE = 4;
+const ITEMS_PER_SLIDE = 5;
 
 const resolveImageUrl = (img?: string): string | null => {
   if (!img) return null;
