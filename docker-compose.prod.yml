@@ -95,6 +95,15 @@ services:
     networks:
       - luminaview-network
 
+  grimoire:
+    build: ./apps/grimoire
+    container_name: luminaview-grimoire
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - luminaview-network
+
 volumes:
   caddy_data:
   caddy_config:

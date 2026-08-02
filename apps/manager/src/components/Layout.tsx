@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useComments } from '../context/CommentsContext';
-import { getAppUrl } from '../utils/urls';
+import { getAppUrl, getVitrineUrl } from '../utils/urls';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -202,7 +202,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </Link>
 
                 <a
-                  href={getAppUrl('portfolio', user.name)}
+                  href={getVitrineUrl(user)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:translate-x-1 ${
@@ -484,7 +484,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </Link>
 
                   <a
-                    href={getAppUrl('portfolio', user.name)}
+                    href={getVitrineUrl(user)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${

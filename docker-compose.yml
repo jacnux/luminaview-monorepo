@@ -70,6 +70,16 @@ services:
     networks:
       - luminaview-local-network
 
+  grimoire:
+    build: ./apps/grimoire
+    container_name: luminaview-grimoire
+    ports:
+      - "7091:80"
+    depends_on:
+      - backend
+    networks:
+      - luminaview-local-network
+
   # --- MAILHOG ---
   mailhog:
     image: mailhog/mailhog

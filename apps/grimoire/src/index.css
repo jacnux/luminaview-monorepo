@@ -1,0 +1,1103 @@
+/* Grimoire - Thème Photojournalisme & Exposition Cinématographique */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-dark: #070709;
+  --bg-card: #121216;
+  --text-main: #f5f5f7;
+  --text-muted: #8e8e93;
+  --text-dim: #5c5c63;
+  --accent: #ffffff;
+  --accent-glow: rgba(255, 255, 255, 0.15);
+  --overlay-bg: rgba(7, 7, 9, 0.88);
+  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Scrollbar minimale */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a32;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444450;
+}
+
+/* --- HEADER & NAVBAR --- */
+.grimoire-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 2.2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+  transition: all 0.3s ease;
+}
+
+.grimoire-brand {
+  pointer-events: auto;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text-main);
+}
+
+.grimoire-title {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 1.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.1;
+  transition: opacity 0.2s ease;
+}
+
+.grimoire-title:hover {
+  opacity: 0.85;
+}
+
+.grimoire-subtitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.grimoire-nav-controls {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+}
+
+.grimoire-menu-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.25s ease;
+}
+
+.grimoire-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.grimoire-hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 20px;
+  height: 13px;
+}
+
+.grimoire-hamburger .line {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #ffffff;
+  border-radius: 1px;
+  transition: all 0.25s ease;
+}
+
+/* --- OVERLAY DRAWER MENU --- */
+.grimoire-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background-color: var(--overlay-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  padding: 3rem;
+  overflow-y: auto;
+}
+
+.grimoire-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3.5rem;
+}
+
+.grimoire-drawer-close {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.grimoire-drawer-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.grimoire-drawer-content {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.grimoire-drawer-section-title {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.grimoire-drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3.5rem;
+}
+
+.grimoire-drawer-item {
+  color: var(--text-main);
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  padding: 10px 14px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.grimoire-drawer-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+/* --- HERO SLIDER (FELIPE DANA STYLE) --- */
+.grimoire-hero {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grimoire-bg-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.grimoire-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(0.72) contrast(1.05);
+}
+
+.grimoire-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.65) 100%),
+              linear-gradient(to top, rgba(7,7,9,0.85) 0%, rgba(0,0,0,0) 40%);
+  pointer-events: none;
+}
+
+.grimoire-hero-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.grimoire-slider-row-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.grimoire-project-horizontal-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4rem;
+  flex-wrap: wrap;
+}
+
+.grimoire-project-link {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 1.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  padding: 4px 10px;
+  text-align: center;
+}
+
+.grimoire-project-link:hover,
+.grimoire-project-link.active {
+  color: #ffffff;
+  transform: scale(1.06);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.grimoire-project-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 60%;
+  height: 1px;
+  background-color: #ffffff;
+  transition: transform 0.3s ease;
+}
+
+.grimoire-project-link:hover::after,
+.grimoire-project-link.active::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Controls de pagination du Slider */
+.grimoire-slider-controls {
+  position: absolute;
+  bottom: 4rem;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+.grimoire-arrow-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-main);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.grimoire-arrow-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+.grimoire-arrow-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.grimoire-slider-indicators {
+  display: flex;
+  gap: 8px;
+}
+
+.grimoire-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.grimoire-indicator-dot.active {
+  background: #ffffff;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* --- VUE MOBILE EN GRILLE VERTICALE --- */
+.grimoire-mobile-grid {
+  display: none;
+  width: 100%;
+  padding: 7rem 1.5rem 4rem 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .grimoire-navbar {
+    padding: 1.5rem;
+  }
+
+  .grimoire-hero-content {
+    display: none;
+  }
+
+  .grimoire-slider-controls {
+    display: none;
+  }
+
+  .grimoire-hero {
+    height: auto;
+    min-height: auto;
+  }
+
+  .grimoire-mobile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .grimoire-project-link {
+    font-size: 1.6rem;
+  }
+}
+
+.grimoire-mobile-card {
+  text-decoration: none;
+  color: var(--text-main);
+  background: var(--bg-card);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: transform 0.25s ease;
+}
+
+.grimoire-mobile-card:hover {
+  transform: translateY(-4px);
+}
+
+.grimoire-mobile-thumb-wrapper {
+  width: 100%;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+}
+
+.grimoire-mobile-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.grimoire-mobile-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  padding: 1rem 1.2rem;
+}
+
+/* --- VUE DÉTAIL DU PROJET / ALBUM --- */
+.grimoire-project-page {
+  min-height: 100vh;
+  padding-top: 8rem;
+  padding-bottom: 6rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.grimoire-back-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-main);
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 3rem;
+  transition: all 0.2s ease;
+}
+
+.grimoire-back-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.grimoire-project-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 4rem auto;
+}
+
+.grimoire-project-header h1 {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 3rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+}
+
+.grimoire-project-header p {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* --- GRILLE D'EXPOSITION (GALLERY MASONRY GRID) --- */
+.grimoire-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+}
+
+.grimoire-gallery-item {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.grimoire-gallery-item:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+.grimoire-gallery-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background-color: #0d0d12;
+}
+
+.grimoire-gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.grimoire-gallery-item:hover .grimoire-gallery-img {
+  transform: scale(1.05);
+}
+
+.grimoire-gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 7, 9, 0.65);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #ffffff;
+  transition: opacity 0.3s ease;
+}
+
+.grimoire-gallery-item:hover .grimoire-gallery-overlay {
+  opacity: 1;
+}
+
+.grimoire-gallery-caption {
+  padding: 1rem 1.2rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* --- VISIONNEUSE LIGHTBOX INTERACTIVE --- */
+.grimoire-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(16px);
+  user-select: none;
+}
+
+.grimoire-lightbox-header {
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 410;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+}
+
+.grimoire-lightbox-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.grimoire-lightbox-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.grimoire-lightbox-body {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+.grimoire-lightbox-img {
+  max-width: 90vw;
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85);
+}
+
+.grimoire-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 410;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.grimoire-lightbox-nav.prev {
+  left: 2.5rem;
+}
+
+.grimoire-lightbox-nav.next {
+  right: 2.5rem;
+}
+
+.grimoire-lightbox-nav:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.grimoire-lightbox-footer {
+  padding: 1.2rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+  z-index: 410;
+}
+
+.grimoire-lightbox-description {
+  position: absolute;
+  bottom: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(12, 12, 16, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  padding: 1rem 1.8rem;
+  border-radius: 8px;
+  max-width: 650px;
+  width: 90%;
+  color: #ffffff;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  text-align: center;
+  z-index: 415;
+}
+
+/* --- FOOTER & COPYRIGHT MODAL --- */
+.grimoire-footer {
+  margin-top: auto;
+  padding: 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.grimoire-copyright-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.grimoire-copyright-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+/* Modale */
+.grimoire-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.grimoire-modal-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  padding: 2.5rem;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+.grimoire-modal-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+}
+
+.grimoire-modal-card p {
+  color: var(--text-muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* --- MENU PANNEAU LATÉRAL DROIT (FELIPE DANA EXACT OVERLAY) --- */
+.grimoire-drawer-right {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: 88vw;
+  z-index: 250;
+  background: rgba(7, 7, 9, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  padding: 2.2rem 2.5rem;
+  box-shadow: -15px 0 50px rgba(0, 0, 0, 0.7);
+  overflow-y: auto;
+}
+
+.grimoire-drawer-right-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
+
+.grimoire-drawer-right-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 1.6rem;
+  margin-top: 1rem;
+}
+
+.grimoire-right-menu-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.grimoire-right-main-link {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  transition: all 0.25s ease;
+}
+
+.grimoire-right-main-link.portfolio-link-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 300;
+  color: #ffffff;
+}
+
+.grimoire-right-main-link:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.grimoire-right-submenu-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.6rem;
+  padding-right: 0.8rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.grimoire-right-submenu-item {
+  color: rgba(255, 255, 255, 0.68);
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  transition: all 0.2s ease;
+}
+
+.grimoire-right-submenu-item:hover {
+  color: #ffffff;
+  transform: translateX(-4px);
+}
+
+.grimoire-right-socials {
+  margin-top: auto;
+  padding-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.grimoire-social-icon {
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.grimoire-social-icon:hover {
+  color: #ffffff;
+}
+
+/* --- MODALE À PROPOS & CONTACT ÉLÉGAMMENT FORMATÉE --- */
+.grimoire-about-card {
+  max-width: 600px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 1.8rem 2.2rem;
+}
+
+.grimoire-about-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.grimoire-about-tabs {
+  display: flex;
+  gap: 0.8rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.grimoire-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.grimoire-tab-btn.active {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.grimoire-about-title {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  font-size: 1.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #ffffff;
+}
+
+.grimoire-about-subtitle {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.grimoire-about-quote {
+  font-style: italic;
+  color: #e5e7eb;
+  text-align: center;
+  font-size: 0.98rem;
+  margin-bottom: 1.8rem;
+  padding: 0.8rem 1.2rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.grimoire-about-quote p {
+  margin: 0;
+}
+
+.grimoire-about-quote strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.grimoire-about-markdown {
+  color: var(--text-muted);
+  line-height: 1.8;
+  font-size: 0.96rem;
+  text-align: left;
+}
+
+.grimoire-about-markdown p {
+  margin-bottom: 1.2rem;
+  color: #d1d5db;
+}
+
+.grimoire-about-markdown p:last-child {
+  margin-bottom: 0;
+}
+
+.grimoire-about-markdown h1,
+.grimoire-about-markdown h2,
+.grimoire-about-markdown h3 {
+  font-family: var(--font-heading);
+  color: #ffffff;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 1.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.grimoire-about-markdown h1 { font-size: 1.4rem; }
+.grimoire-about-markdown h2 { font-size: 1.2rem; }
+.grimoire-about-markdown h3 { font-size: 1.05rem; }
+
+.grimoire-about-markdown strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.grimoire-about-markdown em {
+  font-style: italic;
+  color: #e5e7eb;
+}
+
+.grimoire-about-markdown ul,
+.grimoire-about-markdown ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.grimoire-about-markdown li {
+  line-height: 1.6;
+}
+
+.grimoire-about-markdown blockquote {
+  border-left: 2px solid rgba(255, 255, 255, 0.3);
+  padding-left: 1rem;
+  margin: 1.2rem 0;
+  font-style: italic;
+  color: #e5e7eb;
+}
+
+.grimoire-about-markdown a {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.grimoire-contact-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.4rem 1.6rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.grimoire-contact-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.grimoire-contact-email {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.grimoire-contact-email:hover {
+  color: #38bdf8;
+}
+
+.grimoire-copy-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.grimoire-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

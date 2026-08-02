@@ -56,6 +56,12 @@ https:// {
         reverse_proxy luminaview-chambrenoire:80
     }
 
+    # Sous-domaine spécifique pour GRIMOIRE
+    @grimoire header_regexp Host ^([a-zA-Z0-9-]+)-grimoire\.helioscope\.fr$
+    handle @grimoire {
+        reverse_proxy luminaview-grimoire:80
+    }
+
     # Par défaut : Portfolio (*.helioscope.fr ou helioscope.fr)
     @helioscope host *.helioscope.fr helioscope.fr
     handle @helioscope {
