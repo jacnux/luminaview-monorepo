@@ -47,9 +47,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
       setSubmittingComment(true);
       setCommentSuccess(null);
       setCommentError(null);
-      await axios.post('/api/comments', {
-        albumId: album._id,
-        photoId: photo._id,
+      await axios.post(`/api/comments/${photo._id}`, {
         authorName: authorName.trim(),
         authorEmail: authorEmail.trim(),
         message: message.trim(),
