@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2, Info } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2, Info, MessageSquare, Flag } from 'lucide-react';
 import { Photo } from '@luminaview/types';
 
 export interface LightboxProps {
   photos: Photo[];
   initialIndex: number;
   onClose: () => void;
+  onComment?: (index: number) => void;
+  onReport?: (index: number) => void;
 }
 
 const lightboxVariants = {
@@ -31,13 +33,19 @@ const getPhotoUrl = (photo: any): string => {
   return `/uploads/${path}`;
 };
 
-export const Lightbox: React.FC<LightboxProps> = ({ photos, initialIndex, onClose }) => {
+export const Lightbox: React.FC<LightboxProps> = ({
+  photos,
+  initialIndex,
+  onClose,
+  onComment,
+  onReport,
+}) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoom, setZoom] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const [lightboxBgColor, setLightboxBgColor] = useState<'black' | 'gray'>('black');
+  const [lightboxBgColor, setLightboxBgColor] = useState<'black' | 'gray' | 'white'>('black');
   const [showDescription, setShowDescription] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -113,11 +121,22 @@ export const Lightbox: React.FC<LightboxProps> = ({ photos, initialIndex, onClos
 
   const photoUrl = getPhotoUrl(currentPhoto);
 
+  const getBgStyle = () => {
+    if (lightboxBgColor === 'white') return 'rgba(255,255,255,0.98)';
+    if (lightboxBgColor === 'gray') return 'rgba(40,40,48,0.96)';
+    return 'rgba(7,7,9,0.96)';
+  };
+
+  const getTextColor = () => {
+    return lightboxBgColor === 'white' ? '#111827' : '#ffffff';
+  };
+
   return (
     <motion.div
       className="grimoire-lightbox-overlay"
       style={{
-        backgroundColor: lightboxBgColor === 'black' ? 'rgba(7,7,9,0.96)' : 'rgba(28,28,34,0.96)',
+        backgroundColor: getBgStyle(),
+        color: getTextColor(),
       }}
       variants={lightboxVariants}
       initial="initial"
@@ -125,20 +144,52 @@ export const Lightbox: React.FC<LightboxProps> = ({ photos, initialIndex, onClos
       exit="exit"
       onWheel={handleWheel}
     >
+      {/* Header Lightbox */}
       <div className="grimoire-lightbox-header">
-        <div className="grimoire-lightbox-title">
+        <div className="grimoire-lightbox-title" style={{ color: getTextColor() }}>
           {currentPhoto.title || `Photographie ${currentIndex + 1}`}
         </div>
 
         <div className="grimoire-lightbox-controls">
-          <button
-            className="grimoire-arrow-btn"
-            style={{ width: '36px', height: '36px' }}
-            onClick={() => setLightboxBgColor(lightboxBgColor === 'black' ? 'gray' : 'black')}
-            title="Changer le fond"
-          >
-            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: lightboxBgColor === 'black' ? '#ffffff' : '#666' }} />
-          </button>
+          {/* Sélection de couleur de fond (Noir / Gris / Blanc) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginRight: '8px', background: 'rgba(0,0,0,0.2)', padding: '4px 8px', borderRadius: '20px' }}>
+            <button
+              onClick={() => setLightboxBgColor('black')}
+              style={{
+                width: '14px',
+                height: '14px',
+                borderRadius: '50%',
+                background: '#000000',
+                border: lightboxBgColor === 'black' ? '2px solid #38bdf8' : '1px solid rgba(255,255,255,0.4)',
+                cursor: 'pointer',
+              }}
+              title="Fond Noir"
+            />
+            <button
+              onClick={() => setLightboxBgColor('gray')}
+              style={{
+                width: '14px',
+                height: '14px',
+                borderRadius: '50%',
+                background: '#4b5563',
+                border: lightboxBgColor === 'gray' ? '2px solid #38bdf8' : '1px solid rgba(255,255,255,0.4)',
+                cursor: 'pointer',
+              }}
+              title="Fond Gris"
+            />
+            <button
+              onClick={() => setLightboxBgColor('white')}
+              style={{
+                width: '14px',
+                height: '14px',
+                borderRadius: '50%',
+                background: '#ffffff',
+                border: lightboxBgColor === 'white' ? '2px solid #38bdf8' : '1px solid rgba(0,0,0,0.4)',
+                cursor: 'pointer',
+              }}
+              title="Fond Blanc"
+            />
+          </div>
 
           <button
             className="grimoire-arrow-btn"
@@ -165,6 +216,7 @@ export const Lightbox: React.FC<LightboxProps> = ({ photos, initialIndex, onClos
         </div>
       </div>
 
+      {/* Corps avec l'image zoomable & repositionnable */}
       <div
         className="grimoire-lightbox-body"
         onMouseDown={handleMouseDown}
@@ -210,21 +262,46 @@ export const Lightbox: React.FC<LightboxProps> = ({ photos, initialIndex, onClos
         )}
       </div>
 
+      {/* Footer avec compteur et actions (Commentaire, Signalement drapeau rouge, Description) */}
       <div className="grimoire-lightbox-footer">
-        <div>
+        <div style={{ color: getTextColor() }}>
           <span>{currentIndex + 1}</span> / <span>{photos.length}</span>
         </div>
 
-        {(currentPhoto.caption || currentPhoto.description) && (
-          <button
-            className="grimoire-arrow-btn"
-            style={{ width: '32px', height: '32px' }}
-            onClick={() => setShowDescription(!showDescription)}
-            title="Description"
-          >
-            <Info size={16} />
-          </button>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {(currentPhoto.caption || currentPhoto.description) && (
+            <button
+              className="grimoire-arrow-btn"
+              style={{ width: '34px', height: '34px' }}
+              onClick={() => setShowDescription(!showDescription)}
+              title="Description"
+            >
+              <Info size={16} />
+            </button>
+          )}
+
+          {onComment && (
+            <button
+              className="grimoire-arrow-btn"
+              style={{ width: '34px', height: '34px' }}
+              onClick={() => onComment(currentIndex)}
+              title="Ajouter un commentaire"
+            >
+              <MessageSquare size={16} />
+            </button>
+          )}
+
+          {onReport && (
+            <button
+              className="grimoire-arrow-btn"
+              style={{ width: '34px', height: '34px', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.4)' }}
+              onClick={() => onReport(currentIndex)}
+              title="Signaler l'image (Drapeau rouge)"
+            >
+              <Flag size={16} />
+            </button>
+          )}
+        </div>
       </div>
 
       {showDescription && (currentPhoto.caption || currentPhoto.description) && (

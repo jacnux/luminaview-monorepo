@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Maximize2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Lightbox } from '@luminaview/ui';
+import axios from 'axios';
+import { Lightbox, CommentModal, ReportModal } from '@luminaview/ui';
 import { Album, Photo } from '../types';
 
 interface ProjectDetailViewProps {
@@ -25,7 +26,69 @@ const getPhotoUrl = (photo: any): string => {
 const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, onBack }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  // Gestion des modales de commentaires et de signalement
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+
+  const [submittingComment, setSubmittingComment] = useState(false);
+  const [commentSuccess, setCommentSuccess] = useState<string | null>(null);
+  const [commentError, setCommentError] = useState<string | null>(null);
+
+  const [submittingReport, setSubmittingReport] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState<string | null>(null);
+  const [reportError, setReportError] = useState<string | null>(null);
+
   const albumPhotos = photos.length > 0 ? photos : album.photos || [];
+
+  const handleCommentSubmit = async (authorName: string, authorEmail: string, message: string) => {
+    if (lightboxIndex === null || !albumPhotos[lightboxIndex]) return;
+    const photo = albumPhotos[lightboxIndex];
+    try {
+      setSubmittingComment(true);
+      setCommentSuccess(null);
+      setCommentError(null);
+      await axios.post('/api/comments', {
+        albumId: album._id,
+        photoId: photo._id,
+        authorName: authorName.trim(),
+        authorEmail: authorEmail.trim(),
+        message: message.trim(),
+      });
+      setCommentSuccess("Votre commentaire a été envoyé avec succès au photographe !");
+      setTimeout(() => {
+        setShowCommentModal(false);
+        setCommentSuccess(null);
+      }, 2000);
+    } catch (err: any) {
+      console.error("Erreur envoi commentaire:", err);
+      setCommentError(err.response?.data?.error || "Impossible d'envoyer le commentaire pour le moment.");
+    } finally {
+      setSubmittingComment(false);
+    }
+  };
+
+  const handleReportSubmit = async (reason: string) => {
+    try {
+      setSubmittingReport(true);
+      setReportSuccess(null);
+      setReportError(null);
+      await axios.post('/api/reports', {
+        type: 'album',
+        targetId: album._id,
+        reason: reason.trim(),
+      });
+      setReportSuccess("Le signalement a été transmis avec succès à l'administrateur.");
+      setTimeout(() => {
+        setShowReportModal(false);
+        setReportSuccess(null);
+      }, 2000);
+    } catch (err: any) {
+      console.error("Erreur envoi signalement:", err);
+      setReportError(err.response?.data?.error || "Impossible d'envoyer le signalement pour le moment.");
+    } finally {
+      setSubmittingReport(false);
+    }
+  };
 
   return (
     <motion.div
@@ -104,14 +167,48 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
 
       {/* VISIONNEUSE INTERACTIVE LIGHTBOX */}
       <AnimatePresence>
-        {lightboxIndex !== null && (
+        {lightboxIndex !== null && albumPhotos.length > 0 && (
           <Lightbox
             photos={albumPhotos}
             initialIndex={lightboxIndex}
             onClose={() => setLightboxIndex(null)}
+            onComment={(idx) => {
+              setLightboxIndex(idx);
+              setShowCommentModal(true);
+            }}
+            onReport={(idx) => {
+              setLightboxIndex(idx);
+              setShowReportModal(true);
+            }}
           />
         )}
       </AnimatePresence>
+
+      {/* MODALE DE COMMENTAIRE */}
+      {showCommentModal && lightboxIndex !== null && albumPhotos[lightboxIndex] && (
+        <CommentModal
+          photo={albumPhotos[lightboxIndex]}
+          isOpen={showCommentModal}
+          onClose={() => setShowCommentModal(false)}
+          onSubmit={handleCommentSubmit}
+          submitting={submittingComment}
+          success={commentSuccess}
+          error={commentError}
+        />
+      )}
+
+      {/* MODALE DE SIGNALEMENT DRAPEAU ROUGE */}
+      {showReportModal && lightboxIndex !== null && albumPhotos[lightboxIndex] && (
+        <ReportModal
+          photo={albumPhotos[lightboxIndex]}
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          onSubmit={handleReportSubmit}
+          submitting={submittingReport}
+          success={reportSuccess}
+          error={reportError}
+        />
+      )}
     </motion.div>
   );
 };
