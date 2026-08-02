@@ -37,7 +37,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
     >
       <button className="grimoire-back-btn" onClick={onBack}>
         <ArrowLeft size={16} />
-        <span>Retour aux projets</span>
+        <span>Retour aux galeries</span>
       </button>
 
       <div className="grimoire-project-header">
