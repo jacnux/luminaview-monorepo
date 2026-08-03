@@ -27,3 +27,4 @@ caddy_config/
 .DS_Store
 .vscode/
 .idea/
+*.tsbuildinfo

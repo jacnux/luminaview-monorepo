@@ -43,9 +43,10 @@ const CarnetDeRoutesPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-20 text-center">
-        <div className="inline-block w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-gray-500 dark:text-gray-400 text-sm">Chargement du carnet de routes...</p>
+      <div className="max-w-4xl mx-auto px-6 py-10 animate-pulse space-y-8">
+        <div className="h-40 rounded-2xl bg-gray-200 dark:bg-slate-800/80 w-full" />
+        <div className="h-64 rounded-2xl bg-gray-200 dark:bg-slate-800/80 w-full" />
+        <div className="h-64 rounded-2xl bg-gray-200 dark:bg-slate-800/80 w-full" />
       </div>
     );
   }

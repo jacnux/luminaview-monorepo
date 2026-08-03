@@ -1,0 +1,14 @@
+/* emulation of 5.0.5 style/behavior */
+.dtfc-fixed-right{
+    container-type: scroll-state;
+    container-name: dt-fixed-column-right;
+}
+
+@container dt-fixed-column-right scroll-state(stuck: right){
+    ::after{
+        /* lib style: */
+        /* box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.2); */
+        box-shadow: inset -3px 0px 4px 0px rgba(0, 0, 0, 0.03);
+        border-right: 1px solid var(--bs-card-border-color);
+    }
+}

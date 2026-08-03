@@ -28,9 +28,13 @@ const PostList: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-        <div className="inline-block w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-gray-500 dark:text-gray-400 text-sm">Chargement des articles...</p>
+      <div className="max-w-6xl mx-auto px-6 py-10 animate-pulse">
+        <div className="mb-12 rounded-2xl bg-gray-200 dark:bg-slate-800/80 h-[360px] w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="rounded-xl bg-gray-200 dark:bg-slate-800/80 h-72 w-full" />
+          <div className="rounded-xl bg-gray-200 dark:bg-slate-800/80 h-72 w-full" />
+          <div className="rounded-xl bg-gray-200 dark:bg-slate-800/80 h-72 w-full" />
+        </div>
       </div>
     );
   }

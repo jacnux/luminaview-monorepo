@@ -1,0 +1,106 @@
+.listing-name-country-selector-row {
+    display: flex;
+}
+
+.clear-icon{
+    display: none;
+    cursor: pointer;
+}
+
+.input-group-addon.search-clear-btn.search-listing{
+    cursor: pointer;
+}
+.rating-star {
+    position: relative;
+}
+
+.business-star-rating .rating-star.checked {
+    color: var(--bs-warning);
+}
+.rating-star.half-star:not(.checked):before {
+    content: attr(data-char);
+    position: absolute;
+    overflow: hidden;
+    color: var(--bs-warning);
+}
+.rating-star.half-star-40:before {
+    width: 50%;
+}
+.rating-star.half-star-55:before {
+    width: 60%;
+}
+.rating-star.half-star-70:before {
+    width: 70%;
+}
+
+.review-rating {
+    color: var(--bs-gray-300);
+}
+
+.modal-location-listing .business-star-rating .score {
+    margin-left: 5px;
+}
+.modal-location-listing {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dotted #ccc;
+}
+
+#listingSearchModal .modal-location-listing:last-child{
+    border-bottom: none
+}
+
+#listingSearchModal .modal-footer {
+    padding: 15px;
+    text-align: right;
+    border-top: 1px solid #e5e5e5;
+}
+#listingSearchModal .modal-body {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+#listingSearchModal .modal-header {
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+#listingSearchModal .modal-dialog .modal-content{
+    min-height: 80px;
+    padding: 0;
+}
+.process-spinner{
+    margin-top: 80px;
+}
+
+#listingSearchModal{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    z-index: calc(1 + var(--bs-modal-zindex));
+}
+
+#listingSearchModal .modal-dialog{
+    margin-top: 50px;
+    margin-bottom: 50px;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+#options-modal{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#options-modal .modal-dialog{
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.select2-container--open {
+    z-index: 1999;
+}
+
+.disable-no-website {
+    filter: grayscale(100%) brightness(0.9);
+    opacity: 0.65;
+    pointer-events: auto;
+    cursor: not-allowed;
+}

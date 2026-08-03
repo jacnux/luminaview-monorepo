@@ -1,0 +1,99 @@
+.card-box-thumb-desktop,
+.card-box-thumb-mobile {
+    border: 1px solid var(--bs-card-border-color);
+    position: absolute;
+    background-color: var(--bs-card-bg);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.card-box-thumb-desktop {
+    width: 75%;
+}
+
+.card-box-thumb-desktop img {
+    aspect-ratio: 1280/1012;
+    opacity: 0;
+}
+
+.card-box-thumb-mobile {
+    right:7%;
+    width:25%;
+    bottom:-7%;
+}
+
+.card-box-thumb-mobile img {
+    aspect-ratio: 320/533;
+    opacity: 0;
+}
+
+[data-bs-theme=dark] .card-box-thumb-desktop,
+[data-bs-theme=dark] .card-box-thumb-mobile {
+    box-shadow: 0 0 8px #d9d9d9;
+}
+
+/* GEO (and other non-SEO) audits render no mobile thumbnail, so the 75%-wide,
+   left-anchored desktop thumb leaves a dead gap on the right and reads as left
+   aligned. In the stacked single-column view (<768px) centre it instead. */
+@media (max-width: 767px) {
+    .main-screenshot-container.screenshot-centered .card-box-thumb-desktop {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+.accordion-button.collapsed:hover {
+    background-color: #fcfcfc;
+}
+
+.nav.nav-pills.nav-pills-custom .nav-link {
+    background-color: var(--bs-white) !important;
+}
+
+[data-bs-theme="dark"] .nav.nav-pills.nav-pills-custom .nav-link {
+    background-color: #15171C !important;
+}
+
+.nav.nav-pills.nav-pills-custom .nav-link.border-solid-1 {
+    border: 1px solid var(--bs-border-dashed-color);
+}
+
+.nav.nav-pills.nav-pills-custom .nav-link.js-create-template:hover {
+    background-color: var(--bs-primary) !important;
+}
+
+.nav.nav-pills.nav-pills-custom .nav-link.js-create-template[disabled]:hover {
+    background-color: var(--bs-white) !important;
+}
+
+[data-bs-theme="dark"] .nav.nav-pills.nav-pills-custom .nav-link.js-create-template[disabled]:hover {
+    background-color: #15171C !important;
+}
+
+.nav.nav-pills.nav-pills-custom .nav-text {
+    width: 100%;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+#select2-language-container {
+    width: 100%;
+}
+
+.overlay-blur{
+    position: relative;
+}
+.overlay-blur:after{
+    content: "";
+    position: absolute;
+    top:0;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+

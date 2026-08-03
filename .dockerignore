@@ -1,6 +1,8 @@
 # Fichiers et dossiers à exclure du contexte de build Docker monorepo
 data/
 mongo_data/
+documentation/
+test_performance
 **/node_modules
 **/.git
 **/.github
