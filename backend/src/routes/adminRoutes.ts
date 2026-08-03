@@ -6,11 +6,56 @@ import Photo from '../models/Photo';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 import fs from 'fs';
 import path from 'path';
-import { sendPasswordResetEmail } from '../utils/emailService'; // Ajouter l'import
+import { sendPasswordResetEmail, sendBroadcastEmail } from '../utils/emailService';
 const router = express.Router();
 
 router.use(authenticateToken);
 router.use(requireAdmin);
+
+// --- POST : Envoyer un message général (Broadcast) aux utilisateurs vérifiés ---
+router.post('/broadcast-email', async (req: Request, res: Response) => {
+  try {
+    const { subject, message } = req.body;
+    if (!subject || !subject.trim() || !message || !message.trim()) {
+      return res.status(400).json({ error: 'Le sujet et le corps du message sont obligatoires.' });
+    }
+
+    // Exclure les comptes non vérifiés (isEmailVerified === false)
+    const verifiedUsers = await User.find({ isEmailVerified: { $ne: false } }).select('email name');
+
+    if (verifiedUsers.length === 0) {
+      return res.status(400).json({ error: 'Aucun utilisateur vérifié trouvé.' });
+    }
+
+    console.log(`📧 Diffusion de message par l'admin (${req.user?.userId}) à ${verifiedUsers.length} utilisateur(s)...`);
+
+    let sentCount = 0;
+    let failedCount = 0;
+
+    for (const u of verifiedUsers) {
+      if (u.email) {
+        try {
+          await sendBroadcastEmail(u.email, u.name, subject.trim(), message.trim());
+          sentCount++;
+        } catch (mailErr) {
+          console.error(`❌ Échec d'envoi d'email à ${u.email}:`, mailErr);
+          failedCount++;
+        }
+      }
+    }
+
+    res.json({
+      message: `Message transmis avec succès à ${sentCount} utilisateur(s) vérifié(s).`,
+      totalTargeted: verifiedUsers.length,
+      sentCount,
+      failedCount
+    });
+
+  } catch (error) {
+    console.error('Erreur lors de la diffusion d\'email:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'envoi du message général.' });
+  }
+});
 
 // --- GET : Lister les utilisateurs ---
 router.get('/users', async (req: Request, res: Response) => {

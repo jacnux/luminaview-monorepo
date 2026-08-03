@@ -73,3 +73,53 @@ export const sendPasswordResetEmail = async (email: string, tempPassword: string
 
   await transporter.sendMail(mailOptions);
 };
+
+// Fonction de conversion Markdown basique vers HTML pour les emails
+function markdownToHtml(markdown: string): string {
+  let html = markdown
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  
+  html = html.replace(/^### (.*$)/gim, '<h3 style="color: #0f172a; font-size: 16px; margin-top: 16px; font-weight: bold;">$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2 style="color: #0f172a; font-size: 18px; margin-top: 20px; font-weight: bold;">$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1 style="color: #0f172a; font-size: 22px; margin-top: 24px; font-weight: bold;">$1</h1>');
+
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: #eab308; text-decoration: underline;">$1</a>');
+
+  const paragraphs = html.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 0);
+  return paragraphs.map(p => `<p style="color: #334155; font-size: 14px; line-height: 1.6; margin-bottom: 12px;">${p.replace(/\n/g, '<br/>')}</p>`).join('');
+}
+
+// Fonction d'envoi de message collectif (Broadcast) aux utilisateurs vérifiés
+export const sendBroadcastEmail = async (email: string, userName: string, subject: string, markdownMessage: string) => {
+  const transporter = nodemailer.createTransport(transporterOptions);
+  const messageBodyHtml = markdownToHtml(markdownMessage);
+
+  const mailOptions = {
+    from: process.env.SMTP_FROM || 'test@helioscope.fr',
+    to: email,
+    subject: subject,
+    html: `
+      <div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+        <div style="background-color: #0f172a; padding: 24px; text-align: center;">
+          <h1 style="color: #f59e0b; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;">LuminaView Studio</h1>
+          <p style="color: #94a3b8; margin: 6px 0 0 0; font-size: 13px;">Message officiel de l'administration</p>
+        </div>
+        <div style="padding: 32px 28px;">
+          <p style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 0;">Bonjour ${userName || 'utilisateur'},</p>
+          ${messageBodyHtml}
+        </div>
+        <div style="background-color: #f8fafc; padding: 18px 28px; border-top: 1px solid #f1f5f9; text-align: center;">
+          <p style="font-size: 12px; color: #64748b; margin: 0;">
+            Ce message vous a été envoyé par l'administrateur de LuminaView.
+          </p>
+        </div>
+      </div>
+    `
+  };
+
+  await transporter.sendMail(mailOptions);
+};
