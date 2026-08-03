@@ -37,10 +37,10 @@ const LandingPage = () => {
           </h1>
 
           <p className="text-gray-300 text-base sm:text-lg font-light leading-relaxed mb-10">
-            LuminaView est la plateforme tout-en-un pensée pour les photographes. Un studio privé centralisé, votre portfolio autonome, votre carnet de laboratoire et votre journal de création.
+            LuminaView est la plateforme tout-en-un pensée pour les photographes. Un studio privé centralisé, votre portfolio autonome, votre carnet de laboratoire, votre grimoire de chimie et votre journal de création.
           </p>
 
-          {/* Grid of the 4 Decoupled Spaces */}
+          {/* Grid of the 5 Decoupled Spaces */}
           <div className="grid sm:grid-cols-2 gap-4">
             
             {/* Space 1: Studio Manager */}
@@ -48,7 +48,7 @@ const LandingPage = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="text-2xl">🎛️</div>
                 <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                  lumina.fr
+                  luminaview.fr
                 </span>
               </div>
               <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-400 transition">
@@ -104,6 +104,22 @@ const LandingPage = () => {
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
                 Journal de création avec éditeur Notebook épuré, récits de prises de vue et commentaires publics.
+              </p>
+            </div>
+
+            {/* Space 5: Grimoire de Chimie */}
+            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/40 transition duration-300 backdrop-blur-md group sm:col-span-2">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-2xl">📜</div>
+                <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  [nom]-grimoire.helioscope.fr
+                </span>
+              </div>
+              <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-400 transition">
+                Grimoire & Recettes de Chimie
+              </h3>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                Bibliothèque de développement argentique, fiches chimies, temps, dilutions et formules de laboratoire.
               </p>
             </div>
 

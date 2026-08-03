@@ -80,18 +80,18 @@ const Login = () => {
             </div>
 
             <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition duration-300">
-              <div className="text-2xl mb-2">✍️</div>
-              <h3 className="font-bold text-amber-400 text-sm mb-1">Blog Hélioscope</h3>
+              <div className="text-2xl mb-2">📜</div>
+              <h3 className="font-bold text-amber-400 text-sm mb-1">Grimoire Recettes</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Rédigez vos récits et actualités dans un éditeur type Notebook minimaliste et puissant.
+                Bibliothèque de formules chimiques, révélateurs, dilutions et procédés de développement.
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition duration-300">
-              <div className="text-2xl mb-2">🌐</div>
-              <h3 className="font-bold text-amber-400 text-sm mb-1">Multi-Domaines SSL</h3>
+              <div className="text-2xl mb-2">✍️</div>
+              <h3 className="font-bold text-amber-400 text-sm mb-1">Blog Hélioscope</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Sous-domaines automatiques sécurisés en HTTPS pour chaque brique de votre écosystème.
+                Rédigez vos récits et actualités dans un éditeur type Notebook minimaliste et puissant.
               </p>
             </div>
           </div>
