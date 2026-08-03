@@ -233,6 +233,7 @@ const LandingPage = () => {
                 poster="/uploads/luminaview.png"
               >
                 <source src="/uploads/presentation.mp4" type="video/mp4" />
+                <source src="/uploads/LuminaView_photographes.mp4" type="video/mp4" />
                 <source src="/uploads/presentation.webm" type="video/webm" />
                 Votre navigateur ne prend pas en charge la lecture vidéo.
               </video>

@@ -4,7 +4,7 @@ import Project from '../models/Project';
 import Post from '../models/Post';
 import UserPage from '../models/UserPage';
 
-const SYSTEM_PREFIXES = ['hero', 'monfond', 'avatar', 'banner', 'luminaview', 'menu', 'favicon', 'logo', 'brand'];
+const SYSTEM_PREFIXES = ['hero', 'monfond', 'avatar', 'banner', 'luminaview', 'menu', 'favicon', 'logo', 'brand', 'presentation'];
 
 function extractFilename(val: string | null | undefined): string | null {
   if (!val) return null;
