@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
   const token = localStorage.getItem('token');
 
   return (
@@ -177,6 +178,14 @@ const LandingPage = () => {
                 </Link>
               </>
             )}
+
+            <button
+              type="button"
+              onClick={() => setVideoModalOpen(true)}
+              className="w-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 py-3.5 px-6 rounded-2xl transition duration-200 text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+            >
+              <span>▶️ Présentation Visuelle LuminaView</span>
+            </button>
           </div>
 
           {/* Key Features Bullet Points */}
@@ -202,6 +211,46 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Video Presentation Modal */}
+      {videoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-md" onClick={() => setVideoModalOpen(false)}>
+          <div className="max-w-4xl w-full bg-gray-900 border border-amber-500/30 rounded-3xl overflow-hidden shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="p-4 sm:p-6 bg-gray-950 border-b border-gray-800 flex justify-between items-center">
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-amber-400 flex items-center gap-2">
+                  🎬 Présentation Visuelle LuminaView
+                </h3>
+                <p className="text-xs text-gray-400 mt-0.5">Découvrez les 5 espaces de l'écosystème en vidéo</p>
+              </div>
+              <button onClick={() => setVideoModalOpen(false)} className="text-gray-400 hover:text-white text-3xl font-bold px-2">&times;</button>
+            </div>
+            <div className="p-4 sm:p-6 flex-1 flex flex-col items-center justify-center bg-black">
+              <video
+                controls
+                autoPlay
+                className="w-full max-h-[65vh] rounded-xl shadow-lg border border-white/10"
+                poster="/uploads/luminaview.png"
+              >
+                <source src="/uploads/presentation.mp4" type="video/mp4" />
+                <source src="/uploads/presentation.webm" type="video/webm" />
+                Votre navigateur ne prend pas en charge la lecture vidéo.
+              </video>
+            </div>
+            <div className="p-4 bg-gray-950 border-t border-gray-800 flex flex-wrap justify-between items-center gap-3 text-xs text-gray-400">
+              <a
+                href="https://notebook.google.com/notebook/b823149d-c4a5-4329-a5b2-04101e042278/artifact/80bc6584-a33b-40ba-a507-171afdcabefa?utm_source=nlm_web_share&utm_medium=google_oo&utm_campaign=art_share_1&utm_content=&utm_smc=nlm_web_share_google_oo_art_share_1_"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-400 hover:underline flex items-center gap-1 font-bold"
+              >
+                🔗 Ouvrir sur Google NotebookLM ↗
+              </a>
+              <button onClick={() => setVideoModalOpen(false)} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-bold">Fermer</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
