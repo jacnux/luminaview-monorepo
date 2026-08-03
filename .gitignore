@@ -29,5 +29,8 @@ caddy_config/
 .idea/
 *.tsbuildinfo
 
-# Test reports
+# Test reports & Dev folders
 test_performance/
+bugs/
+patch/
+documentation/
