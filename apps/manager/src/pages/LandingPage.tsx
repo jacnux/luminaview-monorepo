@@ -37,7 +37,7 @@ const LandingPage = () => {
           </h1>
 
           <p className="text-gray-300 text-base sm:text-lg font-light leading-relaxed mb-10">
-            LuminaView est la plateforme tout-en-un pensée pour les photographes. Un studio privé centralisé, votre portfolio autonome, votre carnet de laboratoire, votre grimoire de chimie et votre journal de création.
+            LuminaView est la plateforme tout-en-un pensée pour les photographes. Un studio privé centralisé, votre portfolio autonome, vos galeries virtuelles Grimoire, votre carnet de laboratoire et votre journal de création.
           </p>
 
           {/* Grid of the 5 Decoupled Spaces */}
@@ -107,7 +107,7 @@ const LandingPage = () => {
               </p>
             </div>
 
-            {/* Space 5: Grimoire de Chimie */}
+            {/* Space 5: Grimoire & Galeries Virtuelles */}
             <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-500/40 transition duration-300 backdrop-blur-md group sm:col-span-2">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-2xl">📜</div>
@@ -116,10 +116,10 @@ const LandingPage = () => {
                 </span>
               </div>
               <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-400 transition">
-                Grimoire & Recettes de Chimie
+                Grimoire & Galeries Virtuelles
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Bibliothèque de développement argentique, fiches chimies, temps, dilutions et formules de laboratoire.
+                Version épurée du portfolio exposant vos albums virtuels (filtres par tags) avec le thème visuel Grimoire.
               </p>
             </div>
 

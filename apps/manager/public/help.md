@@ -132,10 +132,10 @@ Une page parente peut regrouper des sous-pages (niveau n-1 et n-2). La page pare
 
 ---
 
-## 8. Grimoire & Recettes de Chimie
+## 8. Grimoire (Galeries Virtuelles & Thème Épuré)
 
-Le **Grimoire** (`http://localhost:7091` ou `https://[pseudo]-grimoire.helioscope.fr`) répertorie l'ensemble de vos recettes de chimie et formules de développement analogique :
+Le **Grimoire** (`http://localhost:7091` ou `https://[pseudo]-grimoire.helioscope.fr`) est une déclinaison simplifiée et poétique de votre portfolio public :
 
-- **Recettes de Développement** : Révélateur, fixateur, dilution, température, durée et rythme d'agitation.
-- **Notes de Procédés** : Détails techniques pour les bains d'arrêt, l'agent d'imbibition (Wetting Agent), le virage (Sélénium, Or, Sepia) et la conservation.
-- **Archivage & Consultation** : Consultation fluide et archivage de vos formules depuis le Studio et le sous-domaine public Grimoire.
+- **Albums Virtuels & Filtres** : Affiche dynamiquement les albums virtuels configurés dans votre Studio (basés sur des filtres de tags ou de dates).
+- **Affichage Portfolio** : Inclut automatiquement tous les albums virtuels pour lesquels le bouton d'exposition portfolio est activé.
+- **Thème Visuel Grimoire** : Propose un design sobre, fluide et immersif spécifiquement adapté à la présentation de vos séries et galeries virtuelles.

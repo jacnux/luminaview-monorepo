@@ -49,12 +49,13 @@ LuminaView repose sur une architecture découplée organisée autour de 5 pilier
   - Planches-contacts virtuelles correspondant exactement à la taille de vos rouleaux (Vue #1 à #36 ou plan-film).
   - Modes d'intégration iframe épurés (`/embed/carnet-de-routes` et `/embed/project/:slug`) sans barre de navigation pour incruster vos carnets sur n'importe quel site tiers.
 
-### 5. 📜 Grimoire (Recettes de Chimie & Bibliothèque de Développement)
+### 5. 📜 Grimoire (Galeries Virtuelles & Thème Épuré)
 
 - **Adresse Production** : `https://[votre-pseudo]-grimoire.helioscope.fr` _(Port dev local : 7091)_
-- **Rôle** : Votre grimoire de formules et bibliothèque de développement argentique.
-  - Fiches détaillées de recettes de chimie : développeurs, fixateurs, dilutions, temps, températures, rythmes d'agitation et notes de procédés.
-  - Base de connaissances pratique pour archiver, consulter et transmettre vos recettes de développement analogique.
+- **Rôle** : Une déclinaison épurée et simplifiée de votre portfolio.
+  - Exposition dynamique de vos **albums virtuels** (collections filtrées par tags ou dates).
+  - Présentation automatique des albums virtuels ayant l'option portfolio activée.
+  - Utilise le thème visuel **Grimoire**, offrant une esthétique sobre et poétique pour mettre en valeur vos séries thématiques.
 
 ---
 
