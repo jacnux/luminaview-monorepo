@@ -93,6 +93,18 @@ app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
+import path from 'path';
+import fs from 'fs';
+
+app.use('/uploads', (req, res, next) => {
+  if (/\.(jpg|jpeg|png)$/i.test(req.path)) {
+    const webpPath = path.join('/app/uploads', req.path.replace(/\.(jpg|jpeg|png)$/i, '.webp'));
+    if (fs.existsSync(webpPath)) {
+      return res.sendFile(webpPath);
+    }
+  }
+  next();
+});
 app.use('/uploads', express.static('/app/uploads'));
 
 

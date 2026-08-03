@@ -517,3 +517,63 @@ La compilation Docker s'est terminée avec **100% de succès** 🎉. Les 6 image
 4. **Chargement JS & Code Splitting** : Bundles optimisés avec séparation explicite du code vendeur (`vendor.js`).
 
 N'hésitez pas à relancer un test Lighthouse / PageSpeed Insights après avoir redéployé les conteneurs !
+
+# Plan d'optimisation des images médias (WebP & Performance réseau)
+
+Ce plan d'action détaille la mise en place du traitement d'images automatisé au format **WebP**, de la création de miniatures pour les flux/grilles et de l'optimisation du chargement des images sur l'ensemble du monorepo.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Conversion WebP** : La conversion en WebP réduit le poids des images de **30% à 60%** sans perte de qualité perceptible.
+> Les images uploadées seront conservées au format WebP optimisé pour réduire drastiquement l'empreinte réseau sur mobile.
+
+## Open Questions
+
+1. **Images existantes (`/uploads/`)** : Souhaitez-vous qu'on exécute un script de migration ponctuel pour convertir également en WebP les images déjà présentes dans le dossier d'uploads ?
+2. **Miniatures (Thumbnails)** : Souhaitez-vous générer des miniatures WebP (largeur max 800px) pour l'affichage en grille sur le blog et le carnet afin d'éviter de charger l'image pleine résolution en aperçu ?
+
+---
+
+## Proposed Changes
+
+### Backend (`luminaview-core-api`)
+
+#### [MODIFY] [backend/src/routes/photoRoutes.ts](file:///Users/jac/docker/hi3/luminaview-Monorepo/backend/src/routes/photoRoutes.ts)
+
+- Remplacer le rendu JPEG 85 par une compression WebP à qualité 82 (`sharp.webp({ quality: 82, effort: 4 })`).
+- Générer automatiquement une version miniature optimisée (`thumb-<filename>.webp`, max-width 800px) pour l'affichage léger en liste et en grille.
+
+#### [NEW] [backend/src/scripts/convertExistingToWebp.ts](file:///Users/jac/docker/hi3/luminaview-Monorepo/backend/src/scripts/convertExistingToWebp.ts)
+
+- Script d'optimisation ponctuel pour compresser les images JPEG/PNG déjà hébergées dans `./uploads` vers le format WebP.
+
+---
+
+### Frontend Apps (`blog`, `chambrenoire`, `portfolio`, `grimoire`)
+
+#### [MODIFY] [apps/blog/src/pages/blog/PostList.tsx](file:///Users/jac/docker/hi3/luminaview-Monorepo/apps/blog/src/pages/blog/PostList.tsx)
+
+- Utiliser la version miniature WebP pour la grille des articles.
+- Ajouter les attributs `loading="lazy"` et `decoding="async"` sur les cartes d'articles secondaires.
+
+#### [MODIFY] [apps/chambrenoire/src/pages/CarnetDeRoutesPage.tsx](file:///Users/jac/docker/hi3/luminaview-Monorepo/apps/chambrenoire/src/pages/CarnetDeRoutesPage.tsx)
+
+- Utiliser les miniatures WebP pour l'affichage en grille du carnet de routes.
+- Conserver l'image haute définition uniquement lors de l'ouverture de la Lightbox / Vue plein écran.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+
+- Compiler le backend : `cd backend && npm run build`
+- Valider qu'un upload d'image produit bien le fichier `.webp` et sa miniature `.webp`.
+
+### Manual Verification
+
+- Tester un upload d'image dans l'interface `luminaview.fr/dashboard`.
+- Vérifier dans l'inspecteur réseau du navigateur que l'image transférée sur `jac-blog` ou `jac-carnet` est bien au format `.webp` avec un poids réduit d'au moins 40%.

@@ -258,22 +258,21 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
     let totalFreed = 0;
 
     for (const photo of photos) {
-      const filePath = path.join(__dirname, '../../uploads', photo.filename);
+      const baseName = path.parse(photo.filename).name;
+      const extensions = ['.webp', '.jpg', '.jpeg', '.png'];
       let fileSize = photo.size || 0;
 
-      if (!fileSize && fs.existsSync(filePath)) {
-        fileSize = fs.statSync(filePath).size;
+      for (const ext of extensions) {
+        const p = path.join(__dirname, '../../uploads', baseName + ext);
+        const thumbP = path.join(__dirname, '../../uploads', `thumb-${baseName}${ext}`);
+        if (!fileSize && fs.existsSync(p)) {
+          fileSize = fs.statSync(p).size;
+        }
+        try { if (fs.existsSync(p)) fs.unlinkSync(p); } catch {}
+        try { if (fs.existsSync(thumbP)) fs.unlinkSync(thumbP); } catch {}
       }
 
       totalFreed += fileSize;
-
-      if (fs.existsSync(filePath)) {
-        try {
-          fs.unlinkSync(filePath);
-        } catch (fileError) {
-          console.error(`Erreur suppression fichier ${photo.filename}:`, fileError);
-        }
-      }
     }
 
     await Photo.deleteMany({ albumId: album._id, userId: req.user.userId });

@@ -285,16 +285,35 @@ router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Re
           ]);
         }
 
-        await sharpChain.jpeg({ quality: 85 }).toFile(outputPath);
+        const parsed = path.parse(file.filename);
+        const webpFilename = `${parsed.name}.webp`;
+        const finalWebpPath = path.join(__dirname, '../../uploads', webpFilename);
+        const thumbWebpPath = path.join(__dirname, '../../uploads', `thumb-${webpFilename}`);
+
+        // Conversion image HD WebP (82% qualité, effort 4)
+        await sharpChain.webp({ quality: 82, effort: 4 }).toFile(outputPath);
 
         if (fs.existsSync(outputPath)) {
-          fs.renameSync(outputPath, inputPath);
+          fs.renameSync(outputPath, finalWebpPath);
+          if (inputPath !== finalWebpPath && fs.existsSync(inputPath)) {
+            try { fs.unlinkSync(inputPath); } catch {}
+          }
         } else {
-          throw new Error(`Sharp n'a pas produit le fichier : ${outputPath}`);
+          throw new Error(`Sharp n'a pas produit le fichier WebP : ${outputPath}`);
+        }
+
+        // Génération miniature WebP 800px (qualité 78) pour grilles/flux
+        try {
+          await sharp(finalWebpPath)
+            .resize(800, null, { fit: 'inside', withoutEnlargement: true })
+            .webp({ quality: 78 })
+            .toFile(thumbWebpPath);
+        } catch (thumbErr) {
+          console.error('Erreur création miniature WebP:', thumbErr);
         }
 
         if (data.isCover) {
-          coverFilename = file.filename;
+          coverFilename = webpFilename;
         }
 
         const manualTags = normalizeTags(data.tag);
@@ -303,7 +322,7 @@ router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Re
         return {
           albumId,
           userId: req.user.userId,
-          filename: file.filename,
+          filename: webpFilename,
           index: data.index || 0,
           title: normalizeStringField(data.title || exifTitle || file.originalname),
           description: normalizeStringField(data.description || exifDescription || ''),
@@ -458,17 +477,18 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
       return res.status(403).json({ error: 'Interdit' });
     }
 
-    const filePath = path.join(__dirname, '../../uploads', photo.filename);
+    const baseName = path.parse(photo.filename).name;
+    const extensions = ['.webp', '.jpg', '.jpeg', '.png'];
     let fileSize = photo.size || 0;
 
-    if (!fileSize && fs.existsSync(filePath)) {
-      fileSize = fs.statSync(filePath).size;
-    }
-
-    try {
-      fs.unlinkSync(filePath);
-    } catch (err) {
-      console.error('Erreur suppression fichier', err);
+    for (const ext of extensions) {
+      const p = path.join(__dirname, '../../uploads', baseName + ext);
+      const thumbP = path.join(__dirname, '../../uploads', `thumb-${baseName}${ext}`);
+      if (!fileSize && fs.existsSync(p)) {
+        fileSize = fs.statSync(p).size;
+      }
+      try { if (fs.existsSync(p)) fs.unlinkSync(p); } catch {}
+      try { if (fs.existsSync(thumbP)) fs.unlinkSync(thumbP); } catch {}
     }
 
     await Photo.findByIdAndDelete(req.params.id);
