@@ -28,3 +28,6 @@ caddy_config/
 .vscode/
 .idea/
 *.tsbuildinfo
+
+# Test reports
+test_performance/
