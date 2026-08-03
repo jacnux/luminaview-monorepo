@@ -10,9 +10,9 @@
 
 ---
 
-## 🚀 Les 4 Espaces de l'Écosystème .
+## 🚀 Les 5 Espaces de l'Écosystème
 
-LuminaView repose sur une architecture découplée organisée autour de 4 piliers principaux :
+LuminaView repose sur une architecture découplée organisée autour de 5 piliers principaux :
 
 ### 1. ⚡ Lumina Studio (Manager & Administration)
 
@@ -30,7 +30,7 @@ LuminaView repose sur une architecture découplée organisée autour de 4 pilier
 - **Rôle** : Votre vitrine d'exposition principale, autonome et épurée.
   - Thèmes visuels personnalisables (**Hélioscope Classic** avec menu horizontal ou **Artfolio** avec sidebar latérale fixe).
   - Mise en valeur de vos séries photographiques, expositions, biographie et coordonnées.
-  - Liens automatiques vers votre Blog et votre Carnet de route lorsque ces modules sont activés dans votre profil.
+  - Liens automatiques vers votre Blog, votre Carnet de route et votre Grimoire lorsque ces modules sont activés.
 
 ### 3. ✍️ Blog Public (Hélioscope)
 
@@ -48,6 +48,13 @@ LuminaView repose sur une architecture découplée organisée autour de 4 pilier
   - Fiches de chimie et de laboratoire : type de film (135, 120, plan-film 4x5), ISO nominal/exposé, révélateur (produit, dilution, temps, température, agitation, push/pull) et fixateur.
   - Planches-contacts virtuelles correspondant exactement à la taille de vos rouleaux (Vue #1 à #36 ou plan-film).
   - Modes d'intégration iframe épurés (`/embed/carnet-de-routes` et `/embed/project/:slug`) sans barre de navigation pour incruster vos carnets sur n'importe quel site tiers.
+
+### 5. 📜 Grimoire (Recettes de Chimie & Bibliothèque de Développement)
+
+- **Adresse Production** : `https://[votre-pseudo]-grimoire.helioscope.fr` _(Port dev local : 7091)_
+- **Rôle** : Votre grimoire de formules et bibliothèque de développement argentique.
+  - Fiches détaillées de recettes de chimie : développeurs, fixateurs, dilutions, temps, températures, rythmes d'agitation et notes de procédés.
+  - Base de connaissances pratique pour archiver, consulter et transmettre vos recettes de développement analogique.
 
 ---
 

@@ -41,6 +41,7 @@ LuminaView orchestre 4 sous-domaines web distincts avec certificats HTTPS automa
 | **Portfolio (Artfolio)**   | `http://localhost:7090/?user=[pseudo]` | `https://[pseudo].helioscope.fr`        |
 | **Blog (Hélioscope)**      | `http://localhost:7081/?user=[pseudo]` | `https://[pseudo]-blog.helioscope.fr`   |
 | **Carnet (Chambre Noire)** | `http://localhost:7082/?user=[pseudo]` | `https://[pseudo]-carnet.helioscope.fr` |
+| **Grimoire (Recettes)**    | `http://localhost:7091/?user=[pseudo]` | `https://[pseudo]-grimoire.helioscope.fr` |
 
 ---
 
@@ -128,3 +129,13 @@ Dans **Mes Pages**, vous pouvez créer et organiser vos contenus sous les rubriq
 ### Relations Parent / Enfant (`parentPageId`) :
 
 Une page parente peut regrouper des sous-pages (niveau n-1 et n-2). La page parente affiche automatiquement les cartes de ses pages filles sous forme d'index avec leurs images de couverture (`coverImage`).
+
+---
+
+## 8. Grimoire & Recettes de Chimie
+
+Le **Grimoire** (`http://localhost:7091` ou `https://[pseudo]-grimoire.helioscope.fr`) répertorie l'ensemble de vos recettes de chimie et formules de développement analogique :
+
+- **Recettes de Développement** : Révélateur, fixateur, dilution, température, durée et rythme d'agitation.
+- **Notes de Procédés** : Détails techniques pour les bains d'arrêt, l'agent d'imbibition (Wetting Agent), le virage (Sélénium, Or, Sepia) et la conservation.
+- **Archivage & Consultation** : Consultation fluide et archivage de vos formules depuis le Studio et le sous-domaine public Grimoire.
