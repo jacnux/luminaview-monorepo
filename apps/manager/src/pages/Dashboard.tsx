@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../utils/api';
 import EditAlbumModal from '../components/EditAlbumModal';
+import { getAppUrl } from '../utils/urls';
 
 type ViewMode = 'grid' | 'list';
 
@@ -92,11 +93,13 @@ const IconList = () => (
 
 const AlbumCardGrid = ({
   album,
+  username,
   onEdit,
   onDelete,
   onShare,
   onToggleVisibility,
   onToggleFeatured,
+  onToggleGrimoire,
 }: any) => (
   <div className="bg-white/10 dark:bg-gray-800/60 backdrop-blur-lg border border-white/20 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden hover:bg-white/20 dark:hover:bg-gray-700/60 transition transform hover:-translate-y-1 flex flex-col">
     <div className="aspect-square w-full bg-black/20 dark:bg-gray-900 flex items-center justify-center overflow-hidden">
@@ -128,7 +131,7 @@ const AlbumCardGrid = ({
         >
           Voir l'album
         </Link>
-        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
           <button
             onClick={() => onToggleVisibility(album._id, album.isPublic)}
             className={`text-xs font-bold uppercase tracking-wide transition ${
@@ -137,19 +140,37 @@ const AlbumCardGrid = ({
           >
             {album.isPublic !== false ? '👁️ Public' : '🔒 Privé'}
           </button>
-          <button
-            onClick={() => onToggleFeatured(album._id, album.isFeatured)}
-            title={
-              album.isFeatured
-                ? 'Retirer du portfolio'
-                : 'Mettre en avant sur le portfolio'
-            }
-            className={`text-xs font-bold uppercase tracking-wide transition ${
-              album.isFeatured ? 'text-yellow-400' : 'text-gray-500'
-            }`}
-          >
-            {album.isFeatured ? '⭐ Portfolio' : '☆ Portfolio'}
-          </button>
+
+          {album.isVirtual && (
+            <>
+              <button
+                type="button"
+                onClick={() => onToggleFeatured(album._id, album.isFeatured)}
+                title={album.isFeatured ? 'Affiché dans Nouveautés (Portfolio)' : 'Masqué de Nouveautés'}
+                className={`text-[11px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-lg border transition flex items-center gap-1 ${
+                  album.isFeatured
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm'
+                    : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
+                }`}
+              >
+                <span>{album.isFeatured ? '⭐' : '☆'}</span> Nouveautés
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onToggleGrimoire(album._id, album.isGrimoire)}
+                title={album.isGrimoire ? 'Affiché sur le Portfolio Grimoire' : 'Masqué de Grimoire'}
+                className={`text-[11px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-lg border transition flex items-center gap-1 ${
+                  album.isGrimoire
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
+                    : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
+                }`}
+              >
+                <span>{album.isGrimoire ? '📜' : '📄'}</span> Grimoire
+              </button>
+            </>
+          )}
+
           <button
             onClick={() => onEdit(album)}
             className="text-indigo-300 hover:text-indigo-100 font-medium text-sm transition"
@@ -178,10 +199,12 @@ const AlbumCardGrid = ({
 
 const AlbumCardList = ({
   album,
+  username,
   onEdit,
   onDelete,
   onShare,
   onToggleFeatured,
+  onToggleGrimoire,
 }: any) => (
   <div className="bg-white/5 dark:bg-gray-800/40 backdrop-blur border border-white/10 dark:border-gray-700 rounded-xl p-4 flex items-center gap-4 hover:bg-white/10 transition group">
     <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-black/20">
@@ -221,6 +244,37 @@ const AlbumCardList = ({
       >
         Voir
       </Link>
+
+      {album.isVirtual && (
+        <>
+          <button
+            type="button"
+            onClick={() => onToggleFeatured(album._id, album.isFeatured)}
+            title={album.isFeatured ? 'Affiché dans Nouveautés' : 'Masqué de Nouveautés'}
+            className={`text-xs font-bold uppercase px-2 py-1 rounded border transition flex items-center gap-1 ${
+              album.isFeatured
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
+            }`}
+          >
+            <span>{album.isFeatured ? '⭐' : '☆'}</span> Nouveautés
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onToggleGrimoire(album._id, album.isGrimoire)}
+            title={album.isGrimoire ? 'Affiché sur Grimoire' : 'Masqué de Grimoire'}
+            className={`text-xs font-bold uppercase px-2 py-1 rounded border transition flex items-center gap-1 ${
+              album.isGrimoire
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
+            }`}
+          >
+            <span>{album.isGrimoire ? '📜' : '📄'}</span> Grimoire
+          </button>
+        </>
+      )}
+
       <button
         onClick={() => onEdit(album)}
         className="text-indigo-300 hover:text-indigo-100 text-sm"
@@ -235,15 +289,6 @@ const AlbumCardList = ({
           Part.
         </button>
       )}
-      <button
-        onClick={() => onToggleFeatured(album._id, album.isFeatured)}
-        title={album.isFeatured ? 'Retirer du portfolio' : 'Mettre en avant'}
-        className={`text-xs font-bold uppercase transition ${
-          album.isFeatured ? 'text-yellow-400' : 'text-gray-500'
-        }`}
-      >
-        {album.isFeatured ? '⭐' : '☆'}
-      </button>
       <button
         onClick={() => onDelete(album)}
         className="text-red-300 hover:text-red-100 text-sm"
@@ -459,6 +504,23 @@ const Dashboard = () => {
     }
   };
 
+  const toggleGrimoire = async (id: string) => {
+    try {
+      await api.patch(`/albums/${id}/toggle-grimoire`);
+      setAlbums(prev =>
+        prev.map(a => {
+          if (a._id === id) {
+            const currentActive = a.isGrimoire !== false;
+            return { ...a, isGrimoire: !currentActive };
+          }
+          return a;
+        })
+      );
+    } catch {
+      alert('Erreur modification état Grimoire');
+    }
+  };
+
   const filteredAlbums = albums.filter(a => {
     const matchesTab = isGalleries ? a.isVirtual === true : a.isVirtual !== true;
     if (!matchesTab) return false;
@@ -480,6 +542,7 @@ const Dashboard = () => {
     onShare: setSharingAlbum,
     onToggleVisibility: toggleVisibility,
     onToggleFeatured: toggleFeatured,
+    onToggleGrimoire: toggleGrimoire,
   };
 
   if (loading) {
@@ -602,12 +665,14 @@ const Dashboard = () => {
                 <AlbumCardGrid
                   key={album._id}
                   album={album}
+                  username={user.name}
                   {...albumActions}
                 />
               ) : (
                 <AlbumCardList
                   key={album._id}
                   album={album}
+                  username={user.name}
                   {...albumActions}
                 />
               )

@@ -10,8 +10,9 @@ const AlbumSchema = new mongoose.Schema({
   // --- Context d'application ---
   appContext: { type: String, enum: ['LUMINAVIEW', 'CHAMBRE_NOIRE', 'BOTH'], default: 'BOTH' },
 
-  // --- NOUVEAU : Pour le Portfolio ---
+  // --- NOUVEAU : Pour le Portfolio & Grimoire ---
   isFeatured: { type: Boolean, default: false },
+  isGrimoire: { type: Boolean, default: false },
   coverImage: String, // Stocke le filename de la couverture (ex: "1772987727758.jpg")
 
   // --- Champs pour les albums virtuels ---

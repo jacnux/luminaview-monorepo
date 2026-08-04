@@ -46,7 +46,7 @@ const App: React.FC = () => {
     const fetchPortfolio = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`/api/albums/portfolio/${USERNAME}`);
+        const res = await axios.get(`/api/albums/portfolio/${USERNAME}?theme=grimoire`);
         setProfile(res.data.user || null);
         setAlbums(res.data.albums || []);
       } catch (err: any) {

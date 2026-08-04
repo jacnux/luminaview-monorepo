@@ -148,11 +148,26 @@ router.get('/portfolio/:username', async (req: Request, res: Response) => {
 
     if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
 
-    const albums = await Album.find({
+    const referer = req.headers.referer || '';
+    const isGrimoireReq =
+      req.query.theme === 'grimoire' ||
+      req.query.app === 'grimoire' ||
+      referer.includes('grimoire') ||
+      referer.includes(':7091');
+
+    const filterQuery: any = {
       userId: user._id,
       isPublic: true,
-      isFeatured: true
-    }).sort({ createdAt: -1 });
+      isVirtual: true
+    };
+
+    if (isGrimoireReq) {
+      filterQuery.isGrimoire = true;
+    } else {
+      filterQuery.isFeatured = true;
+    }
+
+    const albums = await Album.find(filterQuery).sort({ createdAt: -1 });
 
     res.json({ user, albums });
   } catch (error) {
@@ -232,6 +247,20 @@ router.patch('/:id/toggle-featured', authenticateToken, async (req: Request, res
     res.json(album);
   } catch (error) {
     res.status(500).json({ error: 'Erreur mise à jour' });
+  }
+});
+
+router.patch('/:id/toggle-grimoire', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const album = await Album.findById(req.params.id);
+    if (!album) return res.status(404).json({ error: 'Album introuvable' });
+    if (album.userId.toString() !== req.user.userId) return res.status(403).json({ error: 'Non autorisé' });
+
+    album.isGrimoire = !album.isGrimoire;
+    await album.save();
+    res.json(album);
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur mise à jour Grimoire' });
   }
 });
 
