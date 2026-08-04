@@ -23,6 +23,7 @@ type DeleteAlbumResponse = {
 
 const getWpShortcode = (id: string) => `[luminaview id="${id}" autostart="true"]`;
 const getPublicLink = (id: string) => `${window.location.origin}/album/${id}?mode=viewer`;
+const getSocialShareLink = (id: string) => `${window.location.origin}/api/albums/${id}/share`;
 
 const formatBytes = (bytes: number = 0) => {
   if (!bytes) return '0 octet';
@@ -318,44 +319,84 @@ const ShareModal = ({
   onClose: () => void;
 }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-    <div className="bg-white/10 dark:bg-gray-800 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl max-w-sm w-full p-6 relative">
+    <div className="bg-white/10 dark:bg-gray-800 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl max-w-sm w-full p-6 relative max-h-[90vh] overflow-y-auto">
       <button
         onClick={onClose}
         className="absolute top-4 right-4 text-gray-300 hover:text-white font-bold text-xl"
       >
         ✕
       </button>
-      <h3 className="text-xl font-bold mb-2 text-white text-center">
+      <h3 className="text-xl font-bold mb-1 text-white text-center">
         Partager l'album
       </h3>
-      <p className="text-gray-300 text-sm mb-6 text-center">{album.title}</p>
+      <p className="text-gray-300 text-sm mb-4 text-center">{album.title}</p>
+
+      {album.coverImage && (
+        <div className="mb-4 flex flex-col items-center">
+          <div className="w-24 h-24 rounded-xl overflow-hidden border border-white/20 shadow-lg bg-black/30">
+            <img
+              src={`/uploads/${album.coverImage.replace(/\.(jpg|jpeg|png)$/i, '.webp')}`}
+              alt="Miniature WebP"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <span className="text-[11px] text-amber-300/80 mt-1 font-medium">📷 Couverture (Format WebP)</span>
+        </div>
+      )}
 
       <div className="space-y-4">
-        {/* Token de partage LuminaIA */}
+        {/* Lien Réseaux (Facebook, WhatsApp, Twitter...) */}
         <div className="bg-white/5 dark:bg-gray-900 p-4 rounded-lg border border-white/10">
-          <label className="block text-sm font-bold text-white mb-2">
-            Token LuminaIA
+          <label className="block text-sm font-bold text-white mb-1">
+            🌐 Lien Réseaux (Facebook, WhatsApp...)
           </label>
+          <p className="text-[11px] text-gray-400 mb-2">
+            Génère la vignette de couverture WebP et le titre sur les réseaux sociaux.
+          </p>
           <div className="flex gap-2">
             <input
               readOnly
-              value={album._id}
-              className="flex-1 bg-black/20 text-white text-xs p-2 rounded border border-white/10 font-mono"
+              value={getSocialShareLink(album._id)}
+              className="flex-1 bg-black/20 text-white text-xs p-2 rounded border border-white/10"
             />
             <button
               onClick={() => {
-                copyToClipboard(album._id, 'Token LuminaIA');
+                copyToClipboard(getSocialShareLink(album._id), 'Lien Réseaux');
                 onClose();
               }}
-              className="bg-yellow-600 hover:bg-yellow-500 text-white px-3 py-2 rounded text-xs font-bold transition"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-xs font-bold transition"
             >
               Copier
             </button>
           </div>
         </div>
 
+        {/* Lien Public direct (Viewer) */}
         <div className="bg-white/5 dark:bg-gray-900 p-4 rounded-lg border border-white/10">
-          <label className="block text-sm font-bold text-white mb-2">
+          <label className="block text-sm font-bold text-white mb-1">
+            🔗 Lien Direct (Viewer)
+          </label>
+          <div className="flex gap-2">
+            <input
+              readOnly
+              value={getPublicLink(album._id)}
+              className="flex-1 bg-black/20 text-white text-xs p-2 rounded border border-white/10"
+            />
+            <button
+              onClick={() => {
+                copyToClipboard(getPublicLink(album._id), 'Lien Direct');
+                onClose();
+              }}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded text-xs font-bold transition"
+            >
+              Copier
+            </button>
+          </div>
+        </div>
+
+        {/* Shortcode WordPress */}
+        <div className="bg-white/5 dark:bg-gray-900 p-4 rounded-lg border border-white/10">
+          <label className="block text-sm font-bold text-white mb-1">
             Pour WordPress
           </label>
           <div className="flex gap-2">
@@ -376,22 +417,23 @@ const ShareModal = ({
           </div>
         </div>
 
+        {/* Token LuminaIA */}
         <div className="bg-white/5 dark:bg-gray-900 p-4 rounded-lg border border-white/10">
-          <label className="block text-sm font-bold text-white mb-2">
-            Lien Public (Réseaux)
+          <label className="block text-sm font-bold text-white mb-1">
+            Token LuminaIA
           </label>
           <div className="flex gap-2">
             <input
               readOnly
-              value={getPublicLink(album._id)}
-              className="flex-1 bg-black/20 text-white text-xs p-2 rounded border border-white/10"
+              value={album._id}
+              className="flex-1 bg-black/20 text-white text-xs p-2 rounded border border-white/10 font-mono"
             />
             <button
               onClick={() => {
-                copyToClipboard(getPublicLink(album._id), 'Lien Public');
+                copyToClipboard(album._id, 'Token LuminaIA');
                 onClose();
               }}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-xs font-bold transition"
+              className="bg-yellow-600 hover:bg-yellow-500 text-white px-3 py-2 rounded text-xs font-bold transition"
             >
               Copier
             </button>

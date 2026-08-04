@@ -175,6 +175,59 @@ router.get('/portfolio/:username', async (req: Request, res: Response) => {
   }
 });
 
+router.get('/:id/share', async (req: Request, res: Response) => {
+  try {
+    const album = await Album.findById(req.params.id);
+    if (!album || !album.isPublic) {
+      return res.status(404).send('Album non trouvé ou privé');
+    }
+
+    const host = req.headers.host || req.hostname;
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+    const baseUrl = `${protocol}://${host}`;
+
+    let coverUrl = '';
+    if (album.coverImage) {
+      const webpCover = album.coverImage.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+      coverUrl = `${baseUrl}/uploads/${webpCover}`;
+    }
+
+    const viewerUrl = `${baseUrl}/album/${album._id}?mode=viewer`;
+    const title = album.title || 'Album photo LuminaView';
+    const description = album.description || 'Découvrez cet album photo sur LuminaView';
+
+    const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>${title}</title>
+  <meta name="description" content="${description}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${description}">
+  ${coverUrl ? `<meta property="og:image" content="${coverUrl}">
+  <meta property="og:image:secure_url" content="${coverUrl}">
+  <meta property="og:image:type" content="image/webp">
+  <meta name="twitter:image" content="${coverUrl}">` : ''}
+  <meta property="og:url" content="${viewerUrl}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:description" content="${description}">
+  <meta http-equiv="refresh" content="0;url=${viewerUrl}">
+</head>
+<body>
+  <p>Redirection vers <a href="${viewerUrl}">${title}</a>...</p>
+  <script>window.location.href = "${viewerUrl}";</script>
+</body>
+</html>`;
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
+  } catch (error) {
+    res.status(500).send('Erreur lors de la génération du lien de partage');
+  }
+});
+
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const album = await Album.findById(req.params.id);

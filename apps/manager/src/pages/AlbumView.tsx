@@ -338,11 +338,14 @@ const AlbumView = () => {
   };
 
   const handleShare = (photo: any) => {
-    const shareUrl = `${window.location.origin}/uploads/${photo.filename}`;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(shareUrl).then(() => alert('Lien copié !'));
+    const webpFilename = photo.filename ? photo.filename.replace(/\.(jpg|jpeg|png)$/i, '.webp') : '';
+    const shareUrl = `${window.location.origin}/uploads/${webpFilename}`;
+    if (navigator.share) {
+      navigator.share({ title: photo.title || 'Photo', url: shareUrl }).catch(console.error);
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl).then(() => alert('Lien photo WebP copié !'));
     } else {
-      alert('Lien: ' + shareUrl);
+      alert('Lien WebP : ' + shareUrl);
     }
   };
 
