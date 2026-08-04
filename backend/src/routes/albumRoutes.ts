@@ -182,8 +182,13 @@ router.get('/:id/share', async (req: Request, res: Response) => {
       return res.status(404).send('Album non trouvé ou privé');
     }
 
-    const host = req.headers.host || req.hostname;
-    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+    const forwardedHost = req.headers['x-forwarded-host'] as string;
+    const rawHost = forwardedHost || req.headers.host || req.hostname;
+    const cleanHost = rawHost.split(',')[0].trim().replace(/:[0-9]+$/, '');
+    const host = (cleanHost.includes('localhost') || cleanHost.includes('backend')) ? 'luminaview.fr' : cleanHost;
+
+    const forwardedProto = req.headers['x-forwarded-proto'] as string;
+    const protocol = (forwardedProto || (req.secure ? 'https' : 'https')).split(',')[0].trim();
     const baseUrl = `${protocol}://${host}`;
 
     let coverUrl = '';

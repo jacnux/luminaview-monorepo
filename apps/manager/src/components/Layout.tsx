@@ -38,8 +38,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const showBackgroundImage = theme === 'dark' && isAuthenticatedArea;
 
   const isEmbedRoute = location.pathname.startsWith('/embed/');
+  const searchParams = new URLSearchParams(location.search);
+  const isViewer = searchParams.get('mode') === 'viewer';
 
-  if (isEmbedRoute) {
+  if (isEmbedRoute || isViewer) {
     return <>{children}</>;
   }
 
