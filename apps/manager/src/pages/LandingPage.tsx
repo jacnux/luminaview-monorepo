@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../utils/api';
 
 const LandingPage = () => {
   const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [presentationVideo, setPresentationVideo] = useState<string>('');
   const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    api.get('/users/public/profile').then(res => {
+      if (res.data?.presentationVideo) {
+        setPresentationVideo(res.data.presentationVideo);
+      }
+    }).catch(() => {});
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col lg:flex-row relative overflow-hidden font-sans">
@@ -37,9 +47,13 @@ const LandingPage = () => {
             Donnez une dimension <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-500">éditoriale & technique</span> à vos créations.
           </h1>
 
-          <p className="text-gray-300 text-base sm:text-lg font-light leading-relaxed mb-10">
+          <p className="text-gray-300 text-base sm:text-lg font-light leading-relaxed mb-4">
             LuminaView est la plateforme tout-en-un pensée pour les photographes. Un studio privé centralisé, votre portfolio autonome, vos galeries virtuelles Grimoire, votre carnet de laboratoire et votre journal de création.
           </p>
+
+          <blockquote className="text-xs sm:text-sm text-amber-300/80 italic font-serif mb-10 pl-4 border-l-2 border-amber-500/40">
+            « La photographie est un secret sur un secret. Plus elle vous en dit, moins vous en savez. » — Diane Arbus
+          </blockquote>
 
           {/* Grid of the 5 Decoupled Spaces */}
           <div className="grid sm:grid-cols-2 gap-4">
@@ -179,13 +193,15 @@ const LandingPage = () => {
               </>
             )}
 
-            <button
-              type="button"
-              onClick={() => setVideoModalOpen(true)}
-              className="w-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 py-3.5 px-6 rounded-2xl transition duration-200 text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2"
-            >
-              <span>▶️ Présentation Visuelle LuminaView</span>
-            </button>
+            {presentationVideo && (
+              <button
+                type="button"
+                onClick={() => setVideoModalOpen(true)}
+                className="w-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 py-3.5 px-6 rounded-2xl transition duration-200 text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+              >
+                <span>▶️ Présentation Visuelle LuminaView</span>
+              </button>
+            )}
           </div>
 
           {/* Key Features Bullet Points */}
@@ -213,7 +229,7 @@ const LandingPage = () => {
       </div>
 
       {/* Video Presentation Modal */}
-      {videoModalOpen && (
+      {videoModalOpen && presentationVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-md" onClick={() => setVideoModalOpen(false)}>
           <div className="max-w-4xl w-full bg-gray-900 border border-amber-500/30 rounded-3xl overflow-hidden shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="p-4 sm:p-6 bg-gray-950 border-b border-gray-800 flex justify-between items-center">
@@ -221,32 +237,25 @@ const LandingPage = () => {
                 <h3 className="text-lg sm:text-xl font-bold text-amber-400 flex items-center gap-2">
                   🎬 Présentation Visuelle LuminaView
                 </h3>
-                <p className="text-xs text-gray-400 mt-0.5">Découvrez les 5 espaces de l'écosystème en vidéo</p>
+                <p className="text-xs text-gray-400 mt-0.5">Découvrez les 5 espaces de l'écosystème en vidéo officielle</p>
               </div>
               <button onClick={() => setVideoModalOpen(false)} className="text-gray-400 hover:text-white text-3xl font-bold px-2">&times;</button>
             </div>
             <div className="p-4 sm:p-6 flex-1 flex flex-col items-center justify-center bg-black">
-              <video
-                controls
-                autoPlay
-                className="w-full max-h-[65vh] rounded-xl shadow-lg border border-white/10"
-                poster="/uploads/luminaview.png"
-              >
-                <source src="/uploads/presentation.mp4" type="video/mp4" />
-                <source src="/uploads/LuminaView_photographes.mp4" type="video/mp4" />
-                <source src="/uploads/presentation.webm" type="video/webm" />
-                Votre navigateur ne prend pas en charge la lecture vidéo.
-              </video>
+              <div className="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-white/10 bg-black flex items-center justify-center">
+                <video
+                  controls
+                  preload="metadata"
+                  className="w-full h-full object-contain"
+                  poster="/uploads/luminaview.png"
+                >
+                  <source src={`/uploads/${presentationVideo}`} type="video/mp4" />
+                  Votre navigateur ne prend pas en charge la lecture vidéo.
+                </video>
+              </div>
             </div>
             <div className="p-4 bg-gray-950 border-t border-gray-800 flex flex-wrap justify-between items-center gap-3 text-xs text-gray-400">
-              <a
-                href="https://notebook.google.com/notebook/b823149d-c4a5-4329-a5b2-04101e042278/artifact/80bc6584-a33b-40ba-a507-171afdcabefa?utm_source=nlm_web_share&utm_medium=google_oo&utm_campaign=art_share_1&utm_content=&utm_smc=nlm_web_share_google_oo_art_share_1_"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-amber-400 hover:underline flex items-center gap-1 font-bold"
-              >
-                🔗 Ouvrir sur Google NotebookLM ↗
-              </a>
+              
               <button onClick={() => setVideoModalOpen(false)} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-bold">Fermer</button>
             </div>
           </div>

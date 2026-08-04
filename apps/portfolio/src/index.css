@@ -286,14 +286,15 @@ body {
 .gallery-cover-container {
   aspect-ratio: 3/2;
   overflow: hidden;
-  background-color: #f0f0f0;
+  background-color: var(--color-bg-alt, #12161f);
   position: relative;
 }
 
 .gallery-cover {
   width: 100%;
   height: 100%;
-  object-cover: cover;
+  object-fit: cover;
+  object-position: center;
   transition: transform 0.5s ease;
 }
 

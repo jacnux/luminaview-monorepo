@@ -76,7 +76,7 @@ router.put('/me', authenticateToken, upload.fields([
 ]), async (req: Request, res: Response) => {
   try {
     // Récupération des champs textuels
-    const { bio, showcaseAlbums, portfolioIntro, servicesDescription, tagline, blogTheme, chambreNoireUrl, hasBlog, hasCarnet, carnetIntro } = req.body;
+    const { bio, showcaseAlbums, portfolioIntro, servicesDescription, tagline, blogTheme, chambreNoireUrl, hasBlog, hasCarnet, carnetIntro, presentationVideo } = req.body;
 
     const updates: any = {};
 
@@ -90,6 +90,7 @@ router.put('/me', authenticateToken, upload.fields([
     if (tagline !== undefined) updates.tagline = tagline;
     if (blogTheme !== undefined) updates.blogTheme = blogTheme;
     if (chambreNoireUrl !== undefined) updates.chambreNoireUrl = chambreNoireUrl;
+    if (presentationVideo !== undefined) updates.presentationVideo = presentationVideo;
     if (hasBlog !== undefined) updates.hasBlog = hasBlog === 'true' || hasBlog === true;
     if (hasCarnet !== undefined) updates.hasCarnet = hasCarnet === 'true' || hasCarnet === true;
     // ---------------------------
@@ -125,15 +126,15 @@ router.get('/public/profile', async (req: Request, res: Response) => {
     let user = null;
     if (userParam) {
       user = await User.findOne({ name: new RegExp('^' + userParam + '$', 'i') })
-        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription presentationVideo');
     }
     if (!user) {
       user = await User.findOne({ isAdmin: true })
-        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription presentationVideo');
     }
     if (!user) {
       user = await User.findOne()
-        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription presentationVideo');
     }
 
     if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
@@ -150,10 +151,10 @@ router.get('/public/:id', async (req: Request, res: Response) => {
     let user = null;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
       user = await User.findById(id)
-        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription presentationVideo');
     } else {
       user = await User.findOne({ name: new RegExp('^' + id + '$', 'i') })
-        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription');
+        .select('name bio avatar bannerImage tagline blogTheme createdAt chambreNoireUrl hasBlog hasCarnet carnetIntro portfolioIntro servicesDescription presentationVideo');
     }
 
     if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });

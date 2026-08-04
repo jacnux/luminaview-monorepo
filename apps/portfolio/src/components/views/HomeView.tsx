@@ -79,6 +79,7 @@ const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
                       src={`/uploads/${album.coverImage}`} 
                       alt={album.title} 
                       className="gallery-cover" 
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                     />
                   ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#e5e7eb', color: '#9ca3af' }}>📷</div>

@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema({
   blogTheme: { type: String, default: 'classic' },
   chambreNoireUrl: { type: String, default: '' },
   carnetIntro: { type: String, default: '' },
+  presentationVideo: { type: String, default: '' },
 
   bannerImage: {
     type: String

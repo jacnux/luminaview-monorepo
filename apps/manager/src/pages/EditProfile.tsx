@@ -13,6 +13,7 @@ const EditProfile: React.FC = () => {
   const [tagline, setTagline] = useState('');
   const [blogTheme, setBlogTheme] = useState('classic');
   const [chambreNoireUrl, setChambreNoireUrl] = useState('');
+  const [presentationVideo, setPresentationVideo] = useState('');
   const [hasBlog, setHasBlog] = useState(false);
   const [hasCarnet, setHasCarnet] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -40,6 +41,7 @@ const EditProfile: React.FC = () => {
       setTagline(profileRes.data.tagline || '');
       setBlogTheme(profileRes.data.blogTheme || 'classic');
       setChambreNoireUrl(profileRes.data.chambreNoireUrl || '');
+      setPresentationVideo(profileRes.data.presentationVideo || '');
       setHasBlog(!!profileRes.data.hasBlog);
       setHasCarnet(!!profileRes.data.hasCarnet);
       setCurrentAvatar(profileRes.data.avatar || '');
@@ -61,6 +63,7 @@ const EditProfile: React.FC = () => {
       formData.append('tagline', tagline);
       formData.append('blogTheme', blogTheme);
       formData.append('chambreNoireUrl', chambreNoireUrl);
+      formData.append('presentationVideo', presentationVideo);
       formData.append('hasBlog', String(hasBlog));
       formData.append('hasCarnet', String(hasCarnet));
       if (avatarFile) formData.append('avatar', avatarFile);
@@ -408,6 +411,20 @@ const EditProfile: React.FC = () => {
                     className={inputClass}
                     placeholder="Ex. Capturer l'essence de l'instant..."
                   />
+                </div>
+
+                <div>
+                  <label className={labelClass}>🎬 Vidéo de présentation (Optionnel)</label>
+                  <input
+                    type="text"
+                    value={presentationVideo}
+                    onChange={e => setPresentationVideo(e.target.value)}
+                    className={inputClass}
+                    placeholder="Ex. presentation.mp4 (Laissez vide pour masquer le bouton vidéo)"
+                  />
+                  <p className="text-[11px] text-gray-500 mt-1">
+                    Saisissez le nom du fichier vidéo situé dans /uploads (ex. presentation.mp4). Si ce champ est vide, le bouton de présentation vidéo est masqué sur tout le site.
+                  </p>
                 </div>
 
                 <div>
