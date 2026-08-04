@@ -90,7 +90,7 @@ router.put('/me', authenticateToken, upload.fields([
     if (tagline !== undefined) updates.tagline = tagline;
     if (blogTheme !== undefined) updates.blogTheme = blogTheme;
     if (chambreNoireUrl !== undefined) updates.chambreNoireUrl = chambreNoireUrl;
-    if (presentationVideo !== undefined) updates.presentationVideo = presentationVideo;
+    if (presentationVideo !== undefined && (req as any).user?.isAdmin) updates.presentationVideo = presentationVideo;
     if (hasBlog !== undefined) updates.hasBlog = hasBlog === 'true' || hasBlog === true;
     if (hasCarnet !== undefined) updates.hasCarnet = hasCarnet === 'true' || hasCarnet === true;
     // ---------------------------

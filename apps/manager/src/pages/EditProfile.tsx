@@ -6,6 +6,7 @@ import api from '../utils/api';
 
 const EditProfile: React.FC = () => {
   const { updateUser } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
   const [bio, setBio] = useState('');
   const [portfolioIntro, setPortfolioIntro] = useState('');
   const [carnetIntro, setCarnetIntro] = useState('');
@@ -34,6 +35,7 @@ const EditProfile: React.FC = () => {
   const fetchData = async () => {
     try {
       const profileRes = await api.get('/users/me');
+      setIsAdmin(!!profileRes.data.isAdmin);
       setBio(profileRes.data.bio || '');
       setPortfolioIntro(profileRes.data.portfolioIntro || '');
       setCarnetIntro(profileRes.data.carnetIntro || '');
@@ -63,7 +65,9 @@ const EditProfile: React.FC = () => {
       formData.append('tagline', tagline);
       formData.append('blogTheme', blogTheme);
       formData.append('chambreNoireUrl', chambreNoireUrl);
-      formData.append('presentationVideo', presentationVideo);
+      if (isAdmin) {
+        formData.append('presentationVideo', presentationVideo);
+      }
       formData.append('hasBlog', String(hasBlog));
       formData.append('hasCarnet', String(hasCarnet));
       if (avatarFile) formData.append('avatar', avatarFile);
@@ -413,19 +417,21 @@ const EditProfile: React.FC = () => {
                   />
                 </div>
 
-                <div>
-                  <label className={labelClass}>🎬 Vidéo de présentation (Optionnel)</label>
-                  <input
-                    type="text"
-                    value={presentationVideo}
-                    onChange={e => setPresentationVideo(e.target.value)}
-                    className={inputClass}
-                    placeholder="Ex. presentation.mp4 (Laissez vide pour masquer le bouton vidéo)"
-                  />
-                  <p className="text-[11px] text-gray-500 mt-1">
-                    Saisissez le nom du fichier vidéo situé dans /uploads (ex. presentation.mp4). Si ce champ est vide, le bouton de présentation vidéo est masqué sur tout le site.
-                  </p>
-                </div>
+                {isAdmin && (
+                  <div>
+                    <label className={labelClass}>🎬 Vidéo de présentation (Administrateur uniquement)</label>
+                    <input
+                      type="text"
+                      value={presentationVideo}
+                      onChange={e => setPresentationVideo(e.target.value)}
+                      className={inputClass}
+                      placeholder="Ex. presentation.mp4 (Laissez vide pour masquer le bouton vidéo)"
+                    />
+                    <p className="text-[11px] text-gray-500 mt-1">
+                      Saisissez le nom du fichier vidéo situé dans /uploads (ex. presentation.mp4). Champ réservé à l'administrateur du système.
+                    </p>
+                  </div>
+                )}
 
                 <div>
                   <label className={labelClass}>Biographie (À propos) (8 lignes visibles)</label>
