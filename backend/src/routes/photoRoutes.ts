@@ -131,11 +131,7 @@ router.get('/public/standalone', async (req: Request, res: Response) => {
     const userParam = req.query.user as string;
     let query: any = {
       projectId: null,
-      $or: [
-        { isAnalog: true },
-        { 'exposureSettings.aperture': { $ne: '' } },
-        { 'exposureSettings.shutterSpeed': { $ne: '' } }
-      ],
+      showOnBlog: true,
       appContext: { $in: ['CHAMBRE_NOIRE', 'BOTH'] }
     };
 
