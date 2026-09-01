@@ -1163,8 +1163,9 @@ const CarnetRoutesManager: React.FC = () => {
           {/* ========================================================================= */}
           {activeTab === 'photos' && (() => {
             const filteredPhotos = myPhotos.filter(p =>
-              (p.title || 'Sans titre').toLowerCase().includes(searchPhotoQuery.toLowerCase()) ||
-              (p.filename || '').toLowerCase().includes(searchPhotoQuery.toLowerCase())
+              p.showOnBlog &&
+              ((p.title || 'Sans titre').toLowerCase().includes(searchPhotoQuery.toLowerCase()) ||
+              (p.filename || '').toLowerCase().includes(searchPhotoQuery.toLowerCase()))
             );
             return (
               <div className="space-y-6">
@@ -1181,13 +1182,9 @@ const CarnetRoutesManager: React.FC = () => {
                   </div>
                 </div>
 
-                {myPhotos.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500 bg-white/5 rounded-2xl border border-white/5">
-                    Aucune photo importée.
-                  </div>
-                ) : filteredPhotos.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500 bg-white/5 rounded-2xl border border-white/5">
-                    Aucune photo ne correspond à votre recherche.
+                {filteredPhotos.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400 bg-white/5 rounded-2xl border border-white/5">
+                    Aucune photo publiée sur le carnet. Activez le bouton "Public (Carnet)" sur une photo pour l'afficher dans cette liste.
                   </div>
                 ) : (
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
