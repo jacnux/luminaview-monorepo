@@ -15,10 +15,11 @@ router.get('/public/all', async (req: Request, res: Response) => {
     const userParam = req.query.user as string;
     let query: any = { isPublished: true };
     if (userParam) {
-      const user = await User.findOne({ name: new RegExp('^' + userParam + '$', 'i') });
-      if (user) {
-        query.userId = user._id;
+      const user = await User.findOne({ name: new RegExp('^' + userParam.trim() + '$', 'i') });
+      if (!user) {
+        return res.json([]);
       }
+      query.userId = user._id;
     }
     const projects = await Project.find(query).sort({ createdAt: -1 });
     res.json(projects);
@@ -30,7 +31,16 @@ router.get('/public/all', async (req: Request, res: Response) => {
 // Détail d'un projet public avec ses photos (jointures matériels/pellicules)
 router.get('/public/project/:slug', async (req: Request, res: Response) => {
   try {
-    const project = await Project.findOne({ slug: req.params.slug, isPublished: true });
+    const userParam = req.query.user as string;
+    let query: any = { slug: req.params.slug, isPublished: true };
+    if (userParam) {
+      const user = await User.findOne({ name: new RegExp('^' + userParam.trim() + '$', 'i') });
+      if (user) {
+        query.userId = user._id;
+      }
+    }
+
+    const project = await Project.findOne(query);
     if (!project) return res.status(404).json({ error: 'Projet introuvable ou privé' });
 
     const photos = await Photo.find({ projectId: project._id })

@@ -128,7 +128,8 @@ import User from '../models/User';
 
 router.get('/public/standalone', async (req: Request, res: Response) => {
   try {
-    const photos = await Photo.find({
+    const userParam = req.query.user as string;
+    let query: any = {
       projectId: null,
       $or: [
         { isAnalog: true },
@@ -136,7 +137,17 @@ router.get('/public/standalone', async (req: Request, res: Response) => {
         { 'exposureSettings.shutterSpeed': { $ne: '' } }
       ],
       appContext: { $in: ['CHAMBRE_NOIRE', 'BOTH'] }
-    })
+    };
+
+    if (userParam) {
+      const user = await User.findOne({ name: new RegExp('^' + userParam.trim() + '$', 'i') });
+      if (!user) {
+        return res.json([]);
+      }
+      query.userId = user._id;
+    }
+
+    const photos = await Photo.find(query)
       .populate('gearCameraId')
       .populate('gearLensId')
       .populate('filmId')

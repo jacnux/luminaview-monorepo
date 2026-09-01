@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { getUserSlug } from '../utils/domain';
 
 const ProjectDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -15,7 +16,8 @@ const ProjectDetailPage: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    fetch(`/api/projects/public/project/${slug}`)
+    const userSlug = getUserSlug();
+    fetch(`/api/projects/public/project/${slug}?user=${userSlug}`)
       .then(res => {
         if (!res.ok) throw new Error('Impossible de charger ce projet');
         return res.json();
