@@ -98,15 +98,36 @@ import path from 'path';
 import fs from 'fs';
 
 app.use('/uploads', (req, res, next) => {
+  // 1. Fallback transparent si une miniature thumb-* n'existe pas (anciens uploads) -> renvoyer l'original
+  if (req.path.startsWith('/thumb-')) {
+    const thumbPath = path.join('/app/uploads', req.path);
+    if (!fs.existsSync(thumbPath)) {
+      const origWebpPath = path.join('/app/uploads', req.path.replace(/^\/thumb-/, '/'));
+      if (fs.existsSync(origWebpPath)) {
+        return res.sendFile(origWebpPath, { maxAge: '7d' });
+      }
+      const origJpgPath = origWebpPath.replace(/\.webp$/i, '.jpg');
+      if (fs.existsSync(origJpgPath)) {
+        return res.sendFile(origJpgPath, { maxAge: '7d' });
+      }
+    }
+  }
+
+  // 2. Si requête pour .jpg/.png, servir la version .webp si disponible
   if (/\.(jpg|jpeg|png)$/i.test(req.path)) {
     const webpPath = path.join('/app/uploads', req.path.replace(/\.(jpg|jpeg|png)$/i, '.webp'));
     if (fs.existsSync(webpPath)) {
-      return res.sendFile(webpPath);
+      return res.sendFile(webpPath, { maxAge: '7d' });
     }
   }
   next();
 });
-app.use('/uploads', express.static('/app/uploads'));
+
+app.use('/uploads', express.static('/app/uploads', {
+  maxAge: '7d',
+  etag: true,
+  lastModified: true
+}));
 
 
 // ============================================================

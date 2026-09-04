@@ -44,8 +44,10 @@ const GalleryPage: React.FC = () => {
             <div className="h-56 overflow-hidden relative bg-gray-100 dark:bg-slate-950">
               {page.coverImage ? (
                 <img 
-                  src={`/uploads/${page.coverImage}`} 
+                  src={`/uploads/thumb-${page.coverImage}`} 
                   alt={page.title} 
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" 
                 />
               ) : (

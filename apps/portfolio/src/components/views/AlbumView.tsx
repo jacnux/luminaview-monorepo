@@ -56,10 +56,11 @@ const AlbumView: React.FC<AlbumViewProps> = ({
               variants={itemVariants}
             >
               <img 
-                src={`/uploads/${photo.filename}`} 
+                src={`/uploads/thumb-${photo.filename}`} 
                 alt={photo.title} 
                 className="masonry-img" 
                 loading="lazy"
+                decoding="async"
               />
               <div className="masonry-overlay">
                 <h4>{photo.title || 'Sans titre'}</h4>

@@ -263,8 +263,10 @@ const CarnetDeRoutesPage: React.FC = () => {
                 <div className="aspect-[4/3] w-full bg-black/5 dark:bg-white/5 relative overflow-hidden">
                   {project.coverImage ? (
                     <img
-                      src={`/uploads/${project.coverImage}`}
+                      src={`/uploads/thumb-${project.coverImage}`}
                       alt={project.name}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
@@ -334,8 +336,10 @@ const CarnetDeRoutesPage: React.FC = () => {
                 {/* Photo container */}
                 <div className="aspect-[4/3] w-full bg-black/5 dark:bg-white/5 relative overflow-hidden">
                   <img
-                    src={`/uploads/${photo.filename}`}
+                    src={`/uploads/thumb-${photo.filename}`}
                     alt={photo.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />

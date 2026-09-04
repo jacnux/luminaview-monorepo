@@ -66,8 +66,10 @@ const PageView: React.FC<PageViewProps> = ({
                 <div className="gallery-cover-container">
                   {child.coverImage ? (
                     <img 
-                      src={`/uploads/${child.coverImage}`} 
+                      src={`/uploads/thumb-${child.coverImage}`} 
                       alt={child.title} 
+                      loading="lazy"
+                      decoding="async"
                       className="gallery-cover" 
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                     />
@@ -141,10 +143,11 @@ const PageView: React.FC<PageViewProps> = ({
                               variants={itemVariants}
                             >
                               <img 
-                                src={`/uploads/${photo.filename}`} 
+                                src={`/uploads/thumb-${photo.filename}`} 
                                 alt={photo.title} 
                                 className="masonry-img" 
                                 loading="lazy"
+                                decoding="async"
                               />
                               <div className="masonry-overlay">
                                 <h4>{photo.title || 'Sans titre'}</h4>

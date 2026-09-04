@@ -693,8 +693,10 @@ const CarnetRoutesManager: React.FC = () => {
                     <>
                       <div className="flex-1 w-full bg-black/50 relative overflow-hidden flex items-center justify-center">
                         <img
-                          src={`/uploads/${associatedPhoto.filename}`}
+                          src={`/uploads/thumb-${associatedPhoto.filename}`}
                           alt={associatedPhoto.title}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover"
                         />
                         {/* Overlay au hover */}
@@ -834,7 +836,7 @@ const CarnetRoutesManager: React.FC = () => {
                           }}
                           className="bg-black/40 rounded-lg overflow-hidden aspect-square border border-white/5 hover:border-yellow-500 cursor-pointer relative group"
                         >
-                          <img src={`/uploads/${p.filename}`} alt={p.title} className="w-full h-full object-cover" />
+                          <img src={`/uploads/thumb-${p.filename}`} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col justify-end p-1.5 transition duration-150">
                             <p className="text-[9px] truncate w-full text-white font-medium">{p.title}</p>
                             {p.tags && p.tags.length > 0 && (
@@ -1193,8 +1195,10 @@ const CarnetRoutesManager: React.FC = () => {
                         <div className="space-y-4">
                           <div className="aspect-[4/3] w-full bg-black/40 rounded-xl overflow-hidden relative">
                           <img
-                            src={`/uploads/${p.filename}`}
+                            src={`/uploads/thumb-${p.filename}`}
                             alt={p.title || 'Sans titre'}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover"
                           />
                           <button

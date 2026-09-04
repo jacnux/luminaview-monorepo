@@ -637,7 +637,9 @@ const AlbumView = () => {
               viewMode === 'grid' ? (
                 <div key={photo._id} className="relative aspect-square bg-black/20 rounded-xl overflow-hidden group cursor-pointer" onClick={() => setLightboxIndex(idx)}>
                   <img
-                    src={`/uploads/${photo.filename}`}
+                    src={`/uploads/thumb-${photo.filename}`}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                     alt={photo.title}
                   />
@@ -666,7 +668,7 @@ const AlbumView = () => {
               ) : (
                 <div key={photo._id} className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-3 flex items-center gap-4 hover:bg-white/10 transition group">
                   <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-black/20 cursor-pointer" onClick={() => setLightboxIndex(idx)}>
-                    <img src={`/uploads/${photo.filename}`} alt="Thumb" className="w-full h-full object-cover" />
+                    <img src={`/uploads/thumb-${photo.filename}`} loading="lazy" decoding="async" alt="Thumb" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setLightboxIndex(idx)}>
                     <h3 className="font-bold text-white truncate">{photo.title}</h3>

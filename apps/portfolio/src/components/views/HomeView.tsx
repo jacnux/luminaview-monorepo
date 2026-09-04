@@ -76,8 +76,10 @@ const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
                 <div className="gallery-cover-container">
                   {album.coverImage ? (
                     <img 
-                      src={`/uploads/${album.coverImage}`} 
+                      src={`/uploads/thumb-${album.coverImage}`} 
                       alt={album.title} 
+                      loading="lazy"
+                      decoding="async"
                       className="gallery-cover" 
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                     />
