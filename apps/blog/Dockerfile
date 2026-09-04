@@ -23,6 +23,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 RUN echo 'server { \
     listen 80; \
     server_name localhost; \
+    client_max_body_size 100M; \
     location / { \
         root /usr/share/nginx/html; \
         index index.html index.htm; \

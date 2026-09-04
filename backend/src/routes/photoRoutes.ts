@@ -47,7 +47,7 @@ const fileFilter = (req: any, file: any, cb: any) => {
   }
 };
 
-const maxFileSize = parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10) * 1024 * 1024;
+const maxFileSize = parseInt(process.env.MAX_FILE_SIZE_MB || '100', 10) * 1024 * 1024;
 const uploadMulter = multer({
   storage,
   fileFilter,
