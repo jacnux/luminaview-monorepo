@@ -79,4 +79,31 @@ describe('Photos API (/api/photos)', () => {
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBe(2);
   });
+
+  it('should save and return complete digital photo EXIF and exposure metadata via GET /albums/photos/:id', async () => {
+    const photo = await Photo.create({
+      albumId,
+      userId,
+      filename: 'digital-photo.webp',
+      title: 'Digital Landscape',
+      isAnalog: false,
+      exposureSettings: {
+        aperture: 'f/2,8',
+        shutterSpeed: '1/1000s',
+        iso: 100,
+        focalLength: '24 mm'
+      }
+    });
+
+    const res = await request(app).get(`/api/albums/photos/${albumId}`);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    const fetched = res.body.find((p: any) => p._id === photo._id.toString());
+    expect(fetched).toBeDefined();
+    expect(fetched.exposureSettings).toBeDefined();
+    expect(fetched.exposureSettings.aperture).toBe('f/2,8');
+    expect(fetched.exposureSettings.shutterSpeed).toBe('1/1000s');
+    expect(fetched.exposureSettings.iso).toBe(100);
+    expect(fetched.exposureSettings.focalLength).toBe('24 mm');
+  });
 });

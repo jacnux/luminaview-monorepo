@@ -111,7 +111,6 @@ router.get('/photos/:id', async (req: Request, res: Response) => {
     }
 
     let photos;
-    const fieldsToSelect = 'filename title description createdAt index tags';
 
     if (album.virtualFilter === 'tag' && album.filterValue) {
       const rawTags = album.filterValue.split(',').map(t => t.trim()).filter(t => t);
@@ -128,9 +127,9 @@ router.get('/photos/:id', async (req: Request, res: Response) => {
       const validAlbums = await Album.find({ userId: album.userId }).select('_id').lean();
       query.albumId = { $in: validAlbums.map(a => a._id) };
 
-      photos = await Photo.find(query).select(fieldsToSelect).sort({ createdAt: -1 });
+      photos = await Photo.find(query).sort({ createdAt: -1 });
     } else {
-      photos = await Photo.find({ albumId: req.params.id }).select(fieldsToSelect).sort({ createdAt: -1 });
+      photos = await Photo.find({ albumId: req.params.id }).sort({ createdAt: -1 });
     }
 
     res.json(photos);

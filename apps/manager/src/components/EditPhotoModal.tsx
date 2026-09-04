@@ -139,13 +139,26 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
 
       setProjectId(photo.projectId || '');
       setIsAnalog(photo.isAnalog || false);
-      setGearCameraId(photo.gearCameraId || '');
-      setGearLensId(photo.gearLensId || '');
-      setFilmId(photo.filmId || '');
+      setGearCameraId(
+        typeof photo.gearCameraId === 'object' && photo.gearCameraId?._id
+          ? photo.gearCameraId._id
+          : photo.gearCameraId || ''
+      );
+      setGearLensId(
+        typeof photo.gearLensId === 'object' && photo.gearLensId?._id
+          ? photo.gearLensId._id
+          : photo.gearLensId || ''
+      );
+      setFilmId(
+        typeof photo.filmId === 'object' && photo.filmId?._id
+          ? photo.filmId._id
+          : photo.filmId || ''
+      );
       setFilmFrameNumber(photo.filmFrameNumber !== null && photo.filmFrameNumber !== undefined ? String(photo.filmFrameNumber) : '');
       setShowOnBlog(photo.showOnBlog || false);
 
-      setAperture(photo.exposureSettings?.aperture || '');
+      const expAperture = photo.exposureSettings?.aperture || '';
+      setAperture(expAperture ? expAperture.replace('.', ',') : '');
       setShutterSpeed(photo.exposureSettings?.shutterSpeed || '');
       setIso(
         photo.exposureSettings?.iso !== null && photo.exposureSettings?.iso !== undefined
@@ -462,9 +475,12 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
                   className="w-full bg-black/30 border border-white/10 rounded-lg p-1.5 text-white text-[11px] text-center"
                 >
                   <option value="">Sélectionner</option>
-                  {['f/1,4', 'f/1,7', 'f/1,8', 'f/2,8', 'f/3,5', 'f/4', 'f/5,6', 'f/6,3', 'f/8', 'f/11', 'f/16', 'f/22', 'f/32', 'f/45', 'f/64'].map(val => (
+                  {['f/1,2', 'f/1,4', 'f/1,7', 'f/1,8', 'f/2', 'f/2,4', 'f/2,8', 'f/3,5', 'f/4', 'f/4,5', 'f/5', 'f/5,6', 'f/6,3', 'f/8', 'f/9', 'f/10', 'f/11', 'f/13', 'f/14', 'f/16', 'f/18', 'f/20', 'f/22', 'f/32', 'f/45', 'f/64'].map(val => (
                     <option key={val} value={val}>{val}</option>
                   ))}
+                  {aperture && !['f/1,2', 'f/1,4', 'f/1,7', 'f/1,8', 'f/2', 'f/2,4', 'f/2,8', 'f/3,5', 'f/4', 'f/4,5', 'f/5', 'f/5,6', 'f/6,3', 'f/8', 'f/9', 'f/10', 'f/11', 'f/13', 'f/14', 'f/16', 'f/18', 'f/20', 'f/22', 'f/32', 'f/45', 'f/64'].includes(aperture) && (
+                    <option value={aperture}>{aperture}</option>
+                  )}
                 </select>
               </div>
               <div>
@@ -475,9 +491,12 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
                   className="w-full bg-black/30 border border-white/10 rounded-lg p-1.5 text-white text-[11px] text-center"
                 >
                   <option value="">Sélectionner</option>
-                  {['B', '8s', '4s', '2s', '1s', '1/2s', '1/4s', '1/8s', '1/15s', '1/30s', '1/50s', '1/60s', '1/125s', '1/250s', '1/400s', '1/500s'].map(val => (
+                  {['B', '30s', '15s', '8s', '4s', '2s', '1s', '1/2s', '1/4s', '1/8s', '1/15s', '1/30s', '1/50s', '1/60s', '1/80s', '1/100s', '1/125s', '1/160s', '1/200s', '1/250s', '1/320s', '1/400s', '1/500s', '1/640s', '1/800s', '1/1000s', '1/1250s', '1/1600s', '1/2000s', '1/4000s', '1/8000s'].map(val => (
                     <option key={val} value={val}>{val}</option>
                   ))}
+                  {shutterSpeed && !['B', '30s', '15s', '8s', '4s', '2s', '1s', '1/2s', '1/4s', '1/8s', '1/15s', '1/30s', '1/50s', '1/60s', '1/80s', '1/100s', '1/125s', '1/160s', '1/200s', '1/250s', '1/320s', '1/400s', '1/500s', '1/640s', '1/800s', '1/1000s', '1/1250s', '1/1600s', '1/2000s', '1/4000s', '1/8000s'].includes(shutterSpeed) && (
+                    <option value={shutterSpeed}>{shutterSpeed}</option>
+                  )}
                 </select>
               </div>
               <div>
@@ -498,13 +517,10 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
                   className="w-full bg-black/30 border border-white/10 rounded-lg p-1.5 text-white text-[11px] text-center"
                 >
                   <option value="">Sélectionner</option>
-                  <option value="75 mm">75 mm</option>
-                  <option value="90 mm">90 mm</option>
-                  <option value="150 mm">150 mm</option>
-                  <option value="180 mm">180 mm</option>
-                  <option value="210 mm">210 mm</option>
-                  {/* Option fallback si la valeur existante n'est pas dans la liste */}
-                  {focalLength && !['75 mm', '90 mm', '150 mm', '180 mm', '210 mm'].includes(focalLength) && (
+                  {['14 mm', '18 mm', '24 mm', '28 mm', '35 mm', '50 mm', '70 mm', '75 mm', '85 mm', '90 mm', '105 mm', '135 mm', '150 mm', '180 mm', '200 mm', '210 mm', '300 mm', '400 mm', '600 mm'].map(val => (
+                    <option key={val} value={val}>{val}</option>
+                  ))}
+                  {focalLength && !['14 mm', '18 mm', '24 mm', '28 mm', '35 mm', '50 mm', '70 mm', '75 mm', '85 mm', '90 mm', '105 mm', '135 mm', '150 mm', '180 mm', '200 mm', '210 mm', '300 mm', '400 mm', '600 mm'].includes(focalLength) && (
                     <option value={focalLength}>{focalLength}</option>
                   )}
                 </select>

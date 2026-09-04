@@ -13,6 +13,7 @@ import mongoose from 'mongoose';
 import Photo from '../models/Photo';
 import Album from '../models/Album';
 import User from '../models/User';
+import Gear from '../models/Gear';
 import { authenticateToken } from '../middleware/auth';
 import exifr from 'exifr';
 
@@ -192,6 +193,7 @@ router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Re
       return res.status(403).json({ error: 'Espace insuffisant.' });
     }
 
+    const userGears = await Gear.find({ userId: req.user.userId });
     let coverFilename: string | null = null;
 
     const savedPhotos = await Promise.all(
@@ -206,12 +208,15 @@ router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Re
         let exifDescription = '';
         let exifExposureSettings: any = {};
         let exifCaptureDate: Date | undefined = undefined;
+        let detectedCameraId: any = undefined;
+        let detectedLensId: any = undefined;
 
         try {
           const exif = await exifr.parse(inputPath, {
             iptc: true,
             xmp: true,
             tiff: true,
+            exif: true,
           });
 
           if (exif) {
@@ -235,12 +240,82 @@ router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Re
               aperture: fNumber ? `f/${fNumber}`.replace('.', ',') : undefined,
               shutterSpeed: exposureTime ? formatShutterSpeed(exposureTime) : undefined,
               iso: iso ? Number(iso) : undefined,
-              focalLength: focalLength ? `${focalLength} mm` : undefined,
+              focalLength: focalLength ? `${Math.round(focalLength)} mm` : undefined,
             };
 
             const captureDateRaw = (exif as any).DateTimeOriginal ?? (exif as any).CreateDate;
             if (captureDateRaw) {
               exifCaptureDate = new Date(captureDateRaw);
+            }
+
+            // Détection du boîtier (Make / Model)
+            const cameraMake = (exif as any).Make ? normalizeStringField((exif as any).Make) : '';
+            const cameraModel = (exif as any).Model ? normalizeStringField((exif as any).Model) : '';
+
+            if (cameraModel || cameraMake) {
+              const brand = cameraMake || 'Inconnue';
+              const model = cameraModel || brand;
+
+              let match = userGears.find(g =>
+                g.type === 'camera' && (
+                  (model && g.model && model.toLowerCase().includes(g.model.toLowerCase())) ||
+                  (model && g.model && g.model.toLowerCase().includes(model.toLowerCase()))
+                )
+              );
+
+              if (!match && model) {
+                try {
+                  match = await Gear.create({
+                    userId: req.user.userId,
+                    type: 'camera',
+                    brand,
+                    model,
+                    format: 'Numérique'
+                  });
+                  userGears.push(match);
+                } catch {
+                  match = await Gear.findOne({ userId: req.user.userId, brand, model }) || undefined;
+                }
+              }
+
+              if (match) {
+                detectedCameraId = match._id;
+              }
+            }
+
+            // Détection de l'objectif (LensModel / Lens)
+            const rawLens = (exif as any).LensModel ?? (exif as any).Lens;
+            const lensModel = rawLens ? normalizeStringField(rawLens) : '';
+            const lensMake = (exif as any).LensMake ? normalizeStringField((exif as any).LensMake) : cameraMake;
+
+            if (lensModel) {
+              const brand = lensMake || 'Inconnue';
+
+              let matchLens = userGears.find(g =>
+                g.type === 'lens' && (
+                  (lensModel && g.model && lensModel.toLowerCase().includes(g.model.toLowerCase())) ||
+                  (lensModel && g.model && g.model.toLowerCase().includes(lensModel.toLowerCase()))
+                )
+              );
+
+              if (!matchLens) {
+                try {
+                  matchLens = await Gear.create({
+                    userId: req.user.userId,
+                    type: 'lens',
+                    brand,
+                    model: lensModel,
+                    format: 'Numérique'
+                  });
+                  userGears.push(matchLens);
+                } catch {
+                  matchLens = await Gear.findOne({ userId: req.user.userId, brand, model: lensModel }) || undefined;
+                }
+              }
+
+              if (matchLens) {
+                detectedLensId = matchLens._id;
+              }
             }
           }
         } catch (e) {
@@ -335,6 +410,9 @@ router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Re
           description: normalizeStringField(data.description || exifDescription || ''),
           tags: tagsArray,
           size: file.size,
+          isAnalog: false,
+          gearCameraId: detectedCameraId,
+          gearLensId: detectedLensId,
           exposureSettings: Object.keys(exifExposureSettings).length > 0 ? exifExposureSettings : undefined,
           captureDate: exifCaptureDate
         };
