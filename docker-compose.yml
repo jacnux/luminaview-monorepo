@@ -4,6 +4,7 @@ services:
   mongo:
     image: mongo:4.4
     container_name: luminaview-mongo
+    restart: unless-stopped
     volumes:
       - ./data/mongo:/data/db
     networks:
@@ -12,6 +13,7 @@ services:
   backend:
     build: ./backend
     container_name: luminaview-backend
+    restart: unless-stopped
     ports:
       - "7099:3000"
     volumes:
@@ -36,6 +38,7 @@ services:
       context: .
       dockerfile: ./apps/manager/Dockerfile
     container_name: luminaview-manager
+    restart: unless-stopped
     ports:
       - "7080:80"
     depends_on:
@@ -48,6 +51,7 @@ services:
       context: .
       dockerfile: ./apps/blog/Dockerfile
     container_name: luminaview-blog
+    restart: unless-stopped
     ports:
       - "7081:80"
     depends_on:
@@ -60,6 +64,7 @@ services:
       context: .
       dockerfile: ./apps/portfolio/Dockerfile
     container_name: luminaview-portfolio
+    restart: unless-stopped
     ports:
       - "7090:80"
     depends_on:
@@ -72,6 +77,7 @@ services:
       context: .
       dockerfile: ./apps/chambrenoire/Dockerfile
     container_name: luminaview-chambrenoire
+    restart: unless-stopped
     ports:
       - "7082:80"
     depends_on:
@@ -84,6 +90,7 @@ services:
       context: .
       dockerfile: ./apps/grimoire/Dockerfile
     container_name: luminaview-grimoire
+    restart: unless-stopped
     ports:
       - "7091:80"
     depends_on:
@@ -95,6 +102,7 @@ services:
   mailhog:
     image: mailhog/mailhog
     container_name: luminaview-mailhog
+    restart: unless-stopped
     ports:
       - "1025:1025"
       - "8025:8025"

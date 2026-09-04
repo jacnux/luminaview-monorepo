@@ -187,10 +187,12 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
       .map(t => t.trim())
       .filter(t => t);
 
-    // Vérifier si des surcharges de développement ont été saisies
-    const hasSurcharges = developer || dilution || time || temperature || agitation || pushPull || fixerBrand || fixerDilution || fixerTime;
+    // Si argentique, vérifier si des surcharges de développement ont été saisies
+    const hasSurcharges = isAnalog && Boolean(
+      developer || dilution || time || temperature || agitation || pushPull || fixerBrand || fixerDilution || fixerTime
+    );
 
-    const computedIsAnalog = isAnalog || Boolean(filmId) || Boolean(hasSurcharges);
+    const isPhotoAnalog = Boolean(isAnalog);
 
     onSave({
       title,
@@ -198,11 +200,11 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
       tags: tagsArray,
       index: Number(index),
       projectId: projectId || null,
-      isAnalog: computedIsAnalog,
+      isAnalog: isPhotoAnalog,
       gearCameraId: gearCameraId || null,
       gearLensId: gearLensId || null,
-      filmId: filmId || null,
-      filmFrameNumber: filmFrameNumber ? Number(filmFrameNumber) : null,
+      filmId: isPhotoAnalog ? (filmId || null) : null,
+      filmFrameNumber: isPhotoAnalog && filmFrameNumber ? Number(filmFrameNumber) : null,
       showOnBlog,
       exposureSettings: {
         aperture,
@@ -214,19 +216,21 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
         ndFilter,
         lensHood
       },
-      developmentSettings: hasSurcharges
-        ? {
-            developer,
-            dilution,
-            time,
-            temperature,
-            agitation,
-            pushPull,
-            fixerBrand,
-            fixerDilution,
-            fixerTime
-          }
-        : photo.developmentSettings || undefined,
+      developmentSettings: isPhotoAnalog
+        ? (hasSurcharges
+            ? {
+                developer,
+                dilution,
+                time,
+                temperature,
+                agitation,
+                pushPull,
+                fixerBrand,
+                fixerDilution,
+                fixerTime
+              }
+            : (photo.developmentSettings || null))
+        : null,
       shootingIntent,
       location,
       captureDate: captureDate ? new Date(captureDate) : null,
@@ -334,22 +338,31 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
 
           {/* SECTION 2: PRISE DE VUE */}
           <div className="bg-white/5 p-4 rounded-xl space-y-3">
-            <div className="flex justify-between items-center border-b border-white/5 pb-1">
+            <div className="flex justify-between items-center border-b border-white/5 pb-2">
               <h3 className="text-sm font-bold text-gray-300">📸 Paramètres de Prise de vue</h3>
-              <div className="flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded-lg">
-                <input
-                  type="checkbox"
-                  id="analog-toggle"
-                  checked={isAnalog}
-                  onChange={e => setIsAnalog(e.target.checked)}
-                  className="w-3.5 h-3.5 text-yellow-500 rounded bg-transparent border-white/20 focus:ring-0 cursor-pointer"
-                />
-                <label
-                  htmlFor="analog-toggle"
-                  className="text-xs text-yellow-500 font-bold select-none cursor-pointer"
+              <div className="flex items-center bg-black/40 p-0.5 rounded-lg border border-white/10 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setIsAnalog(false)}
+                  className={`px-2.5 py-1 rounded-md font-semibold transition ${
+                    !isAnalog
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  ⚡ Numérique
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAnalog(true)}
+                  className={`px-2.5 py-1 rounded-md font-semibold transition ${
+                    isAnalog
+                      ? 'bg-amber-600 text-white shadow-sm'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
                 >
                   🎞️ Argentique
-                </label>
+                </button>
               </div>
             </div>
 
