@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Typecheck & Build Monorepo
+    name: Lint, Test & Build Monorepo
     runs-on: ubuntu-latest
 
     steps:
@@ -27,27 +27,52 @@ jobs:
           cache: 'npm'
 
       - name: Install Monorepo Dependencies
-        run: npm install
+        run: npm ci || npm install
 
       - name: Build Shared Packages
         run: |
-          npm run build --workspace=packages/types || true
-          npm run build --workspace=packages/ui || true
+          npm run build --workspace=packages/types
+          npm run build --workspace=packages/ui
+
+      - name: Run Automated Tests
+        run: npm run test
 
       - name: Typecheck Applications
         run: |
-          npx tsc --noEmit --workspace=apps/grimoire || true
-          npx tsc --noEmit --workspace=apps/portfolio || true
+          npm run typecheck --workspaces --if-present
+
+      - name: Build All Applications
+        run: |
+          npm run build --workspaces --if-present
 
   deploy-production:
     name: Deploy to Production (Jac-server)
     needs: build-and-test
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Log Deployment Success Notice
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH to Jac-server
+        uses: appleboy/ssh-action@v1.0.3
+        if: env.SSH_HOST != ''
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH || '~/luminaview-Monorepo' }}
+            git pull origin main
+            docker compose -f docker-compose.prod.yml build
+            docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml ps
+
+      - name: Log Deployment Notice
         run: |
-          echo "✅ Release ${{ github.ref_name }} successfully validated by CI/CD pipeline."
-          echo "🚀 Pull and build command to run on production server (Jac-server):"
-          echo "git pull origin main && docker compose -f docker-compose.prod.yml up -d --build"
+          echo "✅ Release ${{ github.ref_name }} validée et prête pour le déploiement."
