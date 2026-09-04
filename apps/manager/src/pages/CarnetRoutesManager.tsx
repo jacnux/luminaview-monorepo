@@ -3,21 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import EditPhotoModal from '../components/EditPhotoModal';
-
-const parseDevTime = (timeStr: string) => {
-  let min = 0;
-  let sec = 0;
-  if (timeStr) {
-    const minMatch = timeStr.match(/(\d+)\s*(m|min|mn)/i);
-    const secMatch = timeStr.match(/(\d+)\s*(s|sec)/i);
-    if (minMatch) min = parseInt(minMatch[1], 10);
-    if (secMatch) sec = parseInt(secMatch[1], 10);
-    if (!minMatch && !secMatch && /^\d+$/.test(timeStr.trim())) {
-      min = parseInt(timeStr.trim(), 10);
-    }
-  }
-  return { min, sec };
-};
+import { parseDevTime } from '@luminaview/utils';
 
 type TabType = 'projects' | 'photos' | 'gear' | 'films';
 

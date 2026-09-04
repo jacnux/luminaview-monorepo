@@ -13,15 +13,7 @@ interface ProjectDetailViewProps {
   onBack: () => void;
 }
 
-const getPhotoUrl = (photo: any): string => {
-  if (!photo) return '';
-  const path = photo.url || photo.filename || photo.filepath || photo.path;
-  if (!path) return '';
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('/uploads/')) {
-    return path;
-  }
-  return `/uploads/${path}`;
-};
+import { getPhotoUrl } from '@luminaview/utils';
 
 const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, onBack }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);

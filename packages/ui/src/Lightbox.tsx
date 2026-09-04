@@ -23,15 +23,7 @@ const imageVariants = {
   exit: { scale: 0.96, opacity: 0, transition: { duration: 0.2 } },
 };
 
-const getPhotoUrl = (photo: any): string => {
-  if (!photo) return '';
-  const path = photo.url || photo.filename || photo.filepath || photo.path;
-  if (!path) return '';
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('/uploads/')) {
-    return path;
-  }
-  return `/uploads/${path}`;
-};
+import { getPhotoUrl } from '@luminaview/utils';
 
 export const Lightbox: React.FC<LightboxProps> = ({
   photos,

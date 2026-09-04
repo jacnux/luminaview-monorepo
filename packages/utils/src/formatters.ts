@@ -28,6 +28,24 @@ export const formatDateShort = (date: string | Date | null | undefined): string 
 };
 
 /**
+ * Analyse une chaîne de durée de développement (ex: "7m 30s", "8min", "45s") en minutes et secondes
+ */
+export const parseDevTime = (timeStr: string | null | undefined): { min: number; sec: number } => {
+  let min = 0;
+  let sec = 0;
+  if (timeStr) {
+    const minMatch = timeStr.match(/(\d+)\s*(m|min|mn)/i);
+    const secMatch = timeStr.match(/(\d+)\s*(s|sec)/i);
+    if (minMatch) min = parseInt(minMatch[1], 10);
+    if (secMatch) sec = parseInt(secMatch[1], 10);
+    if (!minMatch && !secMatch && /^\d+$/.test(timeStr.trim())) {
+      min = parseInt(timeStr.trim(), 10);
+    }
+  }
+  return { min, sec };
+};
+
+/**
  * Nettoie une chaîne de texte
  */
 export const cleanText = (str: string | null | undefined): string => {
