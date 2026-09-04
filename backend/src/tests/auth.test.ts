@@ -89,6 +89,6 @@ describe('Authentication API (/api/auth)', () => {
       });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe('Identifiants invalides');
+    expect(res.body.error).toBe('Identifiants incorrects');
   });
 });
