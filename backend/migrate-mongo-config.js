@@ -7,10 +7,7 @@ const config = {
   mongodb: {
     url: process.env.MONGO_URI || "mongodb://localhost:27017/luminaview",
     databaseName: process.env.MONGO_DB_NAME || "luminaview",
-    options: {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    }
+    options: {}
   },
   migrationsDir: "src/migrations",
   changelogCollectionName: "changelog",
