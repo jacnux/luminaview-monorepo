@@ -70,7 +70,7 @@ const LandingPage = () => {
                 Lumina Studio
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Tableau de bord privé pour administrer vos albums, galeries virtuelles par tags et interrupteurs On/Off.
+                Tableau de bord privé : Boîte à Idées & concrétisation, albums, galeries par tags et interrupteurs On/Off.
               </p>
             </div>
 
@@ -118,7 +118,7 @@ const LandingPage = () => {
                 Chambre Noire & Carnet
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Mémoire technique de terrain, fiches chimies (135/120/4x5), planches-contacts et intégration iframe.
+                Mémoire de terrain, éclairages flash & continu, chimies (135/120/4x5), planches-contacts et iframe.
               </p>
             </div>
 
@@ -209,6 +209,10 @@ const LandingPage = () => {
             <div className="flex items-center gap-2">
               <span className="text-amber-400">✓</span>
               <span>Sous-domaines & SSL Automatique Caddy</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-amber-400">✓</span>
+              <span>Boîte à Idées & Mémoire technique (Éclairage, Chimie)</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-amber-400">✓</span>

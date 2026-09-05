@@ -1157,7 +1157,7 @@ const CarnetRoutesManager: React.FC = () => {
                     💡 Boîte à Idées Photographiques
                   </h2>
                   <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Notez vos intentions artistiques, moodboards et thématiques avant de les concrétiser en projets.
+                    Notez vos intentions artistiques, inspirations visuelles et thématiques avant de les concrétiser en projets.
                   </p>
                 </div>
                 {!showAddIdea && (
@@ -1274,11 +1274,11 @@ const CarnetRoutesManager: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Markdown Notes / Moodboard */}
+                    {/* Markdown Notes & Intentions */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <label className="block text-xs font-semibold text-yellow-600 dark:text-yellow-400">
-                          📝 Notes & Moodboard (Markdown complet)
+                          📝 Notes & Intentions (Markdown complet)
                         </label>
                         <div className="flex gap-2">
                           <label
@@ -1288,9 +1288,9 @@ const CarnetRoutesManager: React.FC = () => {
                                 ? 'border-yellow-400/30 text-yellow-500/50'
                                 : 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10'
                             }`}
-                            title="Insérer une image de croquis ou moodboard"
+                            title="Insérer une image d'inspiration ou de référence"
                           >
-                            {ideaUploadingImage ? '⏳ Upload...' : '📎 Moodboard / Image'}
+                            {ideaUploadingImage ? '⏳ Upload...' : '📎 Image / Référence'}
                           </label>
                           <input
                             id="idea-image-upload"
@@ -2248,7 +2248,7 @@ const CarnetRoutesManager: React.FC = () => {
                   )}
                 </div>
 
-                {/* Content / Moodboard Area */}
+                {/* Content / Notes & Intentions Area */}
                 <div className="flex-1 overflow-y-auto py-6 pr-2 space-y-6">
                   {viewingIdea.notesMarkdown ? (
                     <div className={`p-6 rounded-2xl border leading-relaxed ${
@@ -2262,7 +2262,7 @@ const CarnetRoutesManager: React.FC = () => {
                     <div className={`text-center py-16 rounded-2xl border italic ${
                       isDark ? 'bg-white/5 border-white/5 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
                     }`}>
-                      Aucune note ou moodboard rédigé pour cette idée.
+                      Aucune note ou intention rédigée pour cette idée.
                     </div>
                   )}
                 </div>

@@ -45,29 +45,45 @@ LuminaView orchestre 4 sous-domaines web distincts avec certificats HTTPS automa
 
 ---
 
-## 4. Chambre Noire & Mémoire de Laboratoire
+## 4. Chambre Noire, Carnets & Boîte à Idées
 
-La section **Carnets / Chambre Noire** vous permet de consigner l'intégralité de votre mémoire technique :
+La section **Carnets / Chambre Noire** vous permet de consigner l'intégralité de votre mémoire technique et de planifier vos créations :
 
-### A. Matériel Photo (Gear)
+### A. 💡 Boîte à Idées Photographiques
+
+1. Dans l'onglet **💡 Boîte à Idées**, notez vos intentions artistiques, inspirations visuelles et thématiques avant de les concrétiser.
+2. Renseignez un titre, des tags thématiques (`#paysage`, `#portrait`, etc.), une date cible/échéance optionnelle et des **notes rédigées en Markdown enrichi** avec insertion d'images de référence.
+3. **Visualisation Agrandie** : Cliquez sur `👁️ Voir` ou sur l'aperçu de la note pour ouvrir une grande fenêtre modale immersive dédiée à la lecture complète de votre idée.
+4. **Concrétisation en 1 Clic** : Cliquez sur `🚀 Concrétiser en Projet` pour convertir automatiquement l'idée en projet photographique actif sans aucune ressaisie.
+
+### B. Matériel Photo & Éclairage (Gear)
 
 1. Cliquez sur **📷 Matériel Photo** puis **Ajouter un matériel**.
-2. Spécifiez le type (Boîtier ou Objectif), la marque, le modèle, le format supporté (_135_, _120_, _plan-film 4x5/9x12_) et le numéro de série facultatif.
-3. Ce matériel sera sélectionnable lors de la saisie de vos photos et pellicules.
+2. Spécifiez le type :
+   - **Boîtier** ou **Objectif** : marque, modèle, formats supportés (_135_, _120_, _plan-film 4x5/9x12_) et numéro de série facultatif.
+   - **Éclairage** : déclinaison en **Flash** ⚡ ou **Lumière continue** ☀️, avec marque, modèle et puissance maximale en Watts.
+3. Ce matériel sera sélectionnable lors de la saisie de vos photos, pellicules et projets.
 
-### B. Rouleaux & Plans-Films (Films)
+### C. Rouleaux & Plans-Films (Films)
 
 1. Cliquez sur **🎞️ Pellicules** puis **Ajouter un film**.
 2. Renseignez la marque (ex: _Kodak_), le type (ex: _Tri-X 400_), la sensibilité nominale (ISO 400), la sensibilité utilisée (ISO 800 si poussé) et le format (_135_, _120_, _plan-film_).
 3. **Paramètres Chimie par Défaut** : Renseignez le révélateur (nom, dilution, temps, température, agitation, push/pull) et le fixateur (nom, dilution, temps). Ces valeurs s'appliqueront automatiquement à toutes les photos liées à cette pellicule.
 
-### C. Planche-Contact Virtuelle
+### D. Planche-Contact Virtuelle
 
 1. Dans la liste des pellicules, cliquez sur une carte de film pour ouvrir sa **Planche-Contact**.
 2. La grille affiche exactement le nombre de cases de la pellicule (ex: 36 vues en 35mm, 12 vues en 120, 1 plan-film).
 3. Cliquez sur **Associer** sur n'importe quelle vue pour :
    - Choisir une photo existante depuis votre **Galerie**.
    - Ou téléverser une nouvelle image directement pour cet emplacement.
+
+### E. Paramètres de Prise de Vue & Éclairage Artificiel
+
+Lors de la saisie des réglages d'une photo :
+- **Lumière Naturelle ou Artificielle** : Si `Artificielle` ou `Flash` est sélectionné, un bloc dédié vous permet de choisir le type d'éclairage (Flash / Lumière continue), de pré-remplir la marque et le modèle depuis votre inventaire matériel, et de renseigner la puissance utilisée (sélecteur normalisé de **`1/256` à `1/1`** ou saisie libre).
+- **Prise de vue** : Boîtier, objectif, ouverture, vitesse, focale, filtre physique et parasoleil.
+- **Argentique** : Pellicule liée et héritage automatique des paramètres de chimie.
 
 ---
 

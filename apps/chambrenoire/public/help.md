@@ -13,21 +13,28 @@ Chambre Noire fonctionne comme le module public de mémoire technique de votre u
 
 ---
 
-## 2. Gérer son Matériel et ses Pellicules (Studio)
+## 2. Gérer son Matériel, ses Pellicules & ses Idées (Studio)
 
-Pour documenter vos prises de vue, vous pouvez ajouter vos boîtiers, objectifs et rouleaux de films dans votre Studio.
+Pour documenter vos prises de vue et préparer vos créations, vous pouvez organiser votre univers dans Lumina Studio :
 
-### A. Inventaire du Matériel (Gear)
+### A. 💡 Boîte à Idées Photographiques
+1. Dans **Carnet & Chambre Noire** > **💡 Boîte à Idées**, notez vos projets en gestation, inspirations visuelles et thématiques.
+2. Ajoutez des tags, une échéance cible et des **notes en Markdown enrichi** avec insertion d'images de référence.
+3. Consultez vos idées dans une **grande fenêtre modale immersive** et concrétisez-les en projet actif en un seul clic.
+
+### B. Inventaire du Matériel & Éclairages (Gear)
 1. Dans le Studio, allez dans **Carnet & Chambre Noire** > **📷 Matériel Photo** puis cliquez sur **Ajouter un matériel**.
-2. Renseignez le type (Boîtier ou Objectif), la marque, le modèle, le format supporté (135, 120, plan-film 4x5, etc.) et le numéro de série facultatif.
+2. Renseignez le type :
+   - **Boîtier** ou **Objectif** : marque, modèle, format supporté (135, 120, plan-film 4x5, etc.) et numéro de série facultatif.
+   - **Éclairage** : Flash ⚡ ou Lumière continue ☀️, marque, modèle et puissance maximale en Watts.
 3. Ce matériel sera disponible pour être associé en un clic à vos photos ou rouleaux.
 
-### B. Suivi des Pellicules & Plans-Films (Films)
+### C. Suivi des Pellicules & Plans-Films (Films)
 1. Allez dans **🎞️ Pellicules** puis cliquez sur **Ajouter un film**.
 2. Renseignez la marque (ex: *Kodak*), le modèle (ex: *Tri-X 400*), la sensibilité nominale (ex: *400*), la sensibilité exposée/utilisée (ex: *800* si vous poussez le film) et le format (135, 120, plan-film).
 3. **Chimie par défaut** : Vous pouvez renseigner le révélateur et le fixateur par défaut pour ce rouleau (nom du produit, dilution, temps, température, agitation, push/pull). Ces informations seront héritées automatiquement pour chaque photo liée à ce rouleau.
 
-### C. Planche-Contact Virtuelle
+### D. Planche-Contact Virtuelle
 1. Cliquez sur une pellicule pour afficher sa **Planche-Contact**.
 2. Chaque case représente une vue (Vue #1 à #36 ou plan-film).
 3. Cliquez sur **Associer** pour lier une photo existante de votre galerie ou téléverser directement une nouvelle vue.
@@ -38,9 +45,9 @@ Pour documenter vos prises de vue, vous pouvez ajouter vos boîtiers, objectifs 
 
 Un **projet** correspond à une série, une sortie photo ou une thématique artistique.
 
-1. Créez un projet dans **Projets** avec un titre, une description (Markdown supporté) et le statut de publication (Public / Masqué).
+1. Créez un projet dans **Projets** (ou concrétisez une idée depuis la **Boîte à Idées**) avec un titre, une description (Markdown supporté) et le statut de publication (Public / Masqué).
 2. Associez vos photos au projet.
-3. Chaque photo du projet peut disposer de ses propres réglages de prise de vue et de laboratoire, ou hériter directement de la pellicule associée.
+3. Chaque photo du projet peut disposer de ses propres réglages de prise de vue, d'éclairage et de laboratoire, ou hériter directement de la pellicule associée.
 
 ---
 
@@ -48,8 +55,9 @@ Un **projet** correspond à une série, une sortie photo ou une thématique arti
 
 Dans un album ou un projet, vous pouvez éditer les métadonnées de chaque cliché :
 
-### Prise de vue
+### Prise de vue & Éclairage
 * **Boîtier & Objectif** : À sélectionner parmi votre matériel enregistré.
+* **Éclairage & Lumière** : Sélectionnez lumière Naturelle ou Artificielle. En lumière artificielle, précisez le type (Flash ou Lumière continue), pré-remplissez depuis votre matériel enregistré et indiquez la puissance utilisée (de **`1/256` à `1/1`**).
 * **Exposition** : Ouverture (ex: *f/8*), Vitesse (ex: *1/125*), Sensibilité spécifique (ex: *400*), Focale utilisée, type de filtre physique (ND, filtre couleur) et présence du parasoleil.
 
 ### Chimie & Labo (Argentique uniquement)

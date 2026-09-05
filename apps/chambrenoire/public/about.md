@@ -14,9 +14,9 @@
 
 Chambre Noire s'organise autour d'une interface publique épurée permettant aux visiteurs de parcourir vos sorties photographiques. Pour chaque projet et chaque cliché, l'outil présente de façon structurée :
 
-* **Les données de prise de vue** : boîtier, objectif, ouverture, vitesse d'obturation, focale et sensibilité (ISO).
+* **Les données de prise de vue & éclairage** : boîtier, objectif, ouverture, vitesse d'obturation, focale, sensibilité (ISO), filtres, parasoleil et **éclairage artificiel** (flash ou lumière continue, marque, modèle, puissance de `1/256` à `1/1`).
 * **La mémoire de laboratoire (Chimie & Labo)** : type de pellicule (Format 135, 120, plan-film 4x5/9x12), sensibilité nominale et exposée du film, révélateur utilisé (nom, dilution, temps de développement, température, agitation, push/pull), ainsi que les paramètres de fixateur (nom, dilution et temps de fixage).
-* **L'intention artistique** : notes sur l'intention de prise de vue, conditions lumineuses, filtres physiques (Rouge, Jaune, ND), parasoleil et secrets de fabrication (Markdown supporté).
+* **L'intention artistique & Boîte à Idées** : notes d'intention, préparation en amont dans la Boîte à Idées du Studio, conditions lumineuses, croquis/images de référence et secrets de fabrication (Markdown supporté).
 * **Planches-contacts virtuelles** : visualisation sous forme de bande de négatifs ou de châssis correspondant exactement au nombre de vues de vos films (36 vues, 12 vues ou plan-film).
 
 ---

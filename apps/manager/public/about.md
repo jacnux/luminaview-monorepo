@@ -18,10 +18,11 @@ LuminaView repose sur une architecture découplée organisée autour de 5 pilier
 
 - **Adresse Production** : `https://luminaview.fr` _(Port dev local : 7080)_
 - **Rôle** : Votre tableau de bord privé et centralisé. Il permet de gérer l'intégralité de votre travail :
+  - **💡 Boîte à Idées** : Espace d'idéation photographique avec tags, échéances, notes & inspirations visuelles Markdown, vue immersive agrandie et conversion en projet actif en un clic.
   - Gestion des albums photo et galeries virtuelles basées sur des tags.
   - Création de pages éditoriales (Séries, Expositions, À propos).
   - Rédaction d'articles de blog et modération des commentaires.
-  - Gestion du matériel photo (boîtiers, objectifs) et des rouleaux de pellicules.
+  - Gestion du matériel photo (boîtiers, objectifs, **éclairages flash & continu** avec puissance en Watts) et des rouleaux de pellicules.
   - Activation / Désactivation des modules optionnels (**Blog** et **Carnet de route**) via de simples interrupteurs On/Off.
 
 ### 2. 🖼️ Portfolio Public (Artfolio)
@@ -44,7 +45,7 @@ LuminaView repose sur une architecture découplée organisée autour de 5 pilier
 
 - **Adresse Production** : `https://[votre-pseudo]-carnet.helioscope.fr` _(Port dev local : 7082)_
 - **Rôle** : Votre carnet de terrain et mémoire de laboratoire.
-  - Fiches détaillées pour chaque cliché : boîtier, objectif, ouverture, vitesse, focale, filtre physique et parasoleil.
+  - Fiches détaillées pour chaque cliché : boîtier, objectif, ouverture, vitesse, focale, filtre physique, parasoleil et **éclairage artificiel** (flash/lumière continue, marque, modèle, puissance de `1/256` à `1/1`).
   - Fiches de chimie et de laboratoire : type de film (135, 120, plan-film 4x5), ISO nominal/exposé, révélateur (produit, dilution, temps, température, agitation, push/pull) et fixateur.
   - Planches-contacts virtuelles correspondant exactement à la taille de vos rouleaux (Vue #1 à #36 ou plan-film).
   - Modes d'intégration iframe épurés (`/embed/carnet-de-routes` et `/embed/project/:slug`) sans barre de navigation pour incruster vos carnets sur n'importe quel site tiers.
@@ -61,6 +62,8 @@ LuminaView repose sur une architecture découplée organisée autour de 5 pilier
 
 ## 🎛️ Nouveautés de la Refonte
 
+- **💡 Boîte à Idées & Concrétisation Rapide** : Notez vos inspirations, associez des tags, fixez des échéances et transformez vos idées en projets réels d'un simple clic.
+- **⚡ Gestion des Éclairages Studio & Terrain** : Support complet des flashs et lumières continues dans le matériel et restitution précise de la puissance utilisée (`1/256` à `1/1`) sur chaque cliché.
 - **Modules On/Off configurables** : Activer ou désactiver les modules **Blog** (`hasBlog`) et **Carnet** (`hasCarnet`) d'un simple clic dans votre profil. Les menus de navigation du Studio, du Portfolio et du Blog s'adaptent instantanément sans temps de latence.
 - **Architecture multi-domaines & Caddy SSL Auto** : Routage automatique des sous-domaines (`*.helioscope.fr`) avec certificats HTTPS délivrés dynamiquement par Let's Encrypt.
 - **Moteur Vite + React 18 & Docker Compose** : Compilation ultra-rapide et déploiement containerisé réactif.
