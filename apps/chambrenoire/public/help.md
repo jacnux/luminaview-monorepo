@@ -1,98 +1,95 @@
-# Manuel Utilisateur — Chambre Noire
+# Manuel Utilisateur — Lumina Studio & Écosystème LuminaView
 
-Ce document présente le fonctionnement de **Chambre Noire**, outil de gestion de matériel photo, de suivi de pellicules/plans-films, et de publication de carnets de routes techniques et artistiques.
-
----
-
-## 1. Topologie & Navigation
-
-Chambre Noire fonctionne comme le module public de mémoire technique de votre univers photographique LuminaView :
-
-* **Consultation Publique** : Accessible sur `https://[votre-pseudo]-carnet.helioscope.fr` *(ou `http://localhost:7082/?user=[pseudo]` en développement local)*.
-* **Gestion Privée (Studio)** : La création et la modification de votre matériel, vos pellicules et vos projets s'effectuent de façon sécurisée depuis **Lumina Studio** (`http://localhost:7080` ou `https://lumina.fr`).
+Bienvenue dans le guide d'utilisation de **Lumina Studio** et de ses modules associés (**Portfolio**, **Chambre Noire**, **Blog**, **Grimoire**).
 
 ---
 
-## 2. Gérer son Matériel, ses Pellicules & ses Idées (Studio)
+## 1. Démarrage Rapide & Navigation
 
-Pour documenter vos prises de vue et préparer vos créations, vous pouvez organiser votre univers dans Lumina Studio :
+Une fois connecté à **Lumina Studio** (`http://localhost:7080` ou `https://luminaview.fr`), accédez à vos rubriques depuis le menu :
 
-### A. 💡 Boîte à Idées Photographiques
-1. Dans **Carnet & Chambre Noire** > **💡 Boîte à Idées**, notez vos projets en gestation, inspirations visuelles et thématiques.
-2. Ajoutez des tags, une échéance cible et des **notes en Markdown enrichi** avec insertion d'images de référence.
-3. Consultez vos idées dans une **grande fenêtre modale immersive** et concrétisez-les en projet actif en un seul clic.
-
-### B. Inventaire du Matériel & Éclairages (Gear)
-1. Dans le Studio, allez dans **Carnet & Chambre Noire** > **📷 Matériel Photo** puis cliquez sur **Ajouter un matériel**.
-2. Renseignez le type :
-   - **Boîtier** ou **Objectif** : marque, modèle, format supporté (135, 120, plan-film 4x5, etc.) et numéro de série facultatif.
-   - **Éclairage** : Flash ⚡ ou Lumière continue ☀️, marque, modèle et puissance maximale en Watts.
-3. Ce matériel sera disponible pour être associé en un clic à vos photos ou rouleaux.
-
-### C. Suivi des Pellicules & Plans-Films (Films)
-1. Allez dans **🎞️ Pellicules** puis cliquez sur **Ajouter un film**.
-2. Renseignez la marque (ex: *Kodak*), le modèle (ex: *Tri-X 400*), la sensibilité nominale (ex: *400*), la sensibilité exposée/utilisée (ex: *800* si vous poussez le film) et le format (135, 120, plan-film).
-3. **Chimie par défaut** : Vous pouvez renseigner le révélateur et le fixateur par défaut pour ce rouleau (nom du produit, dilution, temps, température, agitation, push/pull). Ces informations seront héritées automatiquement pour chaque photo liée à ce rouleau.
-
-### D. Planche-Contact Virtuelle
-1. Cliquez sur une pellicule pour afficher sa **Planche-Contact**.
-2. Chaque case représente une vue (Vue #1 à #36 ou plan-film).
-3. Cliquez sur **Associer** pour lier une photo existante de votre galerie ou téléverser directement une nouvelle vue.
+* **💡 Boîte à Idées** : Carnet de réflexion pour préparer vos futures séries et sorties.
+* **🎞️ Carnets & Chambre Noire** : Gestion de vos projets, matériel, pellicules et planches-contacts.
+* **📂 Albums & Galeries** : Organisation de vos photos en albums manuels ou galeries dynamiques par tags.
+* **📄 Mes Pages** : Création des pages de votre portfolio public (Séries, Expositions, Bio).
+* **✍️ Mon Blog** : Rédaction d'articles d'actualité et récits de prise de vue.
+* **👤 Mon Profil** : Paramètres personnels, choix du thème et activation des modules optionnels.
 
 ---
 
-## 3. Le Carnet de Route et les Projets
+## 2. Activer ou Masquer des Modules (On/Off)
 
-Un **projet** correspond à une série, une sortie photo ou une thématique artistique.
+Dans **Mon Profil** > **Modules & Extensions**, activez ou désactivez les fonctionnalités selon vos besoins :
 
-1. Créez un projet dans **Projets** (ou concrétisez une idée depuis la **Boîte à Idées**) avec un titre, une description (Markdown supporté) et le statut de publication (Public / Masqué).
-2. Associez vos photos au projet.
-3. Chaque photo du projet peut disposer de ses propres réglages de prise de vue, d'éclairage et de laboratoire, ou hériter directement de la pellicule associée.
-
----
-
-## 4. Renseigner les paramètres d'une Photo
-
-Dans un album ou un projet, vous pouvez éditer les métadonnées de chaque cliché :
-
-### Prise de vue & Éclairage
-* **Boîtier & Objectif** : À sélectionner parmi votre matériel enregistré.
-* **Éclairage & Lumière** : Sélectionnez lumière Naturelle ou Artificielle. En lumière artificielle, précisez le type (Flash ou Lumière continue), pré-remplissez depuis votre matériel enregistré et indiquez la puissance utilisée (de **`1/256` à `1/1`**).
-* **Exposition** : Ouverture (ex: *f/8*), Vitesse (ex: *1/125*), Sensibilité spécifique (ex: *400*), Focale utilisée, type de filtre physique (ND, filtre couleur) et présence du parasoleil.
-
-### Chimie & Labo (Argentique uniquement)
-* **Pellicule** : Sélectionnez le rouleau ou plan-film associé.
-* **Révélateur & Fixateur** : Renseignez le révélateur (produit, dilution, temps, température, agitation, push/pull) et le fixateur (produit, dilution, temps de fixage).
+1. **Module Blog** : Active la rédaction d'articles et affiche le lien *Actualités* sur votre Portfolio.
+2. **Module Carnet de route** : Active la Chambre Noire (projets, mémoire technique, matériel) et affiche le lien *Carnet* sur votre Portfolio.
 
 ---
 
-## 5. Intégrer son Carnet de Route (Embed Iframe)
+## 3. La Boîte à Idées Photographiques
 
-Chambre Noire propose des adresses épurées, sans barre de navigation ni menus, parfaites pour être intégrées (via iframe) sur un autre site (WordPress, blog, portfolio personnel) :
+La Boîte à Idées vous aide à matérialiser vos projets avant de partir en prise de vue :
 
-* **Carnet de routes complet (Embed)** :
-  ```html
-  <iframe src="http://localhost:7082/embed/carnet-de-routes?user=jac" width="100%" height="700" frameborder="0"></iframe>
-  ```
-* **Projet spécifique (Embed)** :
-  ```html
-  <iframe src="http://localhost:7082/embed/project/slug?user=jac" width="100%" height="600" frameborder="0"></iframe>
-  ```
+1. **Créer une idée** : Cliquez sur `+ Nouvelle Idée` et renseignez :
+   * **Titre** : Intitulé clair de l'idée (ex: *Portraits en clair-obscur au 85mm*).
+   * **Tags** : Mots-clés thématiques séparés par des virgules (`#portrait`, `#studio`, `#n&b`).
+   * **Date cible** *(optionnel)* : Échéance ou période visée pour la réalisation.
+   * **Notes & Intentions** : Rédigez vos intentions en Markdown et insérez des images de référence ou croquis via le bouton `📎 Image / Référence`.
+2. **Consulter en grand format** : Cliquez sur le bouton `👁️ Voir` pour ouvrir la **grande fenêtre de lecture** dédiée à votre idée.
+3. **Concrétiser en Projet** : Cliquez sur `🚀 Concrétiser en Projet` pour transformer automatiquement l'idée en projet photographique actif dans votre Carnet de route, sans aucune ressaisie.
 
 ---
 
-## 6. Syntaxe Markdown acceptée
+## 4. Matériel Photo & Éclairage (Gear)
 
-Les descriptions de profils, de projets et d'intentions de prise de vue acceptent le format Markdown enrichi :
+Consignez l'ensemble de votre équipement dans **Carnet & Chambre Noire** > **📷 Matériel Photo** :
+
+* **Boîtiers & Objectifs** : Marque, modèle, formats acceptés (*135*, *120*, *plan-film 4x5*) et numéro de série facultatif.
+* **Éclairages** : Type (**Flash** ⚡ ou **Lumière continue** ☀️), marque, modèle et puissance maximale en Watts.
+* *Ces équipements seront directement sélectionnables lors de la saisie de vos clichés.*
+
+---
+
+## 5. Pellicules & Laboratoire Argentique
+
+Dans **Carnet & Chambre Noire** > **🎞️ Pellicules** :
+
+1. **Ajouter un film** : Renseignez la marque (*ex: Kodak*), le modèle (*ex: Tri-X 400*), les sensibilités nominale/exposée (ISO) et le format.
+2. **Chimie par défaut** : Enregistrez votre recette de développement (révélateur, dilution, temps, température, agitation, push/pull et fixateur). Elle sera automatiquement appliquée à toutes les photos associées à cette pellicule.
+3. **Planche-Contact Virtuelle** : Cliquez sur un rouleau pour voir sa grille de négatifs (36 vues, 12 vues, plan-film) et associez vos photos aux numéros de vues.
+
+---
+
+## 6. Projets & Paramètres Techniques des Photos
+
+Dans chaque projet ou album, vous pouvez détailler les paramètres de chaque cliché :
+
+* **Prise de vue** : Boîtier, objectif, ouverture (*f/2.8*), vitesse (*1/250s*), focale, filtres physiques et parasoleil.
+* **Éclairage artificiel** : Si la lumière est définie sur *Artificielle* ou *Flash*, choisissez votre source (sélection rapide depuis votre matériel) et ajustez la puissance utilisée (**de `1/256` à `1/1`** ou valeur personnalisée).
+* **Argentique & Chimie** : Pellicule rattachée et paramètres de développement personnalisables.
+
+---
+
+## 7. Partage & Intégration Externe (Iframe)
+
+Chaque projet dispose d'un bouton **Partager** offrant :
+* **Lien public direct** : Vers la page de votre projet dans la Chambre Noire.
+* **Code d'intégration Iframe** : Un code HTML prêt à l'emploi (`/embed/project/:slug`) pour intégrer votre projet ou carnet sans barre de navigation sur un site tiers (WordPress, site personnel).
+
+---
+
+## 8. Aide-mémoire Markdown
+
+Les descriptions de projets, notes d'idées et articles acceptent la syntaxe Markdown :
 
 ```markdown
-# Titre principal
+# Titre de section
 ## Sous-titre
+**Texte en gras** | *Texte en italique*
 
-**Texte important en gras**
-* Élément de liste 1
-* Élément de liste 2
+- Élément de liste à puces
+1. Élément de liste numérotée
 
-![Légende](/uploads/nom-du-fichier.jpg)
-[Visiter mon portfolio](https://jac.helioscope.fr)
+![Légende](/uploads/mon-image.jpg)
+[Lien vers mon site](https://monsite.fr)
 ```

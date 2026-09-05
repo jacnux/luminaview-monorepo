@@ -1,39 +1,55 @@
-# Chambre Noire
+# LuminaView & Lumina Studio
 
-## L'outil de mémoire technique, de carnet de route et de laboratoire photographique
+## La plateforme d'édition photographique et de mémoire technique tout-en-un
 
-![Chambre Noire](/uploads/Helioscope_ecran.jpg)
+![LuminaView](/uploads/luminaview.png)
 
-**La photographie mérite un espace sobre, élégant et axé sur la rigueur technique et artistique.**
+> **La photographie mérite un espace sobre, élégant, vivant et techniquement rigoureux.**
 
-**Chambre Noire** n’est pas un simple hébergeur d’images ou un portfolio générique. C’est un environnement complet conçu spécifiquement pour les photographes (argentiques, numériques et procédés anciens) désireux de consigner la mémoire technique de leurs prises de vue, d'organiser leurs sorties sous forme de carnets de route, et de partager leurs clichés avec tous leurs paramètres de laboratoire et d'exposition.
-
----
-
-## 🎞️ Un véritable Carnet de Route Technique et Artistique
-
-Chambre Noire s'organise autour d'une interface publique épurée permettant aux visiteurs de parcourir vos sorties photographiques. Pour chaque projet et chaque cliché, l'outil présente de façon structurée :
-
-* **Les données de prise de vue & éclairage** : boîtier, objectif, ouverture, vitesse d'obturation, focale, sensibilité (ISO), filtres, parasoleil et **éclairage artificiel** (flash ou lumière continue, marque, modèle, puissance de `1/256` à `1/1`).
-* **La mémoire de laboratoire (Chimie & Labo)** : type de pellicule (Format 135, 120, plan-film 4x5/9x12), sensibilité nominale et exposée du film, révélateur utilisé (nom, dilution, temps de développement, température, agitation, push/pull), ainsi que les paramètres de fixateur (nom, dilution et temps de fixage).
-* **L'intention artistique & Boîte à Idées** : notes d'intention, préparation en amont dans la Boîte à Idées du Studio, conditions lumineuses, croquis/images de référence et secrets de fabrication (Markdown supporté).
-* **Planches-contacts virtuelles** : visualisation sous forme de bande de négatifs ou de châssis correspondant exactement au nombre de vues de vos films (36 vues, 12 vues ou plan-film).
+**LuminaView** est un écosystème numérique complet conçu pour les photographes d'aujourd'hui, qu'ils travaillent en numérique, en argentique (135, 120, grand format) ou en procédés alternatifs. La plateforme permet d'organiser ses travaux, de consigner la mémoire technique de ses prises de vue et de publier des espaces web publics élégants et autonomes.
 
 ---
 
-## 🔗 Intégration simplifiée et export Iframe (`/embed/`)
+## 🚀 Les 5 Espaces de l'Écosystème
 
-Chambre Noire intègre des routes d'affichage nettoyées de tout menu de navigation, spécialement conçues pour être partagées ou intégrées (via iframe) directement sur un autre site web, un portfolio externe ou un blog personnel :
+LuminaView repose sur 5 applications interconnectées :
 
-* **`/embed/carnet-de-routes`** : Affiche la liste complète de vos projets sous forme de flux épuré, sans en-tête ni bouton de navigation parasite.
-* **`/embed/project/:slug`** : Affiche les détails techniques et les clichés grand format d'un projet spécifique de façon totalement intégrée.
+### 1. 🎛️ Lumina Studio (Manager & Administration)
+* **URL** : `https://luminaview.fr` *(ou `http://localhost:7080` en local)*
+* **Rôle** : Votre tableau de bord privé centralisé.
+  * **💡 Boîte à Idées** : Notez vos inspirations, mots-clés et notes enrichies (Markdown, images de repérage), puis convertissez-les en projets réels en un clic.
+  * **📷 Inventaire Matériel** : Boîtiers, objectifs, et éclairages (flashs et lumières continues avec puissance en Watts).
+  * **🎞️ Suivi Pellicules & Labo** : Gestion des rouleaux, planches-contacts virtuelles et chimies de développement.
+  * **📂 Galeries & Pages** : Albums classiques, galeries virtuelles par tags et pages éditoriales (Séries, Expositions).
+  * **⚙️ Modules On/Off** : Activation/désactivation instantanée du Blog et du Carnet de route.
+
+### 2. 🖼️ Portfolio Artfolio
+* **URL** : `https://[pseudo].helioscope.fr` *(ou `http://localhost:7090`)*
+* **Rôle** : Votre vitrine publique principale.
+  * Présentation sobre de vos séries photographiques, expositions et biographie.
+  * Choix du thème d'affichage (Hélioscope Classic ou Artfolio avec barre latérale).
+
+### 3. 🎞️ Chambre Noire (Carnets de Route & Labo)
+* **URL** : `https://[pseudo]-carnet.helioscope.fr` *(ou `http://localhost:7082`)*
+* **Rôle** : Votre carnet de terrain et mémoire technique public.
+  * Fiche détaillée par photo : paramètres d'exposition, filtres, éclairage artificiel (type et puissance de 1/256 à 1/1) et chimie complète de développement.
+  * Planches-contacts interactives fidèles au format de vos rouleaux.
+  * Exportation en iframe pour intégrer vos carnets sur d'autres sites.
+
+### 4. ✍️ Blog Hélioscope
+* **URL** : `https://[pseudo]-blog.helioscope.fr` *(ou `http://localhost:7081`)*
+* **Rôle** : Votre journal de création et d'actualités photographiques avec éditeur Markdown immersif et espace de commentaires.
+
+### 5. 📜 Grimoire (Galeries Virtuelles)
+* **URL** : `https://[pseudo]-grimoire.helioscope.fr` *(ou `http://localhost:7091`)*
+* **Rôle** : Exposition épurée et dynamique de vos albums virtuels (sélections automatiques par tags ou dates).
 
 ---
 
-## 🌐 Intégration dans l'Écosystème LuminaView (`refonte-gemini`)
+## 🎛️ Points Forts & Nouveautés
 
-Chambre Noire s'intègre harmonieusement au sein de l'écosystème multi-domaines LuminaView :
-
-* **Plateforme publique dédiée** : Accessible directement sur votre sous-domaine autonome `https://[votre-pseudo]-carnet.helioscope.fr` *(ou `http://localhost:7082/?user=[pseudo]` en local)*.
-* **Gestion centralisée depuis Lumina Studio** : L'administration de votre matériel, de vos pellicules et de vos projets s'effectue directement depuis votre espace privé **Lumina Studio** (`lumina.fr` / port 7080).
-* **Module activable sur-mesure (`hasCarnet`)** : Vous pouvez activer ou désactiver l'affichage du Carnet de route à tout moment depuis votre profil Studio pour adapter vos menus de navigation.
+* **💡 Boîte à Idées intégrée** : De l'inspiration initiale à la concrétisation en projet actif sans ressaisie.
+* **⚡ Gestion complète de l'éclairage** : Prise en charge des flashs et lumières continues (matériel, marque, modèle et réglage de puissance de 1/256 à 1/1).
+* **🎞️ Mémoire argentique rigoureuse** : Révélateur, dilution, température, agitation, push/pull et fixateur.
+* **🌐 Architecture multi-domaines** : Sous-domaines automatiques avec certificats SSL sécurisés (Caddy).
+* **🔗 Intégration iframe propre** : Export de projets et carnets sans éléments d'interface parasites.

@@ -4,73 +4,52 @@
 
 ![LuminaView](/uploads/luminaview.png)
 
-**La photographie mérite un espace sobre, élégant, vivant et techniquement rigoureux.**
+> **La photographie mérite un espace sobre, élégant, vivant et techniquement rigoureux.**
 
-**LuminaView** dépasse la simple fonction de galerie d'images. C'est un écosystème numérique complet conçu pour les photographes d'aujourd'hui, qu'ils travaillent en numérique, en argentique (135, 120, plan-film) ou en procédé mixte. La plateforme permet d'organiser ses séries, d'enrichir ses travaux d'une écriture éditoriale, d'archiver la mémoire technique de ses prises de vue et de diffuser des espaces publics autonomes et personnalisables.
+**LuminaView** est un écosystème numérique complet conçu pour les photographes d'aujourd'hui, qu'ils travaillent en numérique, en argentique (135, 120, grand format) ou en procédés alternatifs. La plateforme permet d'organiser ses travaux, de consigner la mémoire technique de ses prises de vue et de publier des espaces web publics élégants et autonomes.
 
 ---
 
 ## 🚀 Les 5 Espaces de l'Écosystème
 
-LuminaView repose sur une architecture découplée organisée autour de 5 piliers principaux :
+LuminaView repose sur 5 applications interconnectées :
 
-### 1. ⚡ Lumina Studio (Manager & Administration)
+### 1. 🎛️ Lumina Studio (Manager & Administration)
+* **URL** : `https://luminaview.fr` *(ou `http://localhost:7080` en local)*
+* **Rôle** : Votre tableau de bord privé centralisé.
+  * **💡 Boîte à Idées** : Notez vos inspirations, mots-clés et notes enrichies (Markdown, images de repérage), puis convertissez-les en projets réels en un clic.
+  * **📷 Inventaire Matériel** : Boîtiers, objectifs, et éclairages (flashs et lumières continues avec puissance en Watts).
+  * **🎞️ Suivi Pellicules & Labo** : Gestion des rouleaux, planches-contacts virtuelles et chimies de développement.
+  * **📂 Galeries & Pages** : Albums classiques, galeries virtuelles par tags et pages éditoriales (Séries, Expositions).
+  * **⚙️ Modules On/Off** : Activation/désactivation instantanée du Blog et du Carnet de route.
 
-- **Adresse Production** : `https://luminaview.fr` _(Port dev local : 7080)_
-- **Rôle** : Votre tableau de bord privé et centralisé. Il permet de gérer l'intégralité de votre travail :
-  - **💡 Boîte à Idées** : Espace d'idéation photographique avec tags, échéances, notes & inspirations visuelles Markdown, vue immersive agrandie et conversion en projet actif en un clic.
-  - Gestion des albums photo et galeries virtuelles basées sur des tags.
-  - Création de pages éditoriales (Séries, Expositions, À propos).
-  - Rédaction d'articles de blog et modération des commentaires.
-  - Gestion du matériel photo (boîtiers, objectifs, **éclairages flash & continu** avec puissance en Watts) et des rouleaux de pellicules.
-  - Activation / Désactivation des modules optionnels (**Blog** et **Carnet de route**) via de simples interrupteurs On/Off.
+### 2. 🖼️ Portfolio Artfolio
+* **URL** : `https://[pseudo].helioscope.fr` *(ou `http://localhost:7090`)*
+* **Rôle** : Votre vitrine publique principale.
+  * Présentation sobre de vos séries photographiques, expositions et biographie.
+  * Choix du thème d'affichage (Hélioscope Classic ou Artfolio avec barre latérale).
 
-### 2. 🖼️ Portfolio Public (Artfolio)
+### 3. 🎞️ Chambre Noire (Carnets de Route & Labo)
+* **URL** : `https://[pseudo]-carnet.helioscope.fr` *(ou `http://localhost:7082`)*
+* **Rôle** : Votre carnet de terrain et mémoire technique public.
+  * Fiche détaillée par photo : paramètres d'exposition, filtres, éclairage artificiel (type et puissance de 1/256 à 1/1) et chimie complète de développement.
+  * Planches-contacts interactives fidèles au format de vos rouleaux.
+  * Exportation en iframe pour intégrer vos carnets sur d'autres sites.
 
-- **Adresse Production** : `https://[votre-pseudo].helioscope.fr` _(Port dev local : 7090)_
-- **Rôle** : Votre vitrine d'exposition principale, autonome et épurée.
-  - Thèmes visuels personnalisables (**Hélioscope Classic** avec menu horizontal ou **Artfolio** avec sidebar latérale fixe).
-  - Mise en valeur de vos séries photographiques, expositions, biographie et coordonnées.
-  - Liens automatiques vers votre Blog, votre Carnet de route et votre Grimoire lorsque ces modules sont activés.
+### 4. ✍️ Blog Hélioscope
+* **URL** : `https://[pseudo]-blog.helioscope.fr` *(ou `http://localhost:7081`)*
+* **Rôle** : Votre journal de création et d'actualités photographiques avec éditeur Markdown immersif et espace de commentaires.
 
-### 3. ✍️ Blog Public (Hélioscope)
-
-- **Adresse Production** : `https://[votre-pseudo]-blog.helioscope.fr` _(Port dev local : 7081)_
-- **Rôle** : Votre journal d'actualités et d'écriture photographique.
-  - Publication d'articles, récits de prises de vue, coulisses et nouveautés de votre activité.
-  - Éditeur type **Notebook** épuré et puissant avec mise en forme Markdown interactive.
-  - Espace de commentaires pour interagir directement avec votre public.
-
-### 4. 🎞️ Chambre Noire (Carnets de Route & Mémoire Technique)
-
-- **Adresse Production** : `https://[votre-pseudo]-carnet.helioscope.fr` _(Port dev local : 7082)_
-- **Rôle** : Votre carnet de terrain et mémoire de laboratoire.
-  - Fiches détaillées pour chaque cliché : boîtier, objectif, ouverture, vitesse, focale, filtre physique, parasoleil et **éclairage artificiel** (flash/lumière continue, marque, modèle, puissance de `1/256` à `1/1`).
-  - Fiches de chimie et de laboratoire : type de film (135, 120, plan-film 4x5), ISO nominal/exposé, révélateur (produit, dilution, temps, température, agitation, push/pull) et fixateur.
-  - Planches-contacts virtuelles correspondant exactement à la taille de vos rouleaux (Vue #1 à #36 ou plan-film).
-  - Modes d'intégration iframe épurés (`/embed/carnet-de-routes` et `/embed/project/:slug`) sans barre de navigation pour incruster vos carnets sur n'importe quel site tiers.
-
-### 5. 📜 Grimoire (Galeries Virtuelles & Thème Épuré)
-
-- **Adresse Production** : `https://[votre-pseudo]-grimoire.helioscope.fr` _(Port dev local : 7091)_
-- **Rôle** : Une déclinaison épurée et simplifiée de votre portfolio.
-  - Exposition dynamique de vos **albums virtuels** (collections filtrées par tags ou dates).
-  - Présentation automatique des albums virtuels ayant l'option portfolio activée.
-  - Utilise le thème visuel **Grimoire**, offrant une esthétique sobre et poétique pour mettre en valeur vos séries thématiques.
+### 5. 📜 Grimoire (Galeries Virtuelles)
+* **URL** : `https://[pseudo]-grimoire.helioscope.fr` *(ou `http://localhost:7091`)*
+* **Rôle** : Exposition épurée et dynamique de vos albums virtuels (sélections automatiques par tags ou dates).
 
 ---
 
-## 🎛️ Nouveautés de la Refonte
+## 🎛️ Points Forts & Nouveautés
 
-- **💡 Boîte à Idées & Concrétisation Rapide** : Notez vos inspirations, associez des tags, fixez des échéances et transformez vos idées en projets réels d'un simple clic.
-- **⚡ Gestion des Éclairages Studio & Terrain** : Support complet des flashs et lumières continues dans le matériel et restitution précise de la puissance utilisée (`1/256` à `1/1`) sur chaque cliché.
-- **Modules On/Off configurables** : Activer ou désactiver les modules **Blog** (`hasBlog`) et **Carnet** (`hasCarnet`) d'un simple clic dans votre profil. Les menus de navigation du Studio, du Portfolio et du Blog s'adaptent instantanément sans temps de latence.
-- **Architecture multi-domaines & Caddy SSL Auto** : Routage automatique des sous-domaines (`*.helioscope.fr`) avec certificats HTTPS délivrés dynamiquement par Let's Encrypt.
-- **Moteur Vite + React 18 & Docker Compose** : Compilation ultra-rapide et déploiement containerisé réactif.
-- **Éditeur Markdown Notebook** : Un espace de rédaction minimaliste et immersif avec barre d'outils flottante et enveloppement intelligent de sélection.
-- **Hiérarchie parent/enfant des pages** : Organisez vos séries et expositions en sous-rubriques complexes (niveaux n-1 et n-2) avec images de couverture et accroches d'en-tête.
-- **Génération et partage Iframe** : Générateur de code `<iframe>` propre pour exporter vos projets et planches-contacts sur vos autres sites web.
-
----
-
-LuminaView offre aux photographes un outil sur-mesure pour montrer, documenter et faire vivre leur travail avec une tenue éditoriale et technique exceptionnelle.
+* **💡 Boîte à Idées intégrée** : De l'inspiration initiale à la concrétisation en projet actif sans ressaisie.
+* **⚡ Gestion complète de l'éclairage** : Prise en charge des flashs et lumières continues (matériel, marque, modèle et réglage de puissance de 1/256 à 1/1).
+* **🎞️ Mémoire argentique rigoureuse** : Révélateur, dilution, température, agitation, push/pull et fixateur.
+* **🌐 Architecture multi-domaines** : Sous-domaines automatiques avec certificats SSL sécurisés (Caddy).
+* **🔗 Intégration iframe propre** : Export de projets et carnets sans éléments d'interface parasites.
