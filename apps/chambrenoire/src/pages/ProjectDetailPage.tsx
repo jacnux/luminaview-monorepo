@@ -68,20 +68,80 @@ const ProjectDetailPage: React.FC = () => {
 
       {/* Project Header */}
       <div className="space-y-6">
+        <div className="flex flex-wrap items-center gap-2">
+          {project.medium && (
+            <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
+              project.medium === 'DIGITAL'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                : project.medium === 'ANALOG'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+            }`}>
+              {project.medium === 'DIGITAL' ? '⚡ Projet Numérique' : project.medium === 'ANALOG' ? '🎞️ Projet Argentique' : '🔀 Projet Hybride'}
+            </span>
+          )}
+
+          {project.status && (
+            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+              project.status === 'PREPARATION'
+                ? 'bg-orange-500/20 text-orange-300'
+                : project.status === 'IN_PROGRESS'
+                ? 'bg-emerald-500/20 text-emerald-300'
+                : project.status === 'COMPLETED'
+                ? 'bg-blue-500/20 text-blue-300'
+                : 'bg-gray-500/20 text-gray-400'
+            }`}>
+              {project.status === 'PREPARATION' ? '📋 En préparation' : project.status === 'IN_PROGRESS' ? '📸 Prises de vue actives' : project.status === 'COMPLETED' ? '✨ Projet abouti' : '📦 Archivé'}
+            </span>
+          )}
+        </div>
+
         <h1 className="text-4xl font-extrabold tracking-tight text-gray-100 sm:text-5xl">
           {project.name}
         </h1>
-        <p className="text-xs text-gray-400 dark:text-gray-500">
-          Publié le {new Date(project.createdAt).toLocaleDateString('fr-FR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}
-        </p>
-        <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed font-light text-lg">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.description}</ReactMarkdown>
+
+        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+          <span>
+            Publié le {new Date(project.createdAt).toLocaleDateString('fr-FR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </span>
+          {project.targetDate && (
+            <span>
+              • 📅 Échéance : {new Date(project.targetDate).toLocaleDateString('fr-FR')}
+            </span>
+          )}
+          {Array.isArray(project.tags) && project.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {project.tags.map((t: string, i: number) => (
+                <span key={i} className="bg-white/10 text-gray-300 px-2 py-0.5 rounded text-[10px]">
+                  #{t}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
+
+        {project.description && (
+          <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed font-light text-lg">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.description}</ReactMarkdown>
+          </div>
+        )}
+
+        {project.makingOf && (
+          <div className="bg-purple-950/20 border border-purple-500/30 rounded-2xl p-6 space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+              🎬 Secret de fabrication & Démarche artistique
+            </span>
+            <div className="prose prose-sm dark:prose-invert max-w-none text-gray-300 leading-relaxed">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.makingOf}</ReactMarkdown>
+            </div>
+          </div>
+        )}
       </div>
+
 
       {/* Photos flow (Carnet de voyage style) */}
       <div className="space-y-24">

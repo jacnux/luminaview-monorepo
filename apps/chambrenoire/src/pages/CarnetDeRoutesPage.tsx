@@ -275,16 +275,34 @@ const CarnetDeRoutesPage: React.FC = () => {
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-                  {/* Badge projet */}
-                  <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-amber-500 text-black px-2 py-0.5 rounded-full">
-                    Projet
-                  </span>
+                  {/* Badge médium & projet */}
+                  <div className="absolute top-3 left-3 flex gap-1 items-center">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                      project.medium === 'DIGITAL'
+                        ? 'bg-cyan-500 text-black'
+                        : project.medium === 'ANALOG'
+                        ? 'bg-amber-500 text-black'
+                        : 'bg-purple-500 text-white'
+                    }`}>
+                      {project.medium === 'DIGITAL' ? '⚡ Numérique' : project.medium === 'ANALOG' ? '🎞️ Argentique' : project.medium === 'HYBRID' ? '🔀 Hybride' : 'Projet'}
+                    </span>
+                  </div>
                 </div>
                 {/* Card details */}
                 <div className="p-5 space-y-2">
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-amber-500 transition-colors">
                     {project.name}
                   </h3>
+                  {Array.isArray(project.tags) && project.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {project.tags.map((t: string, i: number) => (
+                        <span key={i} className="text-[9px] bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded">
+                          #{t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   <p className="text-xs text-gray-400 dark:text-gray-500">
                     Publié le {new Date(project.createdAt).toLocaleDateString('fr-FR', {
                       year: 'numeric',

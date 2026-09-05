@@ -99,3 +99,25 @@ export interface BlogArticle {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export type ProjectStatus = 'IDEA' | 'PREPARATION' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
+export type ProjectMedium = 'UNDECIDED' | 'DIGITAL' | 'ANALOG' | 'HYBRID';
+
+export interface Project {
+  _id: string;
+  userId?: string;
+  name: string;
+  slug: string;
+  description?: string;
+  status: ProjectStatus;
+  medium: ProjectMedium;
+  tags?: string[];
+  notesMarkdown?: string;
+  targetDate?: string;
+  isPublished?: boolean;
+  coverImage?: string;
+  makingOf?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+

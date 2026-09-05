@@ -1,19 +1,43 @@
 import express, { Request, Response } from 'express';
 import Project from '../models/Project';
 import Photo from '../models/Photo';
+import User from '../models/User';
 import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
+// Helper to generate a slug
+const generateSlug = (name: string): string => {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // remove accents
+    .replace(/[^a-z0-9]+/g, '-')     // replace non-alphanumeric with hyphen
+    .replace(/(^-|-$)/g, '');        // trim leading/trailing hyphens
+};
+
 // --- Routes publiques (sans authentification) ---
 
 // Lister tous les projets publics
-import User from '../models/User';
-
 router.get('/public/all', async (req: Request, res: Response) => {
   try {
     const userParam = req.query.user as string;
+    const statusParam = req.query.status as string;
+    const mediumParam = req.query.medium as string;
+
     let query: any = { isPublished: true };
+
+    if (statusParam) {
+      query.status = statusParam;
+    } else {
+      // Par défaut pour la chambre noire / public, afficher les projets actifs ou terminés
+      query.status = { $in: ['IN_PROGRESS', 'COMPLETED'] };
+    }
+
+    if (mediumParam && mediumParam !== 'ALL') {
+      query.medium = mediumParam;
+    }
+
     if (userParam) {
       const user = await User.findOne({ name: new RegExp('^' + userParam.trim() + '$', 'i') });
       if (!user) {
@@ -21,6 +45,7 @@ router.get('/public/all', async (req: Request, res: Response) => {
       }
       query.userId = user._id;
     }
+
     const projects = await Project.find(query).sort({ createdAt: -1 });
     res.json(projects);
   } catch (error) {
@@ -55,20 +80,23 @@ router.get('/public/project/:slug', async (req: Request, res: Response) => {
   }
 });
 
-// Helper to generate a slug
-const generateSlug = (name: string): string => {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // remove accents
-    .replace(/[^a-z0-9]+/g, '-')     // replace non-alphanumeric with hyphen
-    .replace(/(^-|-$)/g, '');        // trim leading/trailing hyphens
-};
-
-// 1. GET ALL PROJECTS FOR USER
+// 1. GET ALL PROJECTS FOR USER (AVEC FILTRES STATUS, MEDIUM, TAG)
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const projects = await Project.find({ userId: req.user.userId }).sort({ createdAt: -1 });
+    const { status, medium, tag } = req.query;
+    const query: any = { userId: req.user.userId };
+
+    if (status && status !== 'ALL') {
+      query.status = status;
+    }
+    if (medium && medium !== 'ALL') {
+      query.medium = medium;
+    }
+    if (tag) {
+      query.tags = tag;
+    }
+
+    const projects = await Project.find(query).sort({ createdAt: -1 });
     res.json(projects);
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération des projets' });
@@ -95,12 +123,24 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// 3. CREATE NEW PROJECT
+// 3. CREATE NEW PROJECT / IDEA
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { name, description, isPublished, coverImage, makingOf } = req.body;
+    const {
+      name,
+      description,
+      status,
+      medium,
+      tags,
+      notesMarkdown,
+      targetDate,
+      isPublished,
+      coverImage,
+      makingOf
+    } = req.body;
+
     if (!name) {
-      return res.status(400).json({ error: 'Le nom du projet est obligatoire' });
+      return res.status(400).json({ error: 'Le nom du projet ou de l\'idée est obligatoire' });
     }
 
     const baseSlug = generateSlug(name);
@@ -118,6 +158,11 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       name,
       description: description || '',
       slug,
+      status: status || 'IN_PROGRESS',
+      medium: medium || (status === 'IDEA' ? 'UNDECIDED' : 'ANALOG'),
+      tags: Array.isArray(tags) ? tags : [],
+      notesMarkdown: notesMarkdown || '',
+      targetDate: targetDate ? new Date(targetDate) : undefined,
       isPublished: isPublished ?? false,
       coverImage,
       makingOf: makingOf || ''
@@ -130,7 +175,32 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// 4. UPDATE PROJECT
+// 4. CONCRETIZE AN IDEA INTO AN ACTIVE PROJECT
+router.post('/:id/concretize', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Idée introuvable' });
+    if (project.userId.toString() !== req.user.userId) {
+      return res.status(403).json({ error: 'Action non autorisée' });
+    }
+
+    const { medium, status, targetDate } = req.body;
+    if (!medium || medium === 'UNDECIDED') {
+      return res.status(400).json({ error: 'Veuillez sélectionner un médium valide (Numérique, Argentique ou Hybride)' });
+    }
+
+    project.medium = medium;
+    project.status = status || 'IN_PROGRESS';
+    if (targetDate) project.targetDate = new Date(targetDate);
+
+    await project.save();
+    res.json(project);
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur lors de la concrétisation du projet' });
+  }
+});
+
+// 5. UPDATE PROJECT / IDEA
 router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -139,7 +209,18 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Action non autorisée' });
     }
 
-    const { name, description, isPublished, coverImage, makingOf } = req.body;
+    const {
+      name,
+      description,
+      status,
+      medium,
+      tags,
+      notesMarkdown,
+      targetDate,
+      isPublished,
+      coverImage,
+      makingOf
+    } = req.body;
 
     if (name && name !== project.name) {
       const baseSlug = generateSlug(name);
@@ -155,6 +236,11 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     }
 
     project.description = description ?? project.description;
+    if (status !== undefined) project.status = status;
+    if (medium !== undefined) project.medium = medium;
+    if (tags !== undefined) project.tags = Array.isArray(tags) ? tags : [];
+    if (notesMarkdown !== undefined) project.notesMarkdown = notesMarkdown;
+    if (targetDate !== undefined) project.targetDate = targetDate ? new Date(targetDate) : undefined;
     project.isPublished = isPublished ?? project.isPublished;
     project.coverImage = coverImage !== undefined ? coverImage : project.coverImage;
     if (makingOf !== undefined) project.makingOf = makingOf;
@@ -166,7 +252,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// 5. DELETE PROJECT
+// 6. DELETE PROJECT / IDEA
 router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -186,3 +272,4 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
 });
 
 export default router;
+
