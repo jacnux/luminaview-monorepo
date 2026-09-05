@@ -41,9 +41,10 @@ const CarnetRoutesManager: React.FC = () => {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  // Modal Concrétiser une idée
+  // Modal Concrétiser une idée & Visualiser une idée grand format
   const [showConcretizeModal, setShowConcretizeModal] = useState(false);
   const [concretizeIdeaItem, setConcretizeIdeaItem] = useState<any | null>(null);
+  const [viewingIdea, setViewingIdea] = useState<any | null>(null);
   const [concretizeMedium, setConcretizeMedium] = useState<'DIGITAL' | 'ANALOG' | 'HYBRID'>('DIGITAL');
   const [concretizeStatus, setConcretizeStatus] = useState<'PREPARATION' | 'IN_PROGRESS'>('IN_PROGRESS');
   const [concretizeTargetDate, setConcretizeTargetDate] = useState('');
@@ -617,6 +618,7 @@ const CarnetRoutesManager: React.FC = () => {
     setShowAddFilm(false);
     setShowConcretizeModal(false);
     setConcretizeIdeaItem(null);
+    setViewingIdea(null);
 
     // Boîte à idées
     setIdeaName('');
@@ -1468,11 +1470,15 @@ const CarnetRoutesManager: React.FC = () => {
 
                           {/* Notes Preview */}
                           {idea.notesMarkdown ? (
-                            <div className={`text-xs rounded-xl p-3 max-h-36 overflow-y-auto border leading-relaxed ${
-                              isDark
-                                ? 'text-gray-200 bg-black/30 border-white/5 prose prose-invert prose-xs'
-                                : 'text-gray-800 bg-amber-50/50 border-amber-200/60 prose prose-neutral prose-xs'
-                            }`}>
+                            <div
+                              onClick={() => setViewingIdea(idea)}
+                              className={`text-xs rounded-xl p-3 max-h-36 overflow-y-auto border leading-relaxed cursor-pointer transition ${
+                                isDark
+                                  ? 'text-gray-200 bg-black/30 border-white/5 hover:border-yellow-500/30 prose prose-invert prose-xs'
+                                  : 'text-gray-800 bg-amber-50/50 border-amber-200/60 hover:border-amber-400 prose prose-neutral prose-xs'
+                              }`}
+                              title="Cliquer pour agrandir l'idée"
+                            >
                               <MarkdownRenderer>{idea.notesMarkdown}</MarkdownRenderer>
                             </div>
                           ) : (
@@ -1489,6 +1495,16 @@ const CarnetRoutesManager: React.FC = () => {
                             🚀 Concrétiser en Projet
                           </button>
                           <div className="flex justify-end gap-2 pt-1">
+                            <button
+                              onClick={() => setViewingIdea(idea)}
+                              className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition border flex items-center gap-1 ${
+                                isDark
+                                  ? 'text-blue-400 hover:text-blue-300 bg-blue-500/10 border-transparent'
+                                  : 'text-blue-700 hover:text-blue-800 bg-blue-50 border-blue-200'
+                              }`}
+                            >
+                              👁️ Voir
+                            </button>
                             <button
                               onClick={() => handleEditIdea(idea)}
                               className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition border ${
@@ -2168,8 +2184,137 @@ const CarnetRoutesManager: React.FC = () => {
               </div>
             </div>
           )}          {/* ========================================================================= */}
-          {/* TAB: PHOTOS */}
+          {/* MODAL: 👁️ VUE AGRANDIE & DESIGN ENRICHI DE L'IDÉE */}
           {/* ========================================================================= */}
+          {viewingIdea && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 sm:p-6 backdrop-blur-md overflow-y-auto">
+              <div className={`rounded-3xl shadow-2xl max-w-4xl w-full p-6 sm:p-8 relative flex flex-col max-h-[92vh] border transition-all ${
+                isDark ? 'bg-gray-900/95 border-white/20 text-white' : 'bg-white border-gray-200 text-gray-900'
+              }`}>
+                {/* Bouton fermer */}
+                <button
+                  onClick={() => setViewingIdea(null)}
+                  className={`absolute top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center text-xl transition ${
+                    isDark ? 'bg-white/10 text-gray-300 hover:text-white hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                  }`}
+                >
+                  &times;
+                </button>
+
+                {/* Header */}
+                <div className={`border-b pb-5 pr-10 space-y-3 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider ${
+                      isDark ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/40' : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                    }`}>
+                      💡 Boîte à Idées
+                    </span>
+                    {viewingIdea.targetDate && (
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5 ${
+                        isDark ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' : 'bg-amber-100 text-amber-900 border border-amber-300'
+                      }`}>
+                        📅 Date cible : {new Date(viewingIdea.targetDate).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </span>
+                    )}
+                    {viewingIdea.createdAt && (
+                      <span className={`text-[11px] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Créée le {new Date(viewingIdea.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
+                    )}
+                  </div>
+
+                  <h2 className={`text-2xl sm:text-3xl font-black tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    {viewingIdea.name}
+                  </h2>
+
+                  {/* Tags */}
+                  {Array.isArray(viewingIdea.tags) && viewingIdea.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {viewingIdea.tags.map((t: string, i: number) => (
+                        <span
+                          key={i}
+                          className={`text-xs px-2.5 py-0.5 rounded-lg font-medium ${
+                            isDark ? 'bg-white/10 text-gray-200 border border-white/10' : 'bg-gray-100 text-gray-800 border border-gray-200'
+                          }`}
+                        >
+                          #{t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Content / Moodboard Area */}
+                <div className="flex-1 overflow-y-auto py-6 pr-2 space-y-6">
+                  {viewingIdea.notesMarkdown ? (
+                    <div className={`p-6 rounded-2xl border leading-relaxed ${
+                      isDark
+                        ? 'bg-black/40 border-white/10 text-gray-100 prose prose-invert prose-base max-w-none'
+                        : 'bg-amber-50/40 border-amber-200/60 text-gray-900 prose prose-neutral prose-base max-w-none shadow-inner'
+                    }`}>
+                      <MarkdownRenderer>{viewingIdea.notesMarkdown}</MarkdownRenderer>
+                    </div>
+                  ) : (
+                    <div className={`text-center py-16 rounded-2xl border italic ${
+                      isDark ? 'bg-white/5 border-white/5 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+                    }`}>
+                      Aucune note ou moodboard rédigé pour cette idée.
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer Action Bar */}
+                <div className={`border-t pt-5 flex flex-col sm:flex-row justify-between items-center gap-3 ${
+                  isDark ? 'border-white/10' : 'border-gray-200'
+                }`}>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const target = viewingIdea;
+                        setViewingIdea(null);
+                        handleEditIdea(target);
+                      }}
+                      className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold transition border flex items-center justify-center gap-1.5 ${
+                        isDark
+                          ? 'bg-white/10 hover:bg-white/20 text-yellow-400 border-white/10'
+                          : 'bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border-yellow-300'
+                      }`}
+                    >
+                      ✏️ Modifier l'idée
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewingIdea(null)}
+                      className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-semibold transition border ${
+                        isDark
+                          ? 'bg-white/5 hover:bg-white/10 text-gray-300 border-white/10'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
+                      }`}
+                    >
+                      Fermer
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const target = viewingIdea;
+                      setViewingIdea(null);
+                      handleOpenConcretizeModal(target);
+                    }}
+                    className="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-extrabold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-2"
+                  >
+                    🚀 Concrétiser en Projet Actif
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           {activeTab === 'photos' && (() => {
             const filteredPhotos = myPhotos.filter(p =>
               p.showOnBlog &&
