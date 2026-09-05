@@ -115,10 +115,10 @@ const LandingPage = () => {
                 </span>
               </div>
               <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-400 transition">
-                Chambre Noire (Carnets & Labo)
+                Chambre Noire (Création & Labo)
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Carnet de terrain et mémoire technique : paramètres de prise de vue, éclairages flash & continu (1/256 à 1/1), chimies (135/120/4x5), planches-contacts et iframe.
+                Univers de création complet : Idées & préparation en amont, carnet de route (projets de terrain), éclairages (1/256 à 1/1) et mémoire de labo.
               </p>
             </div>
 

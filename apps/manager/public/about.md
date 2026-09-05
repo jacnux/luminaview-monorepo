@@ -16,29 +16,22 @@ LuminaView repose sur 5 applications interconnectées :
 
 ### 1. 🎛️ Lumina Studio (Manager & Administration)
 * **URL** : `https://luminaview.fr` *(ou `http://localhost:7080` en local)*
-* **Rôle** : Votre tableau de bord privé centralisé.
-  * **💡 Boîte à Idées** : Notez vos inspirations, mots-clés et notes enrichies (Markdown, images de repérage), puis convertissez-les en projets réels en un clic.
-  * **📷 Inventaire Matériel** : Boîtiers, objectifs, et éclairages (flashs et lumières continues avec puissance en Watts).
-  * **🎞️ Suivi Pellicules & Labo** : Gestion des rouleaux, planches-contacts virtuelles et chimies de développement.
-  * **📂 Galeries & Pages** : Albums classiques, galeries virtuelles par tags et pages éditoriales (Séries, Expositions).
-  * **⚙️ Modules On/Off** : Activation/désactivation instantanée du Blog et du Carnet de route.
+* **Rôle** : Votre tableau de bord privé centralisé pour administrer vos albums, vos galeries virtuelles par tags, vos pages éditoriales et vos modules On/Off.
 
 ### 2. 🖼️ Portfolio Artfolio
 * **URL** : `https://[pseudo].helioscope.fr` *(ou `http://localhost:7090`)*
-* **Rôle** : Votre vitrine publique principale.
-  * Présentation sobre de vos séries photographiques, expositions et biographie.
-  * Choix du thème d'affichage (Hélioscope Classic ou Artfolio avec barre latérale).
+* **Rôle** : Votre vitrine publique principale pour exposer vos séries photographiques, vos expositions et votre démarche artistique (thèmes Classic & Artfolio).
 
-### 3. 🎞️ Chambre Noire (Carnets de Route & Labo)
+### 3. 🎞️ Chambre Noire (Espace de Création & Labo)
 * **URL** : `https://[pseudo]-carnet.helioscope.fr` *(ou `http://localhost:7082`)*
-* **Rôle** : Votre carnet de terrain et mémoire technique public.
-  * Fiche détaillée par photo : paramètres d'exposition, filtres, éclairage artificiel (type et puissance de 1/256 à 1/1) et chimie complète de développement.
-  * Planches-contacts interactives fidèles au format de vos rouleaux.
-  * Exportation en iframe pour intégrer vos carnets sur d'autres sites.
+* **Rôle** : Votre univers de création complet, articulé autour de 3 piliers :
+  * **💡 1. Idées & Préparation** : Consignez vos inspirations, mots-clés et notes enrichies (Markdown, images de repérage), puis convertissez-les en projets réels en un clic.
+  * **📖 2. Carnet de route (Projets)** : Publiez vos séries et sorties de terrain avec fiches techniques détaillées (exposition, éclairage flash/continu de 1/256 à 1/1, filtres).
+  * **🧪 3. Laboratoire & Mémoire technique** : Inventaire du matériel, suivi des rouleaux de films, planches-contacts interactives et chimies de développement.
 
 ### 4. ✍️ Blog Hélioscope
 * **URL** : `https://[pseudo]-blog.helioscope.fr` *(ou `http://localhost:7081`)*
-* **Rôle** : Votre journal de création et d'actualités photographiques avec éditeur Markdown immersif et espace de commentaires.
+* **Rôle** : Votre journal de création et d'actualités photographiques avec éditeur Notebook immersif (Markdown) et espace de commentaires.
 
 ### 5. 📜 Grimoire (Galeries Virtuelles)
 * **URL** : `https://[pseudo]-grimoire.helioscope.fr` *(ou `http://localhost:7091`)*
@@ -46,10 +39,10 @@ LuminaView repose sur 5 applications interconnectées :
 
 ---
 
-## 🎛️ Points Forts & Nouveautés
+## 🎛️ Points Forts & Architecture
 
-* **💡 Boîte à Idées intégrée** : De l'inspiration initiale à la concrétisation en projet actif sans ressaisie.
-* **⚡ Gestion complète de l'éclairage** : Prise en charge des flashs et lumières continues (matériel, marque, modèle et réglage de puissance de 1/256 à 1/1).
-* **🎞️ Mémoire argentique rigoureuse** : Révélateur, dilution, température, agitation, push/pull et fixateur.
+* **🎞️ Chambre Noire unifiée** : Un flux créatif fluide de l'idée initiale à la mémoire technique de laboratoire.
+* **⚡ Gestion complète de l'éclairage** : Prise en charge des flashs et lumières continues (matériel, puissance de 1/256 à 1/1).
+* **🧪 Rigueur argentique** : Révélateur, dilution, température, agitation, push/pull et fixateur.
 * **🌐 Architecture multi-domaines** : Sous-domaines automatiques avec certificats SSL sécurisés (Caddy).
 * **🔗 Intégration iframe propre** : Export de projets et carnets sans éléments d'interface parasites.

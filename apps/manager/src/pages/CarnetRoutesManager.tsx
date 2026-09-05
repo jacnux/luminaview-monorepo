@@ -700,11 +700,11 @@ const CarnetRoutesManager: React.FC = () => {
       {/* Header */}
       <div className={`flex flex-col md:flex-row justify-between items-start md:items-end pb-5 border-b gap-4 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">
-            Chambre Noire & Carnet
+          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent flex items-center gap-3">
+            <span>🎞️</span> Chambre Noire
           </h1>
           <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Gérez vos idées créatives, vos projets multi-médiums, vos boîtiers et vos pellicules.
+            Votre espace de création : Idées & préparation, projets de terrain, matériel et mémoire de laboratoire.
           </p>
         </div>
         <Link
@@ -731,7 +731,7 @@ const CarnetRoutesManager: React.FC = () => {
               : 'border-transparent text-gray-600 hover:text-gray-900'
           }`}
         >
-          💡 Boîte à Idées
+          💡 Idées & Préparation
           <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
             activeTab === 'ideas' && !selectedFilmRoll
               ? 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border border-yellow-500/30'
@@ -752,7 +752,7 @@ const CarnetRoutesManager: React.FC = () => {
               : 'border-transparent text-gray-600 hover:text-gray-900'
           }`}
         >
-          📂 Projets
+          📖 Carnet de route (Projets)
           <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
             activeTab === 'projects' && !selectedFilmRoll
               ? 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border border-yellow-500/30'
@@ -785,7 +785,7 @@ const CarnetRoutesManager: React.FC = () => {
               : 'border-transparent text-gray-600 hover:text-gray-900'
           }`}
         >
-          📷 Matériel Photo
+          📷 Matériel & Éclairage
         </button>
         <button
           onClick={() => { setActiveTab('films'); resetForm(); }}
@@ -797,7 +797,7 @@ const CarnetRoutesManager: React.FC = () => {
               : 'border-transparent text-gray-600 hover:text-gray-900'
           }`}
         >
-          🎞️ Pellicules {selectedFilmRoll && `(${selectedFilmRoll.name})`}
+          🧪 Pellicules & Labo {selectedFilmRoll && `(${selectedFilmRoll.name})`}
         </button>
       </div>
 

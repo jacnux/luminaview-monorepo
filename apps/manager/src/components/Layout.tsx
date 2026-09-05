@@ -174,7 +174,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
                     }`}
                   >
-                    <span>📓</span> Carnets
+                    <span>🎞️</span> Chambre Noire
                   </Link>
                 )}
               </nav>
@@ -240,7 +240,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         : 'text-teal-600 hover:text-teal-700 hover:bg-black/[0.04]'
                     }`}
                   >
-                    <span>📖</span> Voir mon carnet
+                    <span>🎞️</span> Voir ma Chambre Noire
                   </a>
                 )}
               </div>
@@ -461,7 +461,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
                         }`}
                       >
-                        <span>📓</span> Carnets
+                        <span>🎞️</span> Chambre Noire
                       </Link>
                     )}
                   </div>
@@ -522,7 +522,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           : 'text-teal-600 hover:text-teal-700 hover:bg-black/[0.04]'
                       }`}
                     >
-                      <span>📖</span> Carnet
+                      <span>🎞️</span> Chambre Noire
                     </a>
                   )}
 
