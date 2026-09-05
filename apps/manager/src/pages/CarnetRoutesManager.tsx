@@ -64,7 +64,10 @@ const CarnetRoutesManager: React.FC = () => {
   // Projet Multi-Médiums
   const [projectName, setProjectName] = useState('');
   const [projectDesc, setProjectDesc] = useState('');
-  const [projectStatus, setProjectStatus] = useState<'PREPARATION' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED'>('IN_PROGRESS');
+  const [projectNotesMarkdown, setProjectNotesMarkdown] = useState('');
+  const [projectNotesPreview, setProjectNotesPreview] = useState(false);
+  const [projectNotesUploading, setProjectNotesUploading] = useState(false);
+  const [projectStatus, setProjectStatus] = useState<'IDEA' | 'PREPARATION' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED'>('IN_PROGRESS');
   const [projectMedium, setProjectMedium] = useState<'DIGITAL' | 'ANALOG' | 'HYBRID'>('ANALOG');
   const [projectTags, setProjectTags] = useState('');
   const [projectTargetDate, setProjectTargetDate] = useState('');
@@ -258,6 +261,7 @@ const CarnetRoutesManager: React.FC = () => {
       const payload = {
         name: projectName,
         description: projectDesc,
+        notesMarkdown: projectNotesMarkdown,
         status: projectStatus,
         medium: projectMedium,
         tags: projectTags ? projectTags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
@@ -284,6 +288,7 @@ const CarnetRoutesManager: React.FC = () => {
     setEditingItem(project);
     setProjectName(project.name);
     setProjectDesc(project.description || '');
+    setProjectNotesMarkdown(project.notesMarkdown || '');
     setProjectStatus(project.status || 'IN_PROGRESS');
     setProjectMedium(project.medium || 'ANALOG');
     setProjectTags(Array.isArray(project.tags) ? project.tags.join(', ') : '');
@@ -632,6 +637,9 @@ const CarnetRoutesManager: React.FC = () => {
     // Projet
     setProjectName('');
     setProjectDesc('');
+    setProjectNotesMarkdown('');
+    setProjectNotesPreview(false);
+    setProjectNotesUploading(false);
     setProjectStatus('IN_PROGRESS');
     setProjectMedium('ANALOG');
     setProjectTags('');
@@ -1688,10 +1696,11 @@ const CarnetRoutesManager: React.FC = () => {
                     {/* Choix du Statut */}
                     <div>
                       <label className={`block text-xs font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Statut du projet</label>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                         {[
-                          { key: 'PREPARATION', label: '📋 En préparation' },
-                          { key: 'IN_PROGRESS', label: '📸 Prises de vue' },
+                          { key: 'IDEA', label: '💡 Idée' },
+                          { key: 'PREPARATION', label: '📋 En prépa' },
+                          { key: 'IN_PROGRESS', label: '📸 En cours' },
                           { key: 'COMPLETED', label: '✨ Finalisé' },
                           { key: 'ARCHIVED', label: '📦 Archivé' }
                         ].map(s => (
@@ -1701,7 +1710,7 @@ const CarnetRoutesManager: React.FC = () => {
                             onClick={() => setProjectStatus(s.key as any)}
                             className={`p-2 rounded-lg border text-center transition text-xs font-semibold ${
                               projectStatus === s.key
-                                ? 'border-yellow-500 bg-yellow-500/20 text-yellow-700 dark:text-yellow-300'
+                                ? 'border-yellow-500 bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 font-bold shadow-sm'
                                 : isDark
                                 ? 'border-white/10 bg-black/30 text-gray-400 hover:text-white'
                                 : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900'
@@ -1740,16 +1749,98 @@ const CarnetRoutesManager: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Description / Intention artistique</label>
+                      <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Description courte / Résumé</label>
                       <textarea
                         value={projectDesc}
                         onChange={e => setProjectDesc(e.target.value)}
-                        rows={3}
+                        rows={2}
                         className={`w-full rounded-lg p-2 text-sm resize-none border focus:outline-none focus:border-yellow-500 ${
                           isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
                         }`}
-                        placeholder="Décrivez l'intention artistique globale du projet..."
+                        placeholder="Résumé court du projet..."
                       />
+                    </div>
+
+                    {/* Markdown Notes & Intentions du Projet */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs font-semibold text-yellow-600 dark:text-yellow-400">
+                          📝 Notes & Intentions (Idée & Préparation - Markdown complet)
+                        </label>
+                        <div className="flex gap-2">
+                          <label
+                            htmlFor="project-notes-image-upload"
+                            className={`cursor-pointer text-[10px] font-bold uppercase px-2 py-1 rounded border transition ${
+                              projectNotesUploading
+                                ? 'border-yellow-400/30 text-yellow-500/50'
+                                : 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10'
+                            }`}
+                            title="Insérer une image d'inspiration ou de référence"
+                          >
+                            {projectNotesUploading ? '⏳ Upload...' : '📎 Image / Référence'}
+                          </label>
+                          <input
+                            id="project-notes-image-upload"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={projectNotesUploading}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setProjectNotesUploading(true);
+                              try {
+                                const formData = new FormData();
+                                formData.append('image', file);
+                                const res = await api.post('/photos/making-of/upload', formData, {
+                                  headers: { 'Content-Type': 'multipart/form-data' }
+                                });
+                                const url = res.data.url;
+                                const mdSnippet = `\n![Image d'inspiration](${url})\n`;
+                                setProjectNotesMarkdown(prev => prev + mdSnippet);
+                              } catch (err) {
+                                alert('Erreur lors du téléversement de l\'image');
+                              } finally {
+                                setProjectNotesUploading(false);
+                                e.target.value = '';
+                              }
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setProjectNotesPreview(!projectNotesPreview)}
+                            className={`text-[10px] font-bold uppercase px-2 py-1 rounded border transition ${
+                              projectNotesPreview
+                                ? 'bg-yellow-500 text-black border-yellow-500'
+                                : 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10'
+                            }`}
+                          >
+                            {projectNotesPreview ? '✏️ Édition' : '👁️ Aperçu'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {projectNotesPreview ? (
+                        <div className={`w-full min-h-[120px] max-h-72 overflow-y-auto p-3 rounded-lg border text-sm prose prose-sm max-w-none ${
+                          isDark ? 'bg-black/30 border-white/10 text-gray-200 prose-invert' : 'bg-gray-50 border-gray-300 text-gray-800'
+                        }`}>
+                          {projectNotesMarkdown ? (
+                            <MarkdownRenderer>{projectNotesMarkdown}</MarkdownRenderer>
+                          ) : (
+                            <span className="text-gray-400 italic text-xs">Aucune note rédigée. Basculez en mode édition pour commencer.</span>
+                          )}
+                        </div>
+                      ) : (
+                        <textarea
+                          rows={4}
+                          value={projectNotesMarkdown}
+                          onChange={e => setProjectNotesMarkdown(e.target.value)}
+                          className={`w-full rounded-lg p-2 text-xs font-mono border focus:outline-none focus:border-yellow-500 ${
+                            isDark ? 'bg-black/40 border-white/10 text-white placeholder-gray-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                          }`}
+                          placeholder="Rédigez les intentions du projet, inspirations, références, checklist... (Markdown supporté : **gras**, listes, images)"
+                        />
+                      )}
                     </div>
 
                     <div>
@@ -1995,6 +2086,19 @@ const CarnetRoutesManager: React.FC = () => {
                             </button>
                           </div>
                           <div className="flex gap-2">
+                            {p.notesMarkdown && (
+                              <button
+                                onClick={() => setViewingIdea(p)}
+                                className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition border flex items-center gap-1 ${
+                                  isDark
+                                    ? 'text-yellow-400 hover:text-yellow-300 bg-yellow-500/10 border-transparent'
+                                    : 'text-yellow-700 hover:text-yellow-800 bg-yellow-50 border-yellow-200'
+                                }`}
+                                title="Consulter les notes & intentions d'origine"
+                              >
+                                💡 Notes
+                              </button>
+                            )}
                             <button
                               onClick={() => {
                                 const projectUrl = getProjectPublicUrl(p);
@@ -2277,7 +2381,11 @@ const CarnetRoutesManager: React.FC = () => {
                       onClick={() => {
                         const target = viewingIdea;
                         setViewingIdea(null);
-                        handleEditIdea(target);
+                        if (target.status === 'IDEA') {
+                          handleEditIdea(target);
+                        } else {
+                          handleEditProject(target);
+                        }
                       }}
                       className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold transition border flex items-center justify-center gap-1.5 ${
                         isDark
@@ -2285,7 +2393,7 @@ const CarnetRoutesManager: React.FC = () => {
                           : 'bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border-yellow-300'
                       }`}
                     >
-                      ✏️ Modifier l'idée
+                      {viewingIdea.status === 'IDEA' ? "✏️ Modifier l'idée" : "✏️ Modifier le projet"}
                     </button>
                     <button
                       type="button"
@@ -2300,17 +2408,19 @@ const CarnetRoutesManager: React.FC = () => {
                     </button>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const target = viewingIdea;
-                      setViewingIdea(null);
-                      handleOpenConcretizeModal(target);
-                    }}
-                    className="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-extrabold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-2"
-                  >
-                    🚀 Concrétiser en Projet Actif
-                  </button>
+                  {viewingIdea.status === 'IDEA' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const target = viewingIdea;
+                        setViewingIdea(null);
+                        handleOpenConcretizeModal(target);
+                      }}
+                      className="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-extrabold px-6 py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-2"
+                    >
+                      🚀 Concrétiser en Projet Actif
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
