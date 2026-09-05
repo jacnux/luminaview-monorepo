@@ -48,7 +48,7 @@ const LandingPage = () => {
           </h1>
 
           <p className="text-gray-300 text-base sm:text-lg font-light leading-relaxed mb-4">
-            LuminaView est la plateforme tout-en-un pensée pour les photographes. Un studio privé centralisé, votre portfolio autonome, vos galeries virtuelles Grimoire, votre carnet de laboratoire et votre journal de création.
+            LuminaView est la plateforme d'édition photographique et de mémoire technique tout-en-un. Un studio privé centralisé, votre portfolio autonome, vos galeries virtuelles Grimoire, votre carnet de laboratoire et votre journal de création.
           </p>
 
           <blockquote className="text-xs sm:text-sm text-amber-300/80 italic font-serif mb-10 pl-4 border-l-2 border-amber-500/40">
@@ -70,7 +70,7 @@ const LandingPage = () => {
                 Lumina Studio
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Tableau de bord privé : Boîte à Idées & concrétisation, albums, galeries par tags et interrupteurs On/Off.
+                Tableau de bord privé centralisé : Boîte à Idées & concrétisation en 1 clic, inventaire matériel (boîtiers, objectifs, éclairages), pellicules et modules On/Off.
               </p>
             </div>
 
@@ -79,14 +79,14 @@ const LandingPage = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="text-2xl">🖼️</div>
                 <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-yellow-400 bg-yellow-500/10 px-2 py-0.5 rounded-full border border-yellow-500/20">
-                  [nom].helioscope.fr
+                  [pseudo].helioscope.fr
                 </span>
               </div>
               <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-400 transition">
                 Portfolio Artfolio
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Vitrine publique autonome avec thèmes visuels (Classic & Artfolio) pour exposer vos séries et biographie.
+                Vitrine publique principale avec choix de thèmes (Classic & Artfolio) pour exposer vos séries photographiques, expositions et biographie.
               </p>
             </div>
 
@@ -95,14 +95,14 @@ const LandingPage = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="text-2xl">📜</div>
                 <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                  [nom]-grimoire.helioscope.fr
+                  [pseudo]-grimoire.helioscope.fr
                 </span>
               </div>
               <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-400 transition">
                 Grimoire & Galeries Virtuelles
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Version épurée du portfolio exposant vos albums virtuels (filtres par tags) avec le thème visuel Grimoire.
+                Exposition épurée et dynamique de vos albums virtuels (sélections automatiques par tags ou dates) avec le thème visuel Grimoire.
               </p>
             </div>
 
@@ -111,14 +111,14 @@ const LandingPage = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="text-2xl">🎞️</div>
                 <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
-                  [nom]-carnet.helioscope.fr
+                  [pseudo]-carnet.helioscope.fr
                 </span>
               </div>
               <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-400 transition">
-                Chambre Noire & Carnet
+                Chambre Noire (Carnets & Labo)
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Mémoire de terrain, éclairages flash & continu, chimies (135/120/4x5), planches-contacts et iframe.
+                Carnet de terrain et mémoire technique : paramètres de prise de vue, éclairages flash & continu (1/256 à 1/1), chimies (135/120/4x5), planches-contacts et iframe.
               </p>
             </div>
 
@@ -127,14 +127,14 @@ const LandingPage = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="text-2xl">✍️</div>
                 <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
-                  [nom]-blog.helioscope.fr
+                  [pseudo]-blog.helioscope.fr
                 </span>
               </div>
               <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-400 transition">
                 Blog Hélioscope
               </h3>
               <p className="text-gray-400 text-xs leading-relaxed">
-                Journal de création avec éditeur Notebook épuré, récits de prises de vue et commentaires publics.
+                Journal de création et d'actualités photographiques avec éditeur Notebook immersif (Markdown enrichi) et espace de commentaires.
               </p>
             </div>
 
@@ -208,19 +208,23 @@ const LandingPage = () => {
           <div className="space-y-3 pt-6 border-t border-white/10 text-xs text-gray-400">
             <div className="flex items-center gap-2">
               <span className="text-amber-400">✓</span>
-              <span>Sous-domaines & SSL Automatique Caddy</span>
+              <span>💡 Boîte à Idées & concrétisation rapide en projet</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-amber-400">✓</span>
-              <span>Boîte à Idées & Mémoire technique (Éclairage, Chimie)</span>
+              <span>⚡ Éclairage studio (Flash & Continu) & Mémoire de labo</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-amber-400">✓</span>
-              <span>Intégration Iframe d'exportation sans barre</span>
+              <span>🌐 Sous-domaines & SSL Automatique Caddy</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-amber-400">✓</span>
-              <span>Modules On/Off sur-mesure (hasBlog, hasCarnet)</span>
+              <span>🔗 Intégration Iframe d'exportation sans barre parasite</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-amber-400">✓</span>
+              <span>⚙️ Modules On/Off sur-mesure (hasBlog, hasCarnet)</span>
             </div>
           </div>
 
