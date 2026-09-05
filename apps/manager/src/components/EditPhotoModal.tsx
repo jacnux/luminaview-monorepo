@@ -28,6 +28,11 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
   const [iso, setIso] = useState('');
   const [focalLength, setFocalLength] = useState('');
   const [light, setLight] = useState('');
+  const [lightingGearId, setLightingGearId] = useState('');
+  const [lightingType, setLightingType] = useState<'continuous' | 'flash'>('flash');
+  const [lightingBrand, setLightingBrand] = useState('');
+  const [lightingModel, setLightingModel] = useState('');
+  const [lightingPower, setLightingPower] = useState('');
   const [filter, setFilter] = useState('Aucun');
   const [ndFilter, setNdFilter] = useState('Aucun');
   const [lensHood, setLensHood] = useState(false);
@@ -167,6 +172,15 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
       );
       setFocalLength(photo.exposureSettings?.focalLength || '');
       setLight(photo.exposureSettings?.light || '');
+      setLightingGearId(
+        typeof photo.exposureSettings?.lightingGearId === 'object' && photo.exposureSettings?.lightingGearId?._id
+          ? photo.exposureSettings.lightingGearId._id
+          : photo.exposureSettings?.lightingGearId || ''
+      );
+      setLightingType(photo.exposureSettings?.lightingType || 'flash');
+      setLightingBrand(photo.exposureSettings?.lightingBrand || '');
+      setLightingModel(photo.exposureSettings?.lightingModel || '');
+      setLightingPower(photo.exposureSettings?.lightingPower || '');
       setFilter(photo.exposureSettings?.filter || 'Aucun');
       setNdFilter(photo.exposureSettings?.ndFilter || 'Aucun');
       setLensHood(photo.exposureSettings?.lensHood || false);
@@ -192,6 +206,17 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
     }
   }, [photo]);
 
+  const handleSelectLightingGear = (gearId: string) => {
+    setLightingGearId(gearId);
+    if (!gearId) return;
+    const selected = gear.find(g => g._id === gearId);
+    if (selected) {
+      setLightingType(selected.subType || 'flash');
+      setLightingBrand(selected.brand || '');
+      setLightingModel(selected.model || '');
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -206,6 +231,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
     );
 
     const isPhotoAnalog = Boolean(isAnalog);
+    const isArtificial = light === 'Artificielle' || light === 'Flash';
 
     onSave({
       title,
@@ -225,6 +251,11 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
         iso: iso ? Number(iso) : null,
         focalLength,
         light,
+        lightingType: isArtificial ? lightingType : undefined,
+        lightingGearId: isArtificial && lightingGearId ? lightingGearId : null,
+        lightingBrand: isArtificial ? lightingBrand : '',
+        lightingModel: isArtificial ? lightingModel : '',
+        lightingPower: isArtificial ? lightingPower : '',
         filter,
         ndFilter,
         lensHood
@@ -542,6 +573,117 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
                 </select>
               </div>
             </div>
+
+            {/* BLOC CONFIGURATION ECLAIRAGE ARTIFICIEL */}
+            {(light === 'Artificielle' || light === 'Flash') && (
+              <div className="bg-yellow-500/5 border border-yellow-500/20 p-3 rounded-xl space-y-3 mt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-yellow-500 flex items-center gap-1.5">
+                    💡 Paramètres de l'Éclairage Artificiel
+                  </h4>
+                  {gear.filter(g => g.type === 'eclairage').length > 0 && (
+                    <span className="text-[10px] text-gray-400">
+                      (depuis l'inventaire ou personnalisé)
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {/* Sélection depuis inventaire */}
+                  <div className="sm:col-span-2">
+                    <label className="block text-[10px] text-gray-400 mb-0.5">
+                      Équipement d'éclairage enregistré (Inventaire)
+                    </label>
+                    <select
+                      value={lightingGearId}
+                      onChange={e => handleSelectLightingGear(e.target.value)}
+                      className="w-full bg-black/40 border border-white/10 rounded-lg p-1.5 text-white text-xs"
+                    >
+                      <option value="">-- Saisie manuelle / Personnalisée --</option>
+                      {gear
+                        .filter(g => g.type === 'eclairage')
+                        .map(g => (
+                          <option key={g._id} value={g._id}>
+                            {g.subType === 'flash' ? '⚡ Flash' : '☀️ Continue'} - {g.brand} {g.model} {g.maxPowerWatts ? `(${g.maxPowerWatts}W)` : ''}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+
+                  {/* Type d'éclairage */}
+                  <div>
+                    <label className="block text-[10px] text-gray-400 mb-0.5">Type d'éclairage *</label>
+                    <select
+                      value={lightingType}
+                      onChange={e => setLightingType(e.target.value as 'continuous' | 'flash')}
+                      className="w-full bg-black/30 border border-white/10 rounded-lg p-1.5 text-white text-xs"
+                    >
+                      <option value="flash">⚡ Flash</option>
+                      <option value="continuous">☀️ Lumière continue</option>
+                    </select>
+                  </div>
+
+                  {/* Puissance utilisée */}
+                  <div>
+                    <label className="block text-[10px] text-gray-400 mb-0.5">Puissance utilisée (1/256 à 1/1)</label>
+                    <select
+                      value={['1/1', '1/2', '1/4', '1/8', '1/16', '1/32', '1/64', '1/128', '1/256'].includes(lightingPower) ? lightingPower : (lightingPower ? 'autre' : '')}
+                      onChange={e => {
+                        if (e.target.value !== 'autre') {
+                          setLightingPower(e.target.value);
+                        }
+                      }}
+                      className="w-full bg-black/30 border border-white/10 rounded-lg p-1.5 text-white text-xs"
+                    >
+                      <option value="">Sélectionner une puissance</option>
+                      <option value="1/1">1/1 (Pleine puissance)</option>
+                      <option value="1/2">1/2</option>
+                      <option value="1/4">1/4</option>
+                      <option value="1/8">1/8</option>
+                      <option value="1/16">1/16</option>
+                      <option value="1/32">1/32</option>
+                      <option value="1/64">1/64</option>
+                      <option value="1/128">1/128</option>
+                      <option value="1/256">1/256</option>
+                      <option value="autre">Autre (Saisie libre)</option>
+                    </select>
+                    {(!['1/1', '1/2', '1/4', '1/8', '1/16', '1/32', '1/64', '1/128', '1/256'].includes(lightingPower) && lightingPower !== '') && (
+                      <input
+                        type="text"
+                        value={lightingPower}
+                        onChange={e => setLightingPower(e.target.value)}
+                        placeholder="ex: 1/16 +0.3, 50%, etc."
+                        className="w-full bg-black/30 border border-white/10 rounded-lg p-1.5 text-white text-xs mt-1.5 font-mono"
+                      />
+                    )}
+                  </div>
+
+                  {/* Marque */}
+                  <div>
+                    <label className="block text-[10px] text-gray-400 mb-0.5">Marque de l'éclairage</label>
+                    <input
+                      type="text"
+                      value={lightingBrand}
+                      onChange={e => setLightingBrand(e.target.value)}
+                      placeholder="ex: Godox, Profoto, Aputure..."
+                      className="w-full bg-black/30 border border-white/10 rounded-lg p-1.5 text-white text-xs"
+                    />
+                  </div>
+
+                  {/* Modèle */}
+                  <div>
+                    <label className="block text-[10px] text-gray-400 mb-0.5">Nom / Modèle de l'éclairage</label>
+                    <input
+                      type="text"
+                      value={lightingModel}
+                      onChange={e => setLightingModel(e.target.value)}
+                      placeholder="ex: AD600 Pro, Amaran 200d, V1..."
+                      className="w-full bg-black/30 border border-white/10 rounded-lg p-1.5 text-white text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-3 gap-2 pt-1">
               <div>

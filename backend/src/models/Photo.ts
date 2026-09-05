@@ -34,6 +34,11 @@ export interface IPhoto extends Document {
     iso?: number;
     focalLength?: string;
     light?: string;
+    lightingType?: 'continuous' | 'flash';
+    lightingGearId?: mongoose.Types.ObjectId;
+    lightingBrand?: string;
+    lightingModel?: string;
+    lightingPower?: string; // e.g. "1/1", "1/2", ..., "1/256"
     filter?: string; // e.g. Aucun, Rouge, Bleu, Vert, Jaune
     ndFilter?: string; // e.g. Aucun, 1, 2, 4, 8, 16, 100
     lensHood?: boolean; // parasoleil
@@ -83,6 +88,11 @@ const PhotoSchema = new Schema<IPhoto>({
     iso: { type: Number, default: null },
     focalLength: { type: String, default: '' },
     light: { type: String, default: '' },
+    lightingType: { type: String, enum: ['continuous', 'flash'], default: undefined },
+    lightingGearId: { type: Schema.Types.ObjectId, ref: 'Gear', default: null },
+    lightingBrand: { type: String, default: '' },
+    lightingModel: { type: String, default: '' },
+    lightingPower: { type: String, default: '' },
     filter: { type: String, default: 'Aucun' },
     ndFilter: { type: String, default: 'Aucun' },
     lensHood: { type: Boolean, default: false }

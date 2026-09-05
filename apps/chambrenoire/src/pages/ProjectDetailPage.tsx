@@ -242,7 +242,16 @@ const ProjectDetailPage: React.FC = () => {
                       {photo.exposureSettings?.light && (
                         <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
                           <td className="py-1.5 font-light">Lumière</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">{photo.exposureSettings.light}</td>
+                          <td className="py-1.5 text-right font-medium text-gray-100">
+                            {photo.exposureSettings.light}
+                            {(photo.exposureSettings.lightingBrand || photo.exposureSettings.lightingModel || photo.exposureSettings.lightingType || photo.exposureSettings.lightingPower) && (
+                              <span className="block text-[11px] text-yellow-400 font-normal">
+                                {photo.exposureSettings.lightingType === 'flash' ? '⚡ Flash' : photo.exposureSettings.lightingType === 'continuous' ? '☀️ Continue' : ''}
+                                {(photo.exposureSettings.lightingBrand || photo.exposureSettings.lightingModel) && ` ${photo.exposureSettings.lightingBrand} ${photo.exposureSettings.lightingModel}`.trim()}
+                                {photo.exposureSettings.lightingPower && ` @ ${photo.exposureSettings.lightingPower}`}
+                              </span>
+                            )}
+                          </td>
                         </tr>
                       )}
                       {photo.exposureSettings?.filter && photo.exposureSettings.filter !== 'Aucun' && (

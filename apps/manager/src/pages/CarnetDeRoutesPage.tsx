@@ -141,6 +141,13 @@ const CarnetDeRoutesPage: React.FC = () => {
                 <div>
                   <span className="text-xs text-gray-500 block">Lumière</span>
                   <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.light}</span>
+                  {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel || lightboxPhoto.exposureSettings.lightingType || lightboxPhoto.exposureSettings.lightingPower) && (
+                    <span className="block text-[11px] text-yellow-400 font-normal mt-0.5">
+                      {lightboxPhoto.exposureSettings.lightingType === 'flash' ? '⚡ Flash' : lightboxPhoto.exposureSettings.lightingType === 'continuous' ? '☀️ Continue' : ''}
+                      {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel) && ` ${lightboxPhoto.exposureSettings.lightingBrand} ${lightboxPhoto.exposureSettings.lightingModel}`.trim()}
+                      {lightboxPhoto.exposureSettings.lightingPower && ` @ ${lightboxPhoto.exposureSettings.lightingPower}`}
+                    </span>
+                  )}
                 </div>
               )}
               {lightboxPhoto.exposureSettings?.filter && lightboxPhoto.exposureSettings.filter !== 'Aucun' && (
@@ -477,6 +484,13 @@ const CarnetDeRoutesPage: React.FC = () => {
                     <div>
                       <span className="text-xs text-gray-500 block">Lumière</span>
                       <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.light}</span>
+                      {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel || lightboxPhoto.exposureSettings.lightingType || lightboxPhoto.exposureSettings.lightingPower) && (
+                        <span className="block text-[11px] text-yellow-400 font-normal mt-0.5">
+                          {lightboxPhoto.exposureSettings.lightingType === 'flash' ? '⚡ Flash' : lightboxPhoto.exposureSettings.lightingType === 'continuous' ? '☀️ Continue' : ''}
+                          {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel) && ` ${lightboxPhoto.exposureSettings.lightingBrand} ${lightboxPhoto.exposureSettings.lightingModel}`.trim()}
+                          {lightboxPhoto.exposureSettings.lightingPower && ` @ ${lightboxPhoto.exposureSettings.lightingPower}`}
+                        </span>
+                      )}
                     </div>
                   )}
                   {lightboxPhoto.exposureSettings?.filter && lightboxPhoto.exposureSettings.filter !== 'Aucun' && (
