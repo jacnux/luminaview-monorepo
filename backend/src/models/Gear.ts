@@ -2,10 +2,12 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IGear {
   userId: mongoose.Types.ObjectId;
-  type: 'camera' | 'lens';
+  type: 'camera' | 'lens' | 'eclairage';
+  subType?: 'continuous' | 'flash'; // Pour type 'eclairage' : Lumière continue ou Flash
   brand: string;
   model: string;
-  format: string; // e.g. "35mm", "120", "Plein format", "APS-C"
+  format?: string; // e.g. "35mm", "120", "Plein format", "APS-C" (ou 'N/A' pour eclairage)
+  maxPowerWatts?: number; // Puissance maximale en Watts
   serialNumber?: string;
   notes?: string;
   createdAt?: Date;
@@ -14,10 +16,12 @@ export interface IGear {
 
 const GearSchema = new Schema<IGear>({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  type: { type: String, enum: ['camera', 'lens'], required: true },
+  type: { type: String, enum: ['camera', 'lens', 'eclairage'], required: true },
+  subType: { type: String, enum: ['continuous', 'flash'] },
   brand: { type: String, required: true },
   model: { type: String, required: true },
-  format: { type: String, required: true },
+  format: { type: String, default: 'N/A' },
+  maxPowerWatts: { type: Number },
   serialNumber: { type: String },
   notes: { type: String }
 }, { timestamps: true });

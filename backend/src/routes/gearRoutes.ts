@@ -36,17 +36,25 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 // 2. CREATE NEW GEAR
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { type, brand, model, format, serialNumber, notes } = req.body;
-    if (!type || !brand || !model || !format) {
-      return res.status(400).json({ error: 'Champs obligatoires manquants' });
+    const { type, subType, brand, model, format, maxPowerWatts, serialNumber, notes } = req.body;
+    if (!type || !brand || !model) {
+      return res.status(400).json({ error: 'Champs obligatoires manquants (type, marque, modèle)' });
+    }
+    if (type !== 'eclairage' && !format) {
+      return res.status(400).json({ error: 'Le format est obligatoire pour les boîtiers et objectifs' });
+    }
+    if (type === 'eclairage' && !subType) {
+      return res.status(400).json({ error: "Le type d'éclairage (Lumière continue ou Flash) est obligatoire" });
     }
 
     const gear = new Gear({
       userId: req.user.userId,
       type,
+      subType: type === 'eclairage' ? subType : undefined,
       brand,
       model,
-      format,
+      format: type === 'eclairage' ? (format || 'N/A') : format,
+      maxPowerWatts: type === 'eclairage' && maxPowerWatts !== undefined && maxPowerWatts !== '' ? Number(maxPowerWatts) : undefined,
       serialNumber,
       notes
     });
@@ -70,12 +78,14 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Action non autorisée' });
     }
 
-    const { type, brand, model, format, serialNumber, notes } = req.body;
+    const { type, subType, brand, model, format, maxPowerWatts, serialNumber, notes } = req.body;
     
     gear.type = type ?? gear.type;
+    gear.subType = subType !== undefined ? subType : gear.subType;
     gear.brand = brand ?? gear.brand;
     gear.model = model ?? gear.model;
     gear.format = format ?? gear.format;
+    gear.maxPowerWatts = maxPowerWatts !== undefined ? (maxPowerWatts === '' ? undefined : Number(maxPowerWatts)) : gear.maxPowerWatts;
     gear.serialNumber = serialNumber !== undefined ? serialNumber : gear.serialNumber;
     gear.notes = notes !== undefined ? notes : gear.notes;
 

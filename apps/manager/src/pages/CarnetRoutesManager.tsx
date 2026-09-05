@@ -77,10 +77,12 @@ const CarnetRoutesManager: React.FC = () => {
   const [filterProjectMedium, setFilterProjectMedium] = useState<string>('ALL');
 
   // Matériel
-  const [gearType, setGearType] = useState<'camera' | 'lens'>('camera');
+  const [gearType, setGearType] = useState<'camera' | 'lens' | 'eclairage'>('camera');
+  const [gearSubType, setGearSubType] = useState<'continuous' | 'flash'>('continuous');
   const [gearBrand, setGearBrand] = useState('');
   const [gearModel, setGearModel] = useState('');
   const [gearFormat, setGearFormat] = useState('35mm');
+  const [gearMaxPowerWatts, setGearMaxPowerWatts] = useState<string>('');
   const [gearSerial, setGearSerial] = useState('');
   const [gearNotes, setGearNotes] = useState('');
 
@@ -304,17 +306,24 @@ const CarnetRoutesManager: React.FC = () => {
   // --- Actions CRUD Matériel ---
   const handleSaveGear = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!gearBrand || !gearModel || !gearFormat) return alert('Veuillez remplir tous les champs obligatoires');
+    if (!gearBrand || !gearModel) return alert('Veuillez remplir la marque et le modèle/nom');
+    if (gearType !== 'eclairage' && !gearFormat) return alert('Veuillez indiquer le format');
+    if (gearType === 'eclairage' && !gearSubType) return alert("Veuillez sélectionner le type d'éclairage (Lumière continue ou Flash)");
 
     try {
-      const payload = {
+      const payload: any = {
         type: gearType,
         brand: gearBrand,
         model: gearModel,
-        format: gearFormat,
+        format: gearType === 'eclairage' ? 'N/A' : gearFormat,
         serialNumber: gearSerial,
         notes: gearNotes
       };
+
+      if (gearType === 'eclairage') {
+        payload.subType = gearSubType;
+        payload.maxPowerWatts = gearMaxPowerWatts ? Number(gearMaxPowerWatts) : undefined;
+      }
 
       if (editingItem) {
         await api.put(`/gears/${editingItem._id}`, payload);
@@ -331,10 +340,12 @@ const CarnetRoutesManager: React.FC = () => {
 
   const handleEditGear = (g: any) => {
     setEditingItem(g);
-    setGearType(g.type);
-    setGearBrand(g.brand);
-    setGearModel(g.model);
-    setGearFormat(g.format);
+    setGearType(g.type || 'camera');
+    setGearSubType(g.subType || 'continuous');
+    setGearBrand(g.brand || '');
+    setGearModel(g.model || '');
+    setGearFormat(g.format || '35mm');
+    setGearMaxPowerWatts(g.maxPowerWatts !== undefined && g.maxPowerWatts !== null ? String(g.maxPowerWatts) : '');
     setGearSerial(g.serialNumber || '');
     setGearNotes(g.notes || '');
     setShowAddGear(true);
@@ -630,9 +641,12 @@ const CarnetRoutesManager: React.FC = () => {
     setProjectMakingOfUploading(false);
 
     // Matériel
+    setGearType('camera');
+    setGearSubType('continuous');
     setGearBrand('');
     setGearModel('');
     setGearFormat('35mm');
+    setGearMaxPowerWatts('');
     setGearSerial('');
     setGearNotes('');
 
@@ -2298,7 +2312,7 @@ const CarnetRoutesManager: React.FC = () => {
           {activeTab === 'gear' && (
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Mon Matériel Photo (Boîtiers & Objectifs)</h2>
+                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Mon Matériel Photo (Boîtiers, Objectifs & Éclairages)</h2>
                 {!showAddGear && (
                   <button
                     onClick={() => { resetForm(); setShowAddGear(true); }}
@@ -2317,28 +2331,47 @@ const CarnetRoutesManager: React.FC = () => {
                       <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Type de matériel *</label>
                       <select
                         value={gearType}
-                        onChange={e => setGearType(e.target.value as 'camera' | 'lens')}
+                        onChange={e => setGearType(e.target.value as 'camera' | 'lens' | 'eclairage')}
                         className={`w-full rounded-lg p-2 text-sm border ${
                           isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
                         }`}
                       >
-                        <option value="camera">Boîtier (Appareil photo)</option>
-                        <option value="lens">Objectif</option>
+                        <option value="camera">📷 Boîtier (Appareil photo)</option>
+                        <option value="lens">🔍 Objectif</option>
+                        <option value="eclairage">💡 Éclairage (Lumière continue / Flash)</option>
                       </select>
                     </div>
-                    <div>
-                      <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Format * (Pellicule ou Capteur)</label>
-                      <input
-                        type="text"
-                        value={gearFormat}
-                        onChange={e => setGearFormat(e.target.value)}
-                        className={`w-full rounded-lg p-2 text-sm border ${
-                          isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        }`}
-                        placeholder="ex: 35mm, 120, Plein format, APS-C..."
-                        required
-                      />
-                    </div>
+
+                    {gearType === 'eclairage' ? (
+                      <div>
+                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Type d'éclairage *</label>
+                        <select
+                          value={gearSubType}
+                          onChange={e => setGearSubType(e.target.value as 'continuous' | 'flash')}
+                          className={`w-full rounded-lg p-2 text-sm border ${
+                            isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          <option value="continuous">☀️ Lumière continue (LED, COB, Torche...)</option>
+                          <option value="flash">⚡ Flash (Cobra, Studio, Générateur...)</option>
+                        </select>
+                      </div>
+                    ) : (
+                      <div>
+                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Format * (Pellicule ou Capteur)</label>
+                        <input
+                          type="text"
+                          value={gearFormat}
+                          onChange={e => setGearFormat(e.target.value)}
+                          className={`w-full rounded-lg p-2 text-sm border ${
+                            isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                          placeholder="ex: 35mm, 120, Plein format, APS-C..."
+                          required
+                        />
+                      </div>
+                    )}
+
                     <div>
                       <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Marque *</label>
                       <input
@@ -2348,12 +2381,14 @@ const CarnetRoutesManager: React.FC = () => {
                         className={`w-full rounded-lg p-2 text-sm border ${
                           isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
                         }`}
-                        placeholder="ex: Leica, Canon, Hasselblad..."
+                        placeholder={gearType === 'eclairage' ? 'ex: Godox, Profoto, Aputure, Elinchrom...' : 'ex: Leica, Canon, Hasselblad...'}
                         required
                       />
                     </div>
                     <div>
-                      <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Modèle / Caractéristique *</label>
+                      <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>
+                        {gearType === 'eclairage' ? 'Nom / Modèle *' : 'Modèle / Caractéristique *'}
+                      </label>
                       <input
                         type="text"
                         value={gearModel}
@@ -2361,10 +2396,35 @@ const CarnetRoutesManager: React.FC = () => {
                         className={`w-full rounded-lg p-2 text-sm border ${
                           isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
                         }`}
-                        placeholder="ex: M6, AE-1, 50mm f/1.4..."
+                        placeholder={gearType === 'eclairage' ? 'ex: AD600 Pro, Amaran 200d, V1, D2 500...' : 'ex: M6, AE-1, 50mm f/1.4...'}
                         required
                       />
                     </div>
+
+                    {gearType === 'eclairage' && (
+                      <div className="sm:col-span-2">
+                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>
+                          Puissance maximale en Watts (W)
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={gearMaxPowerWatts}
+                            onChange={e => setGearMaxPowerWatts(e.target.value)}
+                            className={`w-full rounded-lg p-2 pr-10 text-sm border ${
+                              isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                            placeholder="ex: 600 (Watts)"
+                          />
+                          <span className={`absolute right-3 top-2 text-xs font-bold ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Watts
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="sm:col-span-2">
                       <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Numéro de série</label>
                       <input
@@ -2386,7 +2446,7 @@ const CarnetRoutesManager: React.FC = () => {
                         className={`w-full rounded-lg p-2 text-sm border ${
                           isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
                         }`}
-                        placeholder="ex: Mise au point manuelle, cellule HS..."
+                        placeholder={gearType === 'eclairage' ? 'ex: Monture Bowens, bicolore 2700-6500K, batterie V-Mount...' : 'ex: Mise au point manuelle, cellule HS...'}
                       />
                     </div>
                   </div>
@@ -2415,7 +2475,7 @@ const CarnetRoutesManager: React.FC = () => {
                   Aucun matériel enregistré dans votre inventaire.
                 </div>
               ) : (
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {/* BOITIERS */}
                   <div className="space-y-3">
                     <h3 className={`font-bold text-lg border-b pb-2 ${isDark ? 'text-yellow-500 border-yellow-500/20' : 'text-yellow-600 border-yellow-200'}`}>📷 Boîtiers</h3>
@@ -2462,6 +2522,47 @@ const CarnetRoutesManager: React.FC = () => {
                       ))}
                       {gear.filter(g => g.type === 'lens').length === 0 && (
                         <p className="text-xs text-gray-500 italic">Aucun objectif enregistré.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ECLAIRAGES */}
+                  <div className="space-y-3">
+                    <h3 className={`font-bold text-lg border-b pb-2 ${isDark ? 'text-yellow-500 border-yellow-500/20' : 'text-yellow-600 border-yellow-200'}`}>💡 Éclairages</h3>
+                    <div className="space-y-3">
+                      {gear.filter(g => g.type === 'eclairage').map(g => (
+                        <div key={g._id} className={`border p-4 rounded-xl flex justify-between items-center transition ${
+                          isDark ? 'bg-white/5 border-white/5 hover:border-white/10' : 'bg-white border-gray-200 shadow-sm hover:shadow'
+                        }`}>
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className={`font-bold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{g.brand} {g.model}</p>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                g.subType === 'flash'
+                                  ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30'
+                                  : 'bg-orange-500/20 text-orange-700 dark:text-orange-300 border border-orange-500/30'
+                              }`}>
+                                {g.subType === 'flash' ? '⚡ Flash' : '☀️ Lumière continue'}
+                              </span>
+                            </div>
+                            <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                              {g.maxPowerWatts ? (
+                                <span className="font-semibold text-yellow-600 dark:text-yellow-400 font-mono">⚡ {g.maxPowerWatts} W</span>
+                              ) : (
+                                <span className="italic">Puissance non précisée</span>
+                              )}
+                              {g.serialNumber && ` | N°: ${g.serialNumber}`}
+                            </p>
+                            {g.notes && <p className="text-xs text-gray-500 italic mt-1">"{g.notes}"</p>}
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => handleEditGear(g)} className="text-xs font-semibold text-yellow-600 dark:text-yellow-400 bg-yellow-500/10 px-2.5 py-1.5 rounded-lg">Modifier</button>
+                            <button onClick={() => handleDeleteGear(g._id)} className="text-xs font-semibold text-red-600 dark:text-red-400 bg-red-500/10 px-2.5 py-1.5 rounded-lg">Supprimer</button>
+                          </div>
+                        </div>
+                      ))}
+                      {gear.filter(g => g.type === 'eclairage').length === 0 && (
+                        <p className="text-xs text-gray-500 italic">Aucun éclairage enregistré.</p>
                       )}
                     </div>
                   </div>
