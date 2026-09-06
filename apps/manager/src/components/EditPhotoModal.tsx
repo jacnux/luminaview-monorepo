@@ -288,7 +288,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 sm:p-6 backdrop-blur-md overflow-y-auto">
-      <div className="bg-gray-900 border border-white/20 rounded-2xl shadow-2xl max-w-2xl w-full p-5 sm:p-6 relative max-h-[80vh] my-auto flex flex-col text-white">
+      <div className="bg-gray-900 border border-white/20 rounded-2xl shadow-2xl max-w-5xl w-full p-5 sm:p-6 relative max-h-[85vh] my-auto flex flex-col text-white">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-300 hover:text-white text-2xl z-10"
@@ -300,9 +300,12 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
           Modifier les paramètres de la photo
         </h2>
 
-        <form id="edit-photo-form" onSubmit={handleSubmit} className="space-y-4 overflow-y-auto pr-2 flex-1 min-h-0">
-          {/* SECTION 1: GENERAL & PUBLICATION */}
-          <div className="bg-white/5 p-4 rounded-xl space-y-3">
+        <form id="edit-photo-form" onSubmit={handleSubmit} className="overflow-y-auto pr-1 flex-1 min-h-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
+            {/* COLONNE GAUCHE : INFOS GENERALES + PRISE DE VUE */}
+            <div className="space-y-4">
+              {/* SECTION 1: GENERAL & PUBLICATION */}
+              <div className="bg-white/5 p-4 rounded-xl space-y-3">
             <div className="flex justify-between items-center border-b border-white/5 pb-1">
               <h3 className="text-sm font-bold text-gray-300">📁 Informations Générales</h3>
               {user?.hasCarnet && (
@@ -906,76 +909,84 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
               </div>
             </div>
           )}
+        </div>
 
-          {/* SECRET DE FABRICATION */}
-          <div className="border-t border-white/10 pt-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-purple-400">🎬 Secret de fabrication</h3>
-              <div className="flex gap-2">
-                <label
-                  htmlFor={`making-of-upload-${photo._id}`}
-                  className={`cursor-pointer text-[10px] font-bold uppercase px-2 py-1 rounded border ${
-                    makingOfUploading
-                      ? 'border-purple-400/30 text-purple-400/50'
-                      : 'border-purple-400/50 text-purple-400 hover:bg-purple-400/10'
-                  } transition`}
-                  title="Insérer une image"
-                >
-                  {makingOfUploading ? '⏳ Upload...' : '📎 Image'}
-                </label>
-                <input
-                  id={`making-of-upload-${photo._id}`}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  disabled={makingOfUploading}
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    setMakingOfUploading(true);
-                    try {
-                      const formData = new FormData();
-                      formData.append('image', file);
-                      const res = await api.post('/photos/making-of/upload', formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' }
-                      });
-                      const url = res.data.url;
-                      const mdSnippet = `\n![${file.name}](${url})\n`;
-                      setMakingOf(prev => prev + mdSnippet);
-                    } catch (err) {
-                      alert('Erreur lors de l\'upload de l\'image');
-                    } finally {
-                      setMakingOfUploading(false);
-                      e.target.value = '';
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setMakingOfPreview(p => !p)}
-                  className="text-[10px] font-bold uppercase px-2 py-1 rounded border border-purple-400/50 text-purple-400 hover:bg-purple-400/10 transition"
-                >
-                  {makingOfPreview ? '✏️ Éditer' : '👁 Aperçu'}
-                </button>
+            {/* COLONNE DROITE : SECRET DE FABRICATION */}
+            <div className="space-y-4">
+              <div className="bg-white/5 p-4 rounded-xl space-y-3 border border-purple-500/20">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                  <h3 className="text-sm font-bold text-purple-400 flex items-center gap-1.5">
+                    🎬 Secret de fabrication
+                  </h3>
+                  <div className="flex gap-2">
+                    <label
+                      htmlFor={`making-of-upload-${photo._id}`}
+                      className={`cursor-pointer text-[10px] font-bold uppercase px-2.5 py-1 rounded border ${
+                        makingOfUploading
+                          ? 'border-purple-400/30 text-purple-400/50'
+                          : 'border-purple-400/50 text-purple-400 hover:bg-purple-400/10'
+                      } transition`}
+                      title="Insérer une image"
+                    >
+                      {makingOfUploading ? '⏳ Upload...' : '📎 Image'}
+                    </label>
+                    <input
+                      id={`making-of-upload-${photo._id}`}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={makingOfUploading}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setMakingOfUploading(true);
+                        try {
+                          const formData = new FormData();
+                          formData.append('image', file);
+                          const res = await api.post('/photos/making-of/upload', formData, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                          });
+                          const url = res.data.url;
+                          const mdSnippet = `\n![${file.name}](${url})\n`;
+                          setMakingOf(prev => prev + mdSnippet);
+                        } catch (err) {
+                          alert('Erreur lors de l\'upload de l\'image');
+                        } finally {
+                          setMakingOfUploading(false);
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setMakingOfPreview(p => !p)}
+                      className="text-[10px] font-bold uppercase px-2.5 py-1 rounded border border-purple-400/50 text-purple-400 hover:bg-purple-400/10 transition"
+                    >
+                      {makingOfPreview ? '✏️ Éditer' : '👁 Aperçu'}
+                    </button>
+                  </div>
+                </div>
+                <p className="text-[11px] text-gray-400 leading-relaxed">
+                  Racontez les coulisses, l'histoire, la préparation ou la mise en scène. Markdown et insertion d'images supportés.
+                </p>
+                {makingOfPreview ? (
+                  <div
+                    className="w-full min-h-[380px] max-h-[550px] bg-black/30 border border-white/10 rounded-lg p-3.5 text-sm text-gray-200 prose prose-invert max-w-none overflow-y-auto"
+                    style={{ whiteSpace: 'pre-wrap' }}
+                  >
+                    {makingOf || <span className="text-gray-600 italic">Aucun contenu rédigé pour le moment.</span>}
+                  </div>
+                ) : (
+                  <textarea
+                    value={makingOf}
+                    onChange={e => setMakingOf(e.target.value)}
+                    rows={18}
+                    placeholder={`Racontez le secret de fabrication de cette photo...\n\nEx: # Préparation & Coulisses\nJ'ai préparé la scène avec un réflecteur argenté...\n\n![Croquis préparatoire](/uploads/making-of/maquette.jpg)\n\n# Démarche\nCe cliché visait à capturer l'ambiance matinale...`}
+                    className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white text-xs resize-y font-mono leading-relaxed placeholder-gray-600 focus:outline-none focus:border-purple-400/50 min-h-[380px]"
+                  />
+                )}
               </div>
             </div>
-            <p className="text-[10px] text-gray-500">Markdown supporté : **gras**, *italique*, # titres, ![alt](url)</p>
-            {makingOfPreview ? (
-              <div
-                className="w-full min-h-[120px] bg-black/20 border border-white/10 rounded-lg p-3 text-sm text-gray-200 prose prose-invert max-w-none overflow-auto"
-                style={{ whiteSpace: 'pre-wrap' }}
-              >
-                {makingOf || <span className="text-gray-600 italic">Aucun contenu</span>}
-              </div>
-            ) : (
-              <textarea
-                value={makingOf}
-                onChange={e => setMakingOf(e.target.value)}
-                rows={5}
-                placeholder={`Racontez le secret de fabrication de cette photo...\n\nEx: # Préparation\nJ'ai fait un croquis préparatoire la veille...\n\n![Croquis préparatoire](/uploads/making-of/maquette.jpg)`}
-                className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white text-xs resize-y font-mono leading-relaxed placeholder-gray-600 focus:outline-none focus:border-purple-400/50"
-              />
-            )}
           </div>
         </form>
 
