@@ -328,7 +328,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
+              <div className={user?.hasCarnet ? '' : 'sm:col-span-2'}>
                 <label className="block text-xs text-gray-400 mb-1">Titre</label>
                 <input
                   type="text"
@@ -338,21 +338,23 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
                 />
               </div>
 
-              <div>
-                <label className="block text-xs text-gray-400 mb-1">Projet de Prise de vue (Optionnel)</label>
-                <select
-                  value={projectId}
-                  onChange={e => setProjectId(e.target.value)}
-                  className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-white text-sm"
-                >
-                  <option value="">Aucun projet</option>
-                  {projects.map(p => (
-                    <option key={p._id} value={p._id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {user?.hasCarnet && (
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Projet de Prise de vue (Optionnel)</label>
+                  <select
+                    value={projectId}
+                    onChange={e => setProjectId(e.target.value)}
+                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-white text-sm"
+                  >
+                    <option value="">Aucun projet</option>
+                    {projects.map(p => (
+                      <option key={p._id} value={p._id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div className="sm:col-span-2">
                 <label className="block text-xs text-gray-400 mb-1">Description</label>
