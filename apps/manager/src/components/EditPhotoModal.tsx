@@ -287,20 +287,20 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
   if (!photo) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <div className="bg-gray-900 border border-white/20 rounded-2xl shadow-2xl max-w-2xl w-full p-6 relative max-h-[90vh] flex flex-col text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 sm:p-6 backdrop-blur-md overflow-y-auto">
+      <div className="bg-gray-900 border border-white/20 rounded-2xl shadow-2xl max-w-2xl w-full p-5 sm:p-6 relative max-h-[80vh] my-auto flex flex-col text-white">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-300 hover:text-white text-2xl"
+          className="absolute top-4 right-4 text-gray-300 hover:text-white text-2xl z-10"
         >
           &times;
         </button>
 
-        <h2 className="text-xl font-bold mb-4 text-yellow-500 border-b border-white/10 pb-2">
+        <h2 className="text-xl font-bold mb-4 text-yellow-500 border-b border-white/10 pb-2 flex-shrink-0">
           Modifier les paramètres de la photo
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto pr-2 flex-1">
+        <form id="edit-photo-form" onSubmit={handleSubmit} className="space-y-4 overflow-y-auto pr-2 flex-1 min-h-0">
           {/* SECTION 1: GENERAL & PUBLICATION */}
           <div className="bg-white/5 p-4 rounded-xl space-y-3">
             <div className="flex justify-between items-center border-b border-white/5 pb-1">
@@ -977,24 +977,25 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
               />
             )}
           </div>
-
-          {/* ACTIONS */}
-          <div className="flex gap-4 pt-4 border-t border-white/10">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg font-bold transition text-sm"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black py-2 rounded-lg font-bold transition text-sm shadow-md shadow-yellow-950/20"
-            >
-              Sauvegarder
-            </button>
-          </div>
         </form>
+
+        {/* ACTIONS TOUJOURS VISIBLES */}
+        <div className="flex gap-4 pt-3 mt-3 border-t border-white/10 flex-shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2.5 rounded-lg font-bold transition text-sm"
+          >
+            Annuler
+          </button>
+          <button
+            type="submit"
+            form="edit-photo-form"
+            className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black py-2.5 rounded-lg font-bold transition text-sm shadow-md shadow-yellow-950/20"
+          >
+            Sauvegarder
+          </button>
+        </div>
       </div>
     </div>
   );

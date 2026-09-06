@@ -49,7 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div
-      className={`relative min-h-screen w-full overflow-hidden ${
+      className={`relative min-h-screen w-full overflow-x-hidden ${
         theme === 'dark' ? 'bg-gray-950 text-white' : 'bg-gray-100 text-gray-900'
       }`}
     >
@@ -354,56 +354,50 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
       ) : (
-        // --- THEME CLASSIC (NAVBAR HORIZONTALE) ---
-        <div className="relative z-10 min-h-screen pb-20 flex flex-col">
-          {/* Header sticky */}
-          <div
-            className={`sticky top-0 z-20 border-b p-3 sm:p-4 backdrop-blur-md flex justify-between items-center gap-2 shadow-xl transition-all duration-300 ${
+        // --- THEME CLASSIC (NAVBAR HORIZONTALE COMPACTE) ---
+        <div className="relative z-10 min-h-screen pb-16 flex flex-col">
+          {/* Header compact h-14 */}
+          <header
+            className={`sticky top-0 z-30 h-14 border-b px-3 sm:px-4 backdrop-blur-md flex items-center justify-between gap-2 shadow-sm transition-all duration-300 ${
               theme === 'dark'
-                ? 'bg-gray-950/70 border-white/[0.06] shadow-black/20'
-                : 'bg-white/85 border-gray-200/50 shadow-gray-200/10'
+                ? 'bg-gray-950/85 border-white/[0.08] shadow-black/20'
+                : 'bg-white/90 border-gray-200/70 shadow-gray-200/10'
             }`}
           >
-            <div className="flex-shrink-0 flex flex-col justify-center">
+            {/* Logo / Espace */}
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Link
                 to="/dashboard"
-                className="text-xl sm:text-2xl font-extrabold text-yellow-500 tracking-wide hover:text-yellow-400 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200 drop-shadow-[0_2px_8px_rgba(234,179,8,0.15)]"
+                className="text-base sm:text-lg font-extrabold text-yellow-500 tracking-tight hover:text-yellow-400 transition"
               >
                 Lumina Studio
               </Link>
               {user && (
-                <span
-                  className={`text-[10px] sm:text-xs ml-1 mt-0.5 tracking-wider ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                >
-                  Espace de :{' '}
-                  <span className="font-semibold text-yellow-600">
-                    {user?.name}
-                  </span>
+                <span className="hidden md:inline-block text-[11px] px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-500 font-semibold border border-yellow-500/20">
+                  {user.name}
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-3">
-              {user ? (
-                <>
-                  {/* Tabs principaux */}
+            {user ? (
+              <>
+                {/* Navigation centrale */}
+                <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
                   <div
-                    className={`flex gap-1 p-1 rounded-full border transition-all duration-300 ${
+                    className={`flex items-center gap-0.5 p-0.5 rounded-xl border transition-all duration-300 ${
                       theme === 'dark'
-                        ? 'bg-gray-900/50 border-white/[0.06]'
-                        : 'bg-gray-100/80 border-gray-200'
+                        ? 'bg-black/40 border-white/[0.08]'
+                        : 'bg-gray-100/90 border-gray-200'
                     }`}
                   >
                     <Link
                       to="/dashboard"
-                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                         location.pathname === '/dashboard'
-                          ? 'bg-blue-600 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
+                          ? 'bg-blue-600 text-white shadow-sm'
                           : theme === 'dark'
-                          ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                          : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                          ? 'text-gray-300 hover:text-white hover:bg-white/5'
+                          : 'text-gray-700 hover:text-black hover:bg-black/5'
                       }`}
                     >
                       📁 Albums
@@ -411,12 +405,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                     <Link
                       to="/galleries"
-                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                         location.pathname === '/galleries'
-                          ? 'bg-blue-600 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
+                          ? 'bg-blue-600 text-white shadow-sm'
                           : theme === 'dark'
-                          ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                          : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                          ? 'text-gray-300 hover:text-white hover:bg-white/5'
+                          : 'text-gray-700 hover:text-black hover:bg-black/5'
                       }`}
                     >
                       🗂️ Galeries
@@ -424,132 +418,137 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                     <Link
                       to="/dashboard/pages"
-                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                         location.pathname.startsWith('/dashboard/pages')
-                          ? 'bg-yellow-500 text-black shadow-[0_4px_12px_rgba(234,179,8,0.25)]'
+                          ? 'bg-yellow-500 text-black shadow-sm'
                           : theme === 'dark'
-                          ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                          : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                          ? 'text-gray-300 hover:text-white hover:bg-white/5'
+                          : 'text-gray-700 hover:text-black hover:bg-black/5'
                       }`}
                     >
-                      <span>📄</span> Pages
+                      📄 Pages
                     </Link>
 
                     {user?.hasBlog && (
                       <Link
                         to="/manage-blog"
-                        className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
+                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                           location.pathname === '/manage-blog'
-                            ? 'bg-orange-600 text-white shadow-[0_4px_12px_rgba(234,88,12,0.3)]'
+                            ? 'bg-orange-600 text-white shadow-sm'
                             : theme === 'dark'
-                            ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                            : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                            ? 'text-gray-300 hover:text-white hover:bg-white/5'
+                            : 'text-gray-700 hover:text-black hover:bg-black/5'
                         }`}
                       >
-                        <span>📝</span> Blog
+                        📝 Blog
                       </Link>
                     )}
 
                     {user?.hasCarnet && (
                       <Link
                         to="/dashboard/carnet-routes"
-                        className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                           location.pathname.startsWith('/dashboard/carnet-routes')
-                            ? 'bg-amber-600 text-white shadow-[0_4px_12px_rgba(217,119,6,0.3)]'
+                            ? 'bg-amber-600 text-white shadow-sm'
                             : theme === 'dark'
-                            ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                            : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                            ? 'text-gray-300 hover:text-white hover:bg-white/5'
+                            : 'text-gray-700 hover:text-black hover:bg-black/5'
                         }`}
                       >
-                        <span>🎞️</span> Chambre Noire
+                        🎞️ Chambre Noire
                       </Link>
                     )}
                   </div>
 
                   <Link
                     to="/comments"
-                    className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 ${
+                    className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition ${
                       isCommentsRoute
-                        ? 'bg-blue-600 text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
+                        ? 'bg-blue-600 text-white'
                         : theme === 'dark'
-                        ? 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                        : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
+                        ? 'text-gray-300 hover:text-white hover:bg-white/5'
+                        : 'text-gray-700 hover:text-black hover:bg-black/5'
                     }`}
                   >
                     <span>💬</span>
-                    <span>Commentaires</span>
+                    <span className="hidden xl:inline">Commentaires</span>
                     {unreadCount > 0 && (
-                      <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none animate-pulse">
+                      <span className="inline-flex items-center justify-center min-w-[1.1rem] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-bold leading-none">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}
                   </Link>
+                </nav>
 
-                  <a
-                    href={getVitrineUrl(user)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
-                      theme === 'dark'
-                        ? 'text-amber-400 hover:text-amber-300 hover:bg-white/[0.04]'
-                        : 'text-amber-600 hover:text-amber-700 hover:bg-black/[0.04]'
-                    }`}
-                  >
-                    <span>🌍</span> Vitrine
-                  </a>
-                  {user?.hasBlog && (
+                {/* Actions et Outils à droite */}
+                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                  {/* Liens externes compacts */}
+                  <div className="hidden lg:flex items-center gap-1 text-xs">
                     <a
-                      href={getAppUrl('blog', user.name)}
+                      href={getVitrineUrl(user)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
+                      className={`px-2 py-1 rounded-lg font-medium transition ${
                         theme === 'dark'
-                          ? 'text-indigo-400 hover:text-indigo-300 hover:bg-white/[0.04]'
-                          : 'text-indigo-600 hover:text-indigo-700 hover:bg-black/[0.04]'
+                          ? 'text-amber-400 hover:bg-white/5'
+                          : 'text-amber-600 hover:bg-black/5'
                       }`}
+                      title="Voir ma vitrine"
                     >
-                      <span>✍️</span> Blog
+                      🌍 Vitrine
                     </a>
-                  )}
-                  {user?.hasCarnet && (
-                    <a
-                      href={getAppUrl('carnet', user.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1 ${
-                        theme === 'dark'
-                          ? 'text-teal-400 hover:text-teal-300 hover:bg-white/[0.04]'
-                          : 'text-teal-600 hover:text-teal-700 hover:bg-black/[0.04]'
-                      }`}
-                    >
-                      <span>🎞️</span> Chambre Noire
-                    </a>
-                  )}
+                    {user?.hasBlog && (
+                      <a
+                        href={getAppUrl('blog', user.name)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`px-2 py-1 rounded-lg font-medium transition ${
+                          theme === 'dark'
+                            ? 'text-indigo-400 hover:bg-white/5'
+                            : 'text-indigo-600 hover:bg-black/5'
+                        }`}
+                        title="Voir mon blog"
+                      >
+                        ✍️ Blog
+                      </a>
+                    )}
+                    {user?.hasCarnet && (
+                      <a
+                        href={getAppUrl('carnet', user.name)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`px-2 py-1 rounded-lg font-medium transition ${
+                          theme === 'dark'
+                            ? 'text-teal-400 hover:bg-white/5'
+                            : 'text-teal-600 hover:bg-black/5'
+                        }`}
+                        title="Voir ma Chambre Noire"
+                      >
+                        🎞️ Carnet
+                      </a>
+                    )}
+                  </div>
 
-                  {/* Bouton créer */}
+                  {/* Bouton créer compact */}
                   <Link
                     to="/create-album"
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 shadow-md shadow-green-950/20 hover:shadow-green-900/30 hover:scale-[1.03] active:scale-[0.97]"
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition shadow-sm"
                   >
                     + Créer
                   </Link>
 
-                  {/* Actions à droite */}
+                  {/* Actions utilitaires compactes */}
                   <div
-                    className={`flex items-center gap-1 rounded-full p-1 border transition-all duration-300 ${
+                    className={`flex items-center gap-0.5 rounded-lg p-0.5 border ${
                       theme === 'dark'
-                        ? 'bg-gray-900/50 border-white/[0.06]'
+                        ? 'bg-black/40 border-white/[0.08]'
                         : 'bg-gray-100 border-gray-200'
                     }`}
                   >
                     {isAdmin && (
                       <button
                         onClick={() => navigate('/admin/users')}
-                        className={`p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
-                          theme === 'dark'
-                            ? 'hover:bg-white/[0.06] text-gray-300 hover:text-white'
-                            : 'hover:bg-black/[0.06] text-gray-600 hover:text-black'
-                        }`}
+                        className="p-1 rounded hover:bg-white/10 text-xs"
                         title="Admin Users"
                       >
                         🛡️
@@ -558,7 +557,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     {isAdmin && (
                       <button
                         onClick={() => navigate('/admin/reports')}
-                        className="p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        className="p-1 rounded hover:bg-red-500/10 text-xs text-red-400"
                         title="Signalements"
                       >
                         🚩
@@ -567,11 +566,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                     <button
                       onClick={() => navigate('/tools')}
-                      className={`p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
-                        theme === 'dark'
-                          ? 'hover:bg-white/[0.06] text-gray-300 hover:text-white'
-                          : 'hover:bg-black/[0.06] text-gray-600 hover:text-black'
-                      }`}
+                      className="p-1 rounded hover:bg-white/10 text-xs"
                       title="Outils"
                     >
                       🛠️
@@ -579,31 +574,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                     <button
                       onClick={toggleTheme}
-                      className={`p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 text-lg ${
-                        theme === 'dark' ? 'hover:bg-white/[0.06]' : 'hover:bg-black/[0.06]'
-                      }`}
+                      className="p-1 rounded hover:bg-white/10 text-xs"
                       title="Changer le thème"
                     >
                       {theme === 'light' ? '🌙' : '☀️'}
                     </button>
                     <Link
                       to="/dashboard/about"
-                      className={`p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
-                        theme === 'dark'
-                          ? 'hover:bg-white/[0.06] text-gray-300 hover:text-white'
-                          : 'hover:bg-black/[0.06] text-gray-600 hover:text-black'
-                      }`}
+                      className="p-1 rounded hover:bg-white/10 text-xs"
                       title="À propos"
                     >
                       ℹ️
                     </Link>
                     <Link
                       to="/dashboard/help"
-                      className={`p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
-                        theme === 'dark'
-                          ? 'hover:bg-white/[0.06] text-gray-300 hover:text-white'
-                          : 'hover:bg-black/[0.06] text-gray-600 hover:text-black'
-                      }`}
+                      className="p-1 rounded hover:bg-white/10 text-xs"
                       title="Aide"
                     >
                       ❓
@@ -611,48 +596,42 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                     <button
                       onClick={() => navigate('/edit-profile')}
-                      className={`p-2 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
-                        theme === 'dark'
-                          ? 'hover:bg-white/[0.06] text-gray-300 hover:text-white'
-                          : 'hover:bg-black/[0.06] text-gray-600 hover:text-black'
-                      }`}
+                      className="p-1 rounded hover:bg-white/10 text-xs"
                       title="Profil"
                     >
                       👤
                     </button>
                     <button
                       onClick={logout}
-                      className="p-2 rounded-full hover:bg-red-500/10 text-red-400 hover:text-red-300 transition-all duration-200 hover:scale-105 active:scale-95"
+                      className="p-1 rounded hover:bg-red-500/10 text-xs text-red-400"
                       title="Sortir"
                     >
                       ⏻
                     </button>
                   </div>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className={`px-4 py-2 text-sm ${
-                      theme === 'dark'
-                        ? 'text-gray-300 hover:text-white'
-                        : 'text-gray-600 hover:text-black'
-                    }`}
-                  >
-                    Connexion
-                  </Link>
-                  <button
-                    onClick={toggleTheme}
-                    className={`p-2 rounded-full transition text-xl ${
-                      theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-200'
-                    }`}
-                  >
-                    {theme === 'light' ? '🌙' : '☀️'}
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className={`px-3 py-1 text-xs rounded-lg ${
+                    theme === 'dark'
+                      ? 'text-gray-300 hover:text-white hover:bg-white/5'
+                      : 'text-gray-600 hover:text-black hover:bg-black/5'
+                  }`}
+                >
+                  Connexion
+                </Link>
+                <button
+                  onClick={toggleTheme}
+                  className="p-1 rounded text-sm"
+                >
+                  {theme === 'light' ? '🌙' : '☀️'}
+                </button>
+              </div>
+            )}
+          </header>
 
           {/* Contenu page */}
           <main className="relative flex-1">{children}</main>

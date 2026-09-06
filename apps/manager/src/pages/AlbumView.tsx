@@ -268,8 +268,8 @@ const AlbumView = () => {
   const canAddPhotos = !isViewer && !album?.isVirtual;
 
   const actionsBarWrapperClass = isViewer
-    ? 'px-4 pt-3 sticky top-[76px] sm:top-[88px] z-20 px-4 pt-4'
-    : 'px-4 pt-4 sticky top-[76px] sm:top-[88px] z-20';
+    ? 'px-4 pt-3 sticky top-14 z-20'
+    : 'px-4 pt-3 sticky top-14 z-20';
 
   const locationState = location.state as { fromPortfolio?: boolean; portfolioPath?: string; portfolioLabel?: string } | null;
   const viewerBackLink = locationState?.portfolioPath || subdomain ? null : null;
