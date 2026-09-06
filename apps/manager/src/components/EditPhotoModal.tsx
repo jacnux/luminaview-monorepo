@@ -20,6 +20,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
   const [isAnalog, setIsAnalog] = useState(false);
   const [gearCameraId, setGearCameraId] = useState('');
   const [gearLensId, setGearLensId] = useState('');
+  const [showAllLenses, setShowAllLenses] = useState(false);
   const [filmId, setFilmId] = useState('');
   const [filmFrameNumber, setFilmFrameNumber] = useState<string>('');
   const [showOnBlog, setShowOnBlog] = useState(false);
@@ -488,7 +489,18 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
               </div>
 
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Objectif utilisé</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs text-gray-400">Objectif utilisé</label>
+                  {gearCameraId && gear.filter(g => g.type === 'lens').length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllLenses(!showAllLenses)}
+                      className="text-[10px] text-yellow-500/80 hover:text-yellow-400 underline transition"
+                    >
+                      {showAllLenses ? "Filtrer selon l'appareil" : "Tous les objectifs"}
+                    </button>
+                  )}
+                </div>
                 <select
                   value={gearLensId}
                   onChange={e => setGearLensId(e.target.value)}
@@ -497,12 +509,26 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
                   <option value="">Sélectionner un objectif</option>
                   {gear
                     .filter(g => g.type === 'lens')
+                    .filter((lens: any) => {
+                      if (showAllLenses || !gearCameraId) return true;
+                      if (lens._id === gearLensId) return true;
+                      const validCameras = (lens.compatibleCameras || []).filter(Boolean);
+                      if (validCameras.length === 0) return true;
+                      return validCameras.some((c: any) =>
+                        typeof c === 'object' && c !== null && c._id ? c._id === gearCameraId : c === gearCameraId
+                      );
+                    })
                     .map((g: any) => (
                       <option key={g._id} value={g._id}>
                         {g.brand} {g.model} ({g.format})
                       </option>
                     ))}
                 </select>
+                {gearCameraId && !showAllLenses && (
+                  <p className="text-[9px] text-gray-500 mt-1 italic">
+                    Objectifs compatibles & universels.
+                  </p>
+                )}
               </div>
             </div>
 

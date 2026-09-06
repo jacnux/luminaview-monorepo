@@ -7,6 +7,7 @@ export interface IGear {
   brand: string;
   model: string;
   format?: string; // e.g. "35mm", "120", "Plein format", "APS-C" (ou 'N/A' pour eclairage)
+  compatibleCameras?: mongoose.Types.ObjectId[]; // Pour type 'lens' : Boîtiers compatibles
   maxPowerWatts?: number; // Puissance maximale en Watts
   serialNumber?: string;
   notes?: string;
@@ -21,6 +22,7 @@ const GearSchema = new Schema<IGear>({
   brand: { type: String, required: true },
   model: { type: String, required: true },
   format: { type: String, default: 'N/A' },
+  compatibleCameras: [{ type: Schema.Types.ObjectId, ref: 'Gear' }],
   maxPowerWatts: { type: Number },
   serialNumber: { type: String },
   notes: { type: String }

@@ -86,6 +86,7 @@ const CarnetRoutesManager: React.FC = () => {
   const [gearBrand, setGearBrand] = useState('');
   const [gearModel, setGearModel] = useState('');
   const [gearFormat, setGearFormat] = useState('35mm');
+  const [gearCompatibleCameras, setGearCompatibleCameras] = useState<string[]>([]);
   const [gearMaxPowerWatts, setGearMaxPowerWatts] = useState<string>('');
   const [gearSerial, setGearSerial] = useState('');
   const [gearNotes, setGearNotes] = useState('');
@@ -329,6 +330,8 @@ const CarnetRoutesManager: React.FC = () => {
       if (gearType === 'eclairage') {
         payload.subType = gearSubType;
         payload.maxPowerWatts = gearMaxPowerWatts ? Number(gearMaxPowerWatts) : undefined;
+      } else if (gearType === 'lens') {
+        payload.compatibleCameras = gearCompatibleCameras;
       }
 
       if (editingItem) {
@@ -351,10 +354,18 @@ const CarnetRoutesManager: React.FC = () => {
     setGearBrand(g.brand || '');
     setGearModel(g.model || '');
     setGearFormat(g.format || '35mm');
+    const camIds = (g.compatibleCameras || [])
+      .filter(Boolean)
+      .map((c: any) => (typeof c === 'object' && c !== null && c._id ? c._id : c))
+      .filter((id: any) => typeof id === 'string');
+    setGearCompatibleCameras(camIds);
     setGearMaxPowerWatts(g.maxPowerWatts !== undefined && g.maxPowerWatts !== null ? String(g.maxPowerWatts) : '');
     setGearSerial(g.serialNumber || '');
     setGearNotes(g.notes || '');
     setShowAddGear(true);
+    setTimeout(() => {
+      document.getElementById('gear-form-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
   };
 
   const handleDeleteGear = async (id: string) => {
@@ -656,6 +667,7 @@ const CarnetRoutesManager: React.FC = () => {
     setGearBrand('');
     setGearModel('');
     setGearFormat('35mm');
+    setGearCompatibleCameras([]);
     setGearMaxPowerWatts('');
     setGearSerial('');
     setGearNotes('');
@@ -2579,8 +2591,21 @@ const CarnetRoutesManager: React.FC = () => {
               </div>
 
               {showAddGear && (
-                <form onSubmit={handleSaveGear} className={`border rounded-2xl p-6 space-y-4 max-w-xl ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-sm'}`}>
-                  <h3 className="text-lg font-bold text-yellow-600 dark:text-yellow-400">{editingItem ? 'Modifier le matériel' : 'Ajouter un matériel'}</h3>
+                <form
+                  id="gear-form-section"
+                  onSubmit={handleSaveGear}
+                  className={`border rounded-2xl p-6 space-y-4 max-w-xl transition-all ring-2 ring-yellow-500/50 ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-lg'}`}
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
+                      {editingItem ? `✏️ Modifier : ${editingItem.brand} ${editingItem.model}` : '+ Ajouter un matériel'}
+                    </h3>
+                    {editingItem && (
+                      <span className="text-xs bg-yellow-500/20 text-yellow-500 px-2.5 py-1 rounded-full font-semibold">
+                        Mode édition
+                      </span>
+                    )}
+                  </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
                       <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Type de matériel *</label>
@@ -2680,6 +2705,59 @@ const CarnetRoutesManager: React.FC = () => {
                       </div>
                     )}
 
+                    {gearType === 'lens' && (
+                      <div className="sm:col-span-2">
+                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>
+                          Boîtiers compatibles / associés (Optionnel)
+                        </label>
+                        {gear.filter(g => g.type === 'camera').length === 0 ? (
+                          <p className="text-xs text-gray-500 italic">
+                            Aucun boîtier créé pour le moment. L'objectif sera proposé pour tous les futurs boîtiers.
+                          </p>
+                        ) : (
+                          <div className="space-y-2">
+                            <p className="text-[11px] text-gray-500">
+                              💡 Cochez les boîtiers compatibles avec cet objectif. Si aucun n'est coché, l'objectif sera considéré comme universel (proposé pour tous les boîtiers).
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                              {gear.filter(g => g.type === 'camera').map(cam => {
+                                const isChecked = gearCompatibleCameras.includes(cam._id);
+                                return (
+                                  <button
+                                    key={cam._id}
+                                    type="button"
+                                    onClick={() => {
+                                      if (isChecked) {
+                                        setGearCompatibleCameras(gearCompatibleCameras.filter(id => id !== cam._id));
+                                      } else {
+                                        setGearCompatibleCameras([...gearCompatibleCameras, cam._id]);
+                                      }
+                                    }}
+                                    className={`flex items-center gap-2 p-2 rounded-lg border text-xs text-left transition ${
+                                      isChecked
+                                        ? isDark
+                                          ? 'bg-yellow-500/20 border-yellow-500/50 text-yellow-300'
+                                          : 'bg-yellow-50 border-yellow-400 text-yellow-900 font-semibold'
+                                        : isDark
+                                          ? 'bg-black/20 border-white/10 text-gray-400 hover:border-white/20'
+                                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'
+                                    }`}
+                                  >
+                                    <span className={`w-4 h-4 rounded border flex items-center justify-center text-[10px] ${
+                                      isChecked ? 'bg-yellow-500 text-black font-bold border-yellow-500' : 'border-gray-400'
+                                    }`}>
+                                      {isChecked ? '✓' : ''}
+                                    </span>
+                                    <span className="truncate">📷 {cam.brand} {cam.model}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div className="sm:col-span-2">
                       <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Numéro de série</label>
                       <input
@@ -2767,6 +2845,26 @@ const CarnetRoutesManager: React.FC = () => {
                           <div>
                             <p className={`font-bold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{g.brand} {g.model}</p>
                             <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Format: {g.format} {g.serialNumber && `| N°: ${g.serialNumber}`}</p>
+                            {g.compatibleCameras && g.compatibleCameras.filter(Boolean).length > 0 ? (
+                              <div className="flex flex-wrap gap-1 mt-1.5">
+                                {g.compatibleCameras.filter(Boolean).map((cam: any, idx: number) => {
+                                  const camObj = typeof cam === 'object' && cam !== null ? cam : gear.find(c => c._id === cam);
+                                  return (
+                                    <span key={camObj?._id || (typeof cam === 'string' ? cam : idx)} className={`text-[10px] px-2 py-0.5 rounded-full border ${
+                                      isDark ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400' : 'bg-yellow-50 border-yellow-200 text-yellow-800 font-medium'
+                                    }`}>
+                                      📷 {camObj ? `${camObj.brand} ${camObj.model}` : 'Boîtier'}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <span className={`inline-block text-[10px] px-2 py-0.5 rounded-full border mt-1.5 ${
+                                isDark ? 'bg-white/5 border-white/10 text-gray-400' : 'bg-gray-100 border-gray-200 text-gray-600'
+                              }`}>
+                                🌐 Universel (tous boîtiers)
+                              </span>
+                            )}
                             {g.notes && <p className="text-xs text-gray-500 italic mt-1">"{g.notes}"</p>}
                           </div>
                           <div className="flex gap-2">

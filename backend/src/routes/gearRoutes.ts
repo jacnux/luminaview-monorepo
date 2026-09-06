@@ -6,7 +6,9 @@ const router = express.Router();
 
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    let gearList = await Gear.find({ userId: req.user.userId }).sort({ brand: 1, model: 1 });
+    let gearList = await Gear.find({ userId: req.user.userId })
+      .populate('compatibleCameras', 'brand model format')
+      .sort({ brand: 1, model: 1 });
     
     // Auto-create Sténopé if not present
     const hasStenope = gearList.some(g => g.type === 'camera' && g.brand.toLowerCase() === 'sténopé');
@@ -36,7 +38,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 // 2. CREATE NEW GEAR
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { type, subType, brand, model, format, maxPowerWatts, serialNumber, notes } = req.body;
+    const { type, subType, brand, model, format, compatibleCameras, maxPowerWatts, serialNumber, notes } = req.body;
     if (!type || !brand || !model) {
       return res.status(400).json({ error: 'Champs obligatoires manquants (type, marque, modèle)' });
     }
@@ -54,12 +56,14 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       brand,
       model,
       format: type === 'eclairage' ? (format || 'N/A') : format,
+      compatibleCameras: type === 'lens' && Array.isArray(compatibleCameras) ? compatibleCameras : [],
       maxPowerWatts: type === 'eclairage' && maxPowerWatts !== undefined && maxPowerWatts !== '' ? Number(maxPowerWatts) : undefined,
       serialNumber,
       notes
     });
 
     await gear.save();
+    await gear.populate('compatibleCameras', 'brand model format');
     res.status(201).json(gear);
   } catch (error: any) {
     if (error.code === 11000) {
@@ -78,18 +82,24 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Action non autorisée' });
     }
 
-    const { type, subType, brand, model, format, maxPowerWatts, serialNumber, notes } = req.body;
+    const { type, subType, brand, model, format, compatibleCameras, maxPowerWatts, serialNumber, notes } = req.body;
     
     gear.type = type ?? gear.type;
     gear.subType = subType !== undefined ? subType : gear.subType;
     gear.brand = brand ?? gear.brand;
     gear.model = model ?? gear.model;
     gear.format = format ?? gear.format;
+    if (gear.type === 'lens') {
+      gear.compatibleCameras = Array.isArray(compatibleCameras) ? compatibleCameras : [];
+    } else {
+      gear.compatibleCameras = [];
+    }
     gear.maxPowerWatts = maxPowerWatts !== undefined ? (maxPowerWatts === '' ? undefined : Number(maxPowerWatts)) : gear.maxPowerWatts;
     gear.serialNumber = serialNumber !== undefined ? serialNumber : gear.serialNumber;
     gear.notes = notes !== undefined ? notes : gear.notes;
 
     await gear.save();
+    await gear.populate('compatibleCameras', 'brand model format');
     res.json(gear);
   } catch (error: any) {
     console.error('Erreur lors de la mise à jour du matériel :', error);
