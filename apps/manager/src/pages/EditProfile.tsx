@@ -379,7 +379,7 @@ const EditProfile: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">🎞️</span>
                       <div>
-                        <div className="font-bold text-sm">Module Chambre Noire & Carnets</div>
+                        <div className="font-bold text-sm">Module Chambre Noire</div>
                         <div className={`text-xs ${subtleTextClass}`}>Espace de création complet : Idées, Projets de terrain, Matériel & Mémoire de laboratoire.</div>
                       </div>
                     </div>

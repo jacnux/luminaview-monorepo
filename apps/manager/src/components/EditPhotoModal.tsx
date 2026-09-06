@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 interface EditPhotoModalProps {
   photo: any;
@@ -8,6 +9,7 @@ interface EditPhotoModalProps {
 }
 
 const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave }) => {
+  const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
@@ -303,21 +305,23 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
           <div className="bg-white/5 p-4 rounded-xl space-y-3">
             <div className="flex justify-between items-center border-b border-white/5 pb-1">
               <h3 className="text-sm font-bold text-gray-300">📁 Informations Générales</h3>
-              <div className="flex items-center gap-1.5 bg-yellow-500/10 px-2.5 py-1 rounded-lg border border-yellow-500/20">
-                <input
-                  type="checkbox"
-                  id="blog-toggle"
-                  checked={showOnBlog}
-                  onChange={e => setShowOnBlog(e.target.checked)}
-                  className="w-3.5 h-3.5 text-yellow-500 rounded bg-transparent border-white/20 focus:ring-0 cursor-pointer"
-                />
-                <label
-                  htmlFor="blog-toggle"
-                  className="text-xs text-yellow-500 font-bold select-none cursor-pointer"
-                >
-                  🌐 Public (Carnet)
-                </label>
-              </div>
+              {user?.hasCarnet && (
+                <div className="flex items-center gap-1.5 bg-yellow-500/10 px-2.5 py-1 rounded-lg border border-yellow-500/20">
+                  <input
+                    type="checkbox"
+                    id="blog-toggle"
+                    checked={showOnBlog}
+                    onChange={e => setShowOnBlog(e.target.checked)}
+                    className="w-3.5 h-3.5 text-yellow-500 rounded bg-transparent border-white/20 focus:ring-0 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="blog-toggle"
+                    className="text-xs text-yellow-500 font-bold select-none cursor-pointer"
+                  >
+                    🌐 Public (Carnet)
+                  </label>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

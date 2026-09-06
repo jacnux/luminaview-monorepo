@@ -21,7 +21,7 @@ Une fois connecté à **Lumina Studio** (`http://localhost:7080` ou `https://lum
 Dans **Mon Profil** > **Modules & Extensions**, activez ou désactivez les fonctionnalités selon vos besoins :
 
 1. **Module Blog** : Active la rédaction d'articles et affiche le lien *Actualités* sur votre Portfolio.
-2. **Module Chambre Noire & Carnets** : Active l'espace de création (Idées, Projets, Matériel & Labo) et affiche le lien *Chambre Noire* sur votre Portfolio.
+2. **Module Chambre Noire** : Active l'espace de création (Idées, Projets, Matériel & Labo) et affiche le lien *Chambre Noire* sur votre Portfolio.
 
 ---
 
