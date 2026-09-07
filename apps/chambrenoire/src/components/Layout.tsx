@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import { getUserSlug } from '../utils/domain';
+import { getPortfolioUrl } from '../utils/urls';
 
 interface LayoutProps {
   children: React.ReactNode;
+}
+
+interface UserProfile {
+  name: string;
+  blogTheme?: string;
+  hasBlog?: boolean;
+  hasCarnet?: boolean;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
@@ -13,6 +21,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = 'dark';
   const userSlug = getUserSlug();
   const homeUrl = userSlug ? `/?user=${userSlug}` : '/';
+
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    if (userSlug) {
+      fetch(`/api/users/public/profile?user=${userSlug}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) setUserProfile(data);
+        })
+        .catch(() => {});
+    }
+  }, [userSlug]);
+
+  const portfolioUrl = getPortfolioUrl(userProfile?.name || userSlug, userProfile?.blogTheme);
 
   // Zone connectée large (albums, galeries, carnet-routes, etc.)
   const isAuthenticatedArea = [
@@ -95,6 +118,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Link>
           </div>
 
+          {/* Lien retour Portfolio */}
+          <div className="flex items-center gap-3">
+            <a
+              href={portfolioUrl}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-gray-300 hover:text-amber-400 bg-white/5 hover:bg-white/10 border border-white/10 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm"
+              title={`Retour au Portfolio de ${userProfile?.name || userSlug}`}
+            >
+              <span className="text-amber-500">&larr;</span>
+              <span>Retour Portfolio</span>
+            </a>
+          </div>
         </div>
 
         {/* Contenu page */}
@@ -115,3 +149,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 };
 
 export default Layout;
+

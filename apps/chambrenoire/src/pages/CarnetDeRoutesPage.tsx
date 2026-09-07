@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getSubdomain } from '../utils/domain';
+import { getPortfolioUrl } from '../utils/urls';
 
 const CarnetDeRoutesPage: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -237,6 +238,15 @@ const CarnetDeRoutesPage: React.FC = () => {
       {/* Intro Header */}
       {!isEmbedded && (
         <div className="text-center max-w-2xl mx-auto space-y-4">
+          <div>
+            <a
+              href={getPortfolioUrl(userProfile?.name || getSubdomain() || 'jac', userProfile?.blogTheme)}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-500/90 hover:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm"
+            >
+              <span>&larr;</span>
+              <span>Retour au Portfolio {userProfile?.name ? `(${userProfile.name})` : ''}</span>
+            </a>
+          </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-gray-950 dark:text-white sm:text-5xl">
             📓 Carnet de Routes
           </h1>
