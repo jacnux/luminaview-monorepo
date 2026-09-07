@@ -18,8 +18,11 @@ const ProjectDetailPage: React.FC = () => {
 
     const userSlug = getUserSlug();
     fetch(`/api/projects/public/project/${slug}?user=${userSlug}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Impossible de charger ce projet');
+      .then(async res => {
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          throw new Error(errData?.error || 'Impossible de charger ce projet');
+        }
         return res.json();
       })
       .then(data => {
@@ -32,6 +35,9 @@ const ProjectDetailPage: React.FC = () => {
       })
       .finally(() => setLoading(false));
   }, [slug]);
+
+  const userSlug = getUserSlug();
+  const backUrl = userSlug ? `/?user=${userSlug}` : '/';
 
   if (loading) {
     return (
@@ -46,7 +52,7 @@ const ProjectDetailPage: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto px-6 py-20 text-center space-y-4">
         <p className="text-red-500 font-medium">{error || 'Projet introuvable'}</p>
-        <Link to="/" className="inline-block text-amber-500 font-semibold hover:underline">
+        <Link to={backUrl} className="inline-block text-amber-500 font-semibold hover:underline">
           &larr; Retour au carnet de routes
         </Link>
       </div>
@@ -60,7 +66,7 @@ const ProjectDetailPage: React.FC = () => {
       {/* Back link */}
       {!isEmbedded && (
         <div>
-          <Link to="/" className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-amber-500 transition-colors">
+          <Link to={backUrl} className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-amber-500 transition-colors">
             &larr; Retour au carnet de routes
           </Link>
         </div>

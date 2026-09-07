@@ -57,7 +57,7 @@ router.get('/public/all', async (req: Request, res: Response) => {
 router.get('/public/project/:slug', async (req: Request, res: Response) => {
   try {
     const userParam = req.query.user as string;
-    let query: any = { slug: req.params.slug, isPublished: true };
+    let query: any = { slug: req.params.slug };
     if (userParam) {
       const user = await User.findOne({ name: new RegExp('^' + userParam.trim() + '$', 'i') });
       if (user) {
@@ -66,7 +66,10 @@ router.get('/public/project/:slug', async (req: Request, res: Response) => {
     }
 
     const project = await Project.findOne(query);
-    if (!project) return res.status(404).json({ error: 'Projet introuvable ou privé' });
+    if (!project) return res.status(404).json({ error: 'Projet introuvable' });
+    if (!project.isPublished) {
+      return res.status(403).json({ error: 'Ce projet est privé (non publié dans le carnet de routes)' });
+    }
 
     const photos = await Photo.find({ projectId: project._id })
       .populate('gearCameraId')
@@ -184,7 +187,7 @@ router.post('/:id/concretize', authenticateToken, async (req: Request, res: Resp
       return res.status(403).json({ error: 'Action non autorisée' });
     }
 
-    const { medium, status, targetDate } = req.body;
+    const { medium, status, targetDate, isPublished } = req.body;
     if (!medium || medium === 'UNDECIDED') {
       return res.status(400).json({ error: 'Veuillez sélectionner un médium valide (Numérique, Argentique ou Hybride)' });
     }
@@ -192,6 +195,7 @@ router.post('/:id/concretize', authenticateToken, async (req: Request, res: Resp
     project.medium = medium;
     project.status = status || 'IN_PROGRESS';
     if (targetDate) project.targetDate = new Date(targetDate);
+    project.isPublished = isPublished !== undefined ? isPublished : true; // Par défaut, un projet concrétisé est publié
 
     await project.save();
     res.json(project);

@@ -10,16 +10,28 @@ export const getUserSlug = (): string => {
   // 1. Priorité absolue aux paramètres d'URL (?user=xxx ou ?u=xxx)
   const params = new URLSearchParams(window.location.search);
   const queryUser = params.get('u') || params.get('user');
-  if (queryUser) return queryUser.trim().toLowerCase();
+  if (queryUser) {
+    const slug = queryUser.trim().toLowerCase();
+    try {
+      sessionStorage.setItem('chambrenoire_current_user', slug);
+    } catch (e) {}
+    return slug;
+  }
+
+  // 2. Vérifier si un utilisateur était actif dans la session courante (pour navigation localhost)
+  try {
+    const stored = sessionStorage.getItem('chambrenoire_current_user');
+    if (stored) return stored;
+  } catch (e) {}
 
   const hostname = window.location.hostname;
 
-  // 2. Cas Localhost simple
+  // 3. Cas Localhost simple (repli sur jac si aucune session trouvée)
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return 'jac';
   }
 
-  // 3. Cas Production / DNS (*.helioscope.fr ou *.luminaview.fr)
+  // 4. Cas Production / DNS (*.helioscope.fr ou *.luminaview.fr)
   if (hostname.endsWith(`.${MAIN_DOMAIN}`) || hostname.endsWith('.luminaview.fr')) {
     const parts = hostname.split('.');
     if (parts.length >= 3) {
@@ -31,7 +43,7 @@ export const getUserSlug = (): string => {
     }
   }
 
-  // 4. Cas particulier pour le dev local avec /etc/hosts
+  // 5. Cas particulier pour le dev local avec /etc/hosts
   if (hostname.endsWith('.local.luminaview')) {
     const parts = hostname.split('.');
     if (parts.length >= 3) return parts[0].toLowerCase();

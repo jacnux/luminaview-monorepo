@@ -48,6 +48,7 @@ const CarnetRoutesManager: React.FC = () => {
   const [concretizeMedium, setConcretizeMedium] = useState<'DIGITAL' | 'ANALOG' | 'HYBRID'>('DIGITAL');
   const [concretizeStatus, setConcretizeStatus] = useState<'PREPARATION' | 'IN_PROGRESS'>('IN_PROGRESS');
   const [concretizeTargetDate, setConcretizeTargetDate] = useState('');
+  const [concretizePublished, setConcretizePublished] = useState(true);
 
   // --- Form States ---
   // Boîte à Idées
@@ -230,6 +231,7 @@ const CarnetRoutesManager: React.FC = () => {
     setConcretizeMedium('DIGITAL');
     setConcretizeStatus('IN_PROGRESS');
     setConcretizeTargetDate(idea.targetDate ? idea.targetDate.split('T')[0] : '');
+    setConcretizePublished(true);
     setShowConcretizeModal(true);
   };
 
@@ -241,7 +243,8 @@ const CarnetRoutesManager: React.FC = () => {
       await api.post(`/projects/${concretizeIdeaItem._id}/concretize`, {
         medium: concretizeMedium,
         status: concretizeStatus,
-        targetDate: concretizeTargetDate || undefined
+        targetDate: concretizeTargetDate || undefined,
+        isPublished: concretizePublished
       });
 
       setShowConcretizeModal(false);
@@ -655,7 +658,7 @@ const CarnetRoutesManager: React.FC = () => {
     setProjectMedium('ANALOG');
     setProjectTags('');
     setProjectTargetDate('');
-    setProjectPublished(false);
+    setProjectPublished(true);
     setProjectCover('');
     setProjectMakingOf('');
     setProjectMakingOfPreview(false);
@@ -2275,6 +2278,20 @@ const CarnetRoutesManager: React.FC = () => {
                         isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
                       }`}
                     />
+                  </div>
+
+                  {/* Publier en ligne */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <input
+                      type="checkbox"
+                      id="concretize-published"
+                      checked={concretizePublished}
+                      onChange={e => setConcretizePublished(e.target.checked)}
+                      className="w-4 h-4 rounded text-yellow-500 bg-black/40 border-white/20 focus:ring-yellow-500 cursor-pointer"
+                    />
+                    <label htmlFor="concretize-published" className={`text-xs cursor-pointer select-none ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      🌐 Rendre ce projet visible (En Ligne) dans mon carnet de routes public
+                    </label>
                   </div>
 
                   <div className="pt-2 flex gap-2">
