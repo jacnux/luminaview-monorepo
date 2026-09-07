@@ -156,6 +156,56 @@ router.get('/public/standalone', async (req: Request, res: Response) => {
   }
 });
 
+// 0.1 UPLOAD MAKING-OF / NOTES ATTACHMENT IMAGE
+router.post('/making-of/upload', authenticateToken, uploadMulter.single('image'), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Aucun fichier fourni' });
+    }
+
+    const file = req.file;
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+
+    if (user.quotaUsed + file.size > user.quotaLimit) {
+      if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+      return res.status(400).json({ error: 'Quota de stockage dépassé' });
+    }
+
+    const uploadsDir = path.join(__dirname, '../../uploads');
+    const webpFilename = `makingof-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.webp`;
+    const webpPath = path.join(uploadsDir, webpFilename);
+
+    // Convert and compress to WebP (max dimension 2048px, quality 85)
+    await sharp(file.path)
+      .rotate()
+      .resize({ width: 2048, height: 2048, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 85 })
+      .toFile(webpPath);
+
+    const stats = fs.statSync(webpPath);
+
+    // Update user quota
+    await User.findByIdAndUpdate(req.user.userId, {
+      $inc: { quotaUsed: stats.size }
+    });
+
+    // Clean up original uploaded file if different from webpPath
+    if (fs.existsSync(file.path) && file.path !== webpPath) {
+      fs.unlinkSync(file.path);
+    }
+
+    const relativeUrl = `/uploads/${webpFilename}`;
+    res.status(201).json({ url: relativeUrl, filename: webpFilename });
+  } catch (error) {
+    console.error('Erreur upload making-of image:', error);
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.status(500).json({ error: "Erreur lors du traitement de l'image" });
+  }
+});
+
 // 1. UPLOAD PHOTOS
 router.post('/', authenticateToken, uploadMulter.array('photos'), async (req: Request, res: Response) => {
   try {
