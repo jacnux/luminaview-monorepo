@@ -614,9 +614,9 @@ const CarnetRoutesManager: React.FC = () => {
     const name = (user?.name || 'jac').toLowerCase();
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     if (isLocal) {
-      return `http://localhost:7082/project/${project.slug}?user=${name}`;
+      return `http://localhost:7082/project/${project.slug}?user=${name}&from=manager`;
     }
-    return `https://${name}-carnet.helioscope.fr/project/${project.slug}`;
+    return `https://${name}-carnet.helioscope.fr/project/${project.slug}?from=manager`;
   };
 
   const getProjectEmbedUrl = (project: any) => {

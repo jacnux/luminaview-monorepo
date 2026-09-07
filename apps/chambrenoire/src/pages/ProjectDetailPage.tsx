@@ -37,7 +37,40 @@ const ProjectDetailPage: React.FC = () => {
   }, [slug]);
 
   const userSlug = getUserSlug();
-  const backUrl = userSlug ? `/?user=${userSlug}` : '/';
+  const searchParams = new URLSearchParams(window.location.search);
+  const fromManager = searchParams.get('from') === 'manager' || searchParams.get('from') === 'dashboard';
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const dashboardUrl = isLocal
+    ? 'http://localhost:7080/dashboard/carnet-routes'
+    : 'https://manager.luminaview.fr/dashboard/carnet-routes';
+
+  const renderBackLink = (className: string) => {
+    if (fromManager) {
+      return (
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href={dashboardUrl}
+            className={className}
+            title="Retourner à votre gestionnaire de carnet de routes"
+          >
+            &larr; Retour au Dashboard (Carnet de routes)
+          </a>
+          <span className="text-gray-600 text-xs">•</span>
+          <Link
+            to={userSlug ? `/?user=${userSlug}` : '/'}
+            className="text-xs text-gray-500 hover:text-yellow-400 transition"
+          >
+            🌐 Voir Chambre Noire publique
+          </Link>
+        </div>
+      );
+    }
+    return (
+      <Link to={userSlug ? `/?user=${userSlug}` : '/'} className={className}>
+        &larr; Retour Chambre Noire
+      </Link>
+    );
+  };
 
   if (loading) {
     return (
@@ -52,9 +85,9 @@ const ProjectDetailPage: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto px-6 py-20 text-center space-y-4">
         <p className="text-red-500 font-medium">{error || 'Projet introuvable'}</p>
-        <Link to={backUrl} className="inline-block text-amber-500 font-semibold hover:underline">
-          &larr; Retour Chambre Noire
-        </Link>
+        <div className="flex justify-center">
+          {renderBackLink("inline-block text-amber-500 font-semibold hover:underline")}
+        </div>
       </div>
     );
   }
@@ -66,9 +99,7 @@ const ProjectDetailPage: React.FC = () => {
       {/* Back link */}
       {!isEmbedded && (
         <div>
-          <Link to={backUrl} className="inline-flex items-center text-sm font-semibold text-gray-400 hover:text-yellow-500 transition-colors">
-            &larr; Retour Chambre Noire
-          </Link>
+          {renderBackLink("inline-flex items-center text-sm font-semibold text-gray-400 hover:text-yellow-500 transition-colors")}
         </div>
       )}
 
