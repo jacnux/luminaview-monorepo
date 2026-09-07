@@ -53,7 +53,7 @@ const ProjectDetailPage: React.FC = () => {
       <div className="max-w-4xl mx-auto px-6 py-20 text-center space-y-4">
         <p className="text-red-500 font-medium">{error || 'Projet introuvable'}</p>
         <Link to={backUrl} className="inline-block text-amber-500 font-semibold hover:underline">
-          &larr; Retour au carnet de routes
+          &larr; Retour Chambre Noire
         </Link>
       </div>
     );
@@ -66,8 +66,8 @@ const ProjectDetailPage: React.FC = () => {
       {/* Back link */}
       {!isEmbedded && (
         <div>
-          <Link to={backUrl} className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-amber-500 transition-colors">
-            &larr; Retour au carnet de routes
+          <Link to={backUrl} className="inline-flex items-center text-sm font-semibold text-gray-400 hover:text-yellow-500 transition-colors">
+            &larr; Retour Chambre Noire
           </Link>
         </div>
       )}
@@ -130,9 +130,30 @@ const ProjectDetailPage: React.FC = () => {
           )}
         </div>
 
+        {project.coverImage && (
+          <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[21/9] max-h-96 relative border border-white/10">
+            <img
+              src={`/uploads/${project.coverImage}`}
+              alt={project.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
         {project.description && (
           <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed font-light text-lg">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.description}</ReactMarkdown>
+          </div>
+        )}
+
+        {project.notesMarkdown && (
+          <div className="bg-amber-950/20 border border-amber-500/30 rounded-2xl p-6 space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+              💡 Notes, intentions & inspirations
+            </span>
+            <div className="prose prose-sm dark:prose-invert max-w-none text-gray-300 leading-relaxed">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.notesMarkdown}</ReactMarkdown>
+            </div>
           </div>
         )}
 
@@ -148,9 +169,16 @@ const ProjectDetailPage: React.FC = () => {
         )}
       </div>
 
-
       {/* Photos flow (Carnet de voyage style) */}
       <div className="space-y-24">
+        {photos.length === 0 && (
+          <div className="text-center py-16 rounded-3xl bg-black/20 border border-white/5 space-y-2">
+            <span className="text-3xl">📸</span>
+            <p className="text-gray-300 text-sm font-medium">Séance de prise de vue en cours de réalisation</p>
+            <p className="text-gray-500 text-xs">Les photographies associées à ce projet apparaîtront ici dès leur ajout.</p>
+          </div>
+        )}
+
         {photos.map((photo, idx) => (
           <div key={photo._id} className="space-y-6 border-b border-black/[0.06] dark:border-white/[0.06] pb-16 last:border-b-0 last:pb-0">
             {/* Visual */}

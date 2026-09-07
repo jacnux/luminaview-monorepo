@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
+import { getUserSlug } from '../utils/domain';
+
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -9,6 +11,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = 'dark';
+  const userSlug = getUserSlug();
+  const homeUrl = userSlug ? `/?user=${userSlug}` : '/';
 
   // Zone connectée large (albums, galeries, carnet-routes, etc.)
   const isAuthenticatedArea = [
@@ -77,7 +81,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         >
           <div className="flex-shrink-0 flex flex-col justify-center">
             <Link
-              to="/"
+              to={homeUrl}
               className="flex items-center gap-2 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200"
             >
               <img
