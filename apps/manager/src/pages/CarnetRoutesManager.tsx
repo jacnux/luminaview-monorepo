@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -13,7 +13,27 @@ const CarnetRoutesManager: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const [activeTab, setActiveTab] = useState<TabType>('ideas');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') as TabType;
+  const [activeTab, setActiveTab] = useState<TabType>(
+    tabParam && ['ideas', 'projects', 'photos', 'gear', 'films'].includes(tabParam)
+      ? tabParam
+      : 'ideas'
+  );
+
+  useEffect(() => {
+    const tab = searchParams.get('tab') as TabType;
+    if (tab && ['ideas', 'projects', 'photos', 'gear', 'films'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const switchTab = (tab: TabType) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+    resetForm();
+    setSelectedFilmRoll(null);
+  };
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -249,7 +269,7 @@ const CarnetRoutesManager: React.FC = () => {
 
       setShowConcretizeModal(false);
       setConcretizeIdeaItem(null);
-      setActiveTab('projects');
+      switchTab('projects');
       fetchData();
     } catch (err: any) {
       alert(err.response?.data?.error || 'Erreur lors de la concrétisation du projet');
@@ -745,7 +765,7 @@ const CarnetRoutesManager: React.FC = () => {
       {/* Tabs Selector */}
       <div className={`flex border-b gap-2 overflow-x-auto pb-1 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
         <button
-          onClick={() => { setActiveTab('ideas'); resetForm(); setSelectedFilmRoll(null); }}
+          onClick={() => switchTab('ideas')}
           className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'ideas' && !selectedFilmRoll
               ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400 font-bold'
@@ -766,7 +786,7 @@ const CarnetRoutesManager: React.FC = () => {
           </span>
         </button>
         <button
-          onClick={() => { setActiveTab('projects'); resetForm(); setSelectedFilmRoll(null); }}
+          onClick={() => switchTab('projects')}
           className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'projects' && !selectedFilmRoll
               ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400 font-bold'
@@ -787,7 +807,7 @@ const CarnetRoutesManager: React.FC = () => {
           </span>
         </button>
         <button
-          onClick={() => { setActiveTab('photos'); resetForm(); setSelectedFilmRoll(null); }}
+          onClick={() => switchTab('photos')}
           className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${
             activeTab === 'photos' && !selectedFilmRoll
               ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400 font-bold'
@@ -799,7 +819,7 @@ const CarnetRoutesManager: React.FC = () => {
           🖼️ Photos
         </button>
         <button
-          onClick={() => { setActiveTab('gear'); resetForm(); setSelectedFilmRoll(null); }}
+          onClick={() => switchTab('gear')}
           className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${
             activeTab === 'gear' && !selectedFilmRoll
               ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400 font-bold'
@@ -811,7 +831,7 @@ const CarnetRoutesManager: React.FC = () => {
           📷 Matériel & Éclairage
         </button>
         <button
-          onClick={() => { setActiveTab('films'); resetForm(); }}
+          onClick={() => switchTab('films')}
           className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${
             activeTab === 'films' || selectedFilmRoll
               ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400 font-bold'

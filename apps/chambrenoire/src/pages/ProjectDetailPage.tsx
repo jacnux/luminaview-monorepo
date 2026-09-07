@@ -40,27 +40,38 @@ const ProjectDetailPage: React.FC = () => {
   const searchParams = new URLSearchParams(window.location.search);
   const fromManager = searchParams.get('from') === 'manager' || searchParams.get('from') === 'dashboard';
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  const dashboardUrl = isLocal
-    ? 'http://localhost:7080/dashboard/carnet-routes'
-    : 'https://manager.luminaview.fr/dashboard/carnet-routes';
+  const dashboardProjectsUrl = isLocal
+    ? 'http://localhost:7080/dashboard/carnet-routes?tab=projects'
+    : 'https://manager.luminaview.fr/dashboard/carnet-routes?tab=projects';
+  const dashboardIdeasUrl = isLocal
+    ? 'http://localhost:7080/dashboard/carnet-routes?tab=ideas'
+    : 'https://manager.luminaview.fr/dashboard/carnet-routes?tab=ideas';
 
   const renderBackLink = (className: string) => {
     if (fromManager) {
       return (
         <div className="flex flex-wrap items-center gap-3">
           <a
-            href={dashboardUrl}
+            href={dashboardProjectsUrl}
             className={className}
-            title="Retourner à votre gestionnaire de carnet de routes"
+            title="Retourner aux Projets de prise de vue dans le Dashboard"
           >
-            &larr; Retour au Dashboard (Carnet de routes)
+            &larr; Projets de prise de vue
+          </a>
+          <span className="text-gray-600 text-xs">•</span>
+          <a
+            href={dashboardIdeasUrl}
+            className="text-xs text-amber-500/90 hover:text-amber-400 font-medium transition"
+            title="Retourner aux Idées en préparation dans le Dashboard"
+          >
+            💡 Idées en préparation
           </a>
           <span className="text-gray-600 text-xs">•</span>
           <Link
             to={userSlug ? `/?user=${userSlug}` : '/'}
             className="text-xs text-gray-500 hover:text-yellow-400 transition"
           >
-            🌐 Voir Chambre Noire publique
+            🌐 Chambre Noire publique
           </Link>
         </div>
       );
