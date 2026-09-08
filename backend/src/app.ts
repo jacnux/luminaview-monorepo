@@ -122,9 +122,14 @@ app.use('/uploads', express.static(uploadsDir, {
   lastModified: true
 }));
 
-// ============================================================
-// ROUTES
-// ============================================================
+// Endpoint de santé (health check)
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
 
 app.use('/api/auth',       authRoutes);
 app.use('/api/albums',     albumRoutes);
