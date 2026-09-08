@@ -3,7 +3,7 @@ import path from 'path';
 import sharp from 'sharp';
 
 async function convertExistingImages() {
-  const uploadsDir = path.join(__dirname, '../../uploads');
+  const uploadsDir = path.resolve(__dirname, '../../uploads');
   if (!fs.existsSync(uploadsDir)) {
     console.log('Répertoire uploads introuvable:', uploadsDir);
     return;
@@ -16,12 +16,49 @@ async function convertExistingImages() {
   let thumbCount = 0;
 
   for (const file of files) {
-    if (file.startsWith('thumb-')) continue;
     const ext = path.extname(file).toLowerCase();
     if (!['.jpg', '.jpeg', '.png'].includes(ext)) continue;
 
     const baseName = path.parse(file).name;
     const inputPath = path.join(uploadsDir, file);
+
+    // Cas 1 : Vignettes existantes thumb-*.jpg / thumb-*.png
+    if (file.startsWith('thumb-')) {
+      const thumbWebpPath = path.join(uploadsDir, `${baseName}.webp`);
+      if (!fs.existsSync(thumbWebpPath)) {
+        try {
+          await sharp(inputPath)
+            .resize(800, null, { fit: 'inside', withoutEnlargement: true })
+            .webp({ quality: 78, effort: 4 })
+            .toFile(thumbWebpPath);
+          thumbCount++;
+          console.log(`🖼️ Miniature WebP optimisée: ${file} -> ${baseName}.webp`);
+        } catch (err) {
+          console.error(`❌ Erreur miniature WebP pour ${file}:`, err);
+        }
+      }
+      continue;
+    }
+
+    // Cas 2 : Bannières banner-*.png / banner-*.jpg
+    if (file.startsWith('banner-')) {
+      const bannerWebpPath = path.join(uploadsDir, `${baseName}.webp`);
+      if (!fs.existsSync(bannerWebpPath)) {
+        try {
+          await sharp(inputPath)
+            .resize(1600, null, { fit: 'inside', withoutEnlargement: true })
+            .webp({ quality: 82, effort: 4 })
+            .toFile(bannerWebpPath);
+          convertedCount++;
+          console.log(`🎨 Bannière WebP optimisée: ${file} -> ${baseName}.webp`);
+        } catch (err) {
+          console.error(`❌ Erreur conversion bannière pour ${file}:`, err);
+        }
+      }
+      continue;
+    }
+
+    // Cas 3 : Photos normales
     const webpPath = path.join(uploadsDir, `${baseName}.webp`);
     const thumbPath = path.join(uploadsDir, `thumb-${baseName}.webp`);
 
@@ -45,7 +82,7 @@ async function convertExistingImages() {
         const sourceForThumb = fs.existsSync(webpPath) ? webpPath : inputPath;
         await sharp(sourceForThumb)
           .resize(800, null, { fit: 'inside', withoutEnlargement: true })
-          .webp({ quality: 78 })
+          .webp({ quality: 78, effort: 4 })
           .toFile(thumbPath);
         thumbCount++;
         console.log(`🖼️ Miniature créée: thumb-${baseName}.webp`);
@@ -55,9 +92,9 @@ async function convertExistingImages() {
     }
   }
 
-  console.log(`\n🎉 Bilan de la migration :`);
-  console.log(`  - Images converties en WebP : ${convertedCount}`);
-  console.log(`  - Miniatures WebP créées : ${thumbCount}`);
+  console.log(`\n🎉 Bilan de la migration WebP :`);
+  console.log(`  - Images/bannières converties en WebP : ${convertedCount}`);
+  console.log(`  - Miniatures WebP générées : ${thumbCount}`);
 }
 
 convertExistingImages();

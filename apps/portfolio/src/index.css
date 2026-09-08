@@ -59,6 +59,10 @@ body {
   margin-left: 280px; /* Décale pour laisser la place au menu fixe à gauche */
   width: calc(100% - 280px);
   background-color: var(--color-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* --- HEADER & LOGO --- */
@@ -739,6 +743,10 @@ body {
     margin-left: 0;
     width: 100%;
     padding: 25px 20px;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 }
 

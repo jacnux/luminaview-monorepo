@@ -9,6 +9,7 @@
     "dev": "npx tsx watch src/server.ts",
     "predev": "sleep 15",
     "reassign-photos": "npx tsx src/scripts/reassignPhotos.ts",
+    "convert:webp": "npx tsx src/scripts/convertExistingToWebp.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "migrate:up": "migrate-mongo up",
