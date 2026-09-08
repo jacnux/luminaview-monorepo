@@ -36,7 +36,11 @@ const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
           <img 
             src={getHomeImage()!} 
             alt={formatName(profile?.name)} 
-            className="home-photo" 
+            className="home-photo"
+            fetchPriority="high"
+            decoding="async"
+            width={1200}
+            height={675}
           />
         ) : (
           <div style={{ height: '300px', backgroundColor: '#eaeaea', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>

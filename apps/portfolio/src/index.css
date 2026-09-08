@@ -196,11 +196,17 @@ body {
   margin-bottom: 25px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  aspect-ratio: 16 / 9;
+  max-height: 500px;
+  background-color: var(--color-bg-alt, #1a1e29);
+  border-radius: 6px;
 }
 
 .home-photo {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   display: block;
 }
 
