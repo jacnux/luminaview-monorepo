@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Album, UserProfile } from '../types';
+import { getThumbUrl, getPhotoUrl } from '@luminaview/utils';
 
 interface HeroSliderProps {
   albums: Album[];
@@ -13,10 +14,7 @@ const ITEMS_PER_SLIDE = 5;
 
 const resolveImageUrl = (img?: string): string | null => {
   if (!img) return null;
-  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('/uploads/')) {
-    return img;
-  }
-  return `/uploads/${img}`;
+  return getPhotoUrl(img);
 };
 
 const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum }) => {
@@ -164,7 +162,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum 
       {/* VUE MOBILE EN VIGNETTES / CARTE VERTICALE */}
       <div className="grimoire-mobile-grid">
         {albums.map((album, idx) => {
-          const coverUrl = resolveImageUrl(album.coverImage) || getActiveImageUrl();
+          const coverUrl = getThumbUrl(album.coverImage) || resolveImageUrl(album.coverImage) || getActiveImageUrl();
           return (
             <a
               key={album._id}

@@ -17,10 +17,30 @@ async function convertExistingImages() {
 
   for (const file of files) {
     const ext = path.extname(file).toLowerCase();
-    if (!['.jpg', '.jpeg', '.png'].includes(ext)) continue;
+    if (!['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) continue;
 
     const baseName = path.parse(file).name;
     const inputPath = path.join(uploadsDir, file);
+
+    // Cas 0 : Fichier déjà en .webp mais sans miniature thumb-*
+    if (ext === '.webp') {
+      if (!file.startsWith('thumb-')) {
+        const thumbPath = path.join(uploadsDir, `thumb-${file}`);
+        if (!fs.existsSync(thumbPath)) {
+          try {
+            await sharp(inputPath)
+              .resize(800, null, { fit: 'inside', withoutEnlargement: true })
+              .webp({ quality: 78, effort: 4 })
+              .toFile(thumbPath);
+            thumbCount++;
+            console.log(`🖼️ Miniature WebP créée pour WebP existant: thumb-${file}`);
+          } catch (err) {
+            console.error(`❌ Erreur création miniature pour ${file}:`, err);
+          }
+        }
+      }
+      continue;
+    }
 
     // Cas 1 : Vignettes existantes thumb-*.jpg / thumb-*.png
     if (file.startsWith('thumb-')) {

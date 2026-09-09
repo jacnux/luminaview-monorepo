@@ -9,6 +9,7 @@ import bcrypt from 'bcryptjs';
 import Album from '../models/Album';
 import { authenticateToken } from '../middleware/auth';
 import multer from 'multer';
+import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
 import nodemailer from 'nodemailer';
@@ -97,12 +98,64 @@ router.put('/me', authenticateToken, upload.fields([
 
     // Gestion des fichiers uploadés
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const uploadsDir = path.join(__dirname, '../../uploads');
 
-    if (files && files['avatar']) {
-      updates.avatar = files['avatar'][0].filename;
+    if (files && files['avatar'] && files['avatar'][0]) {
+      const avFile = files['avatar'][0];
+      try {
+        const parsed = path.parse(avFile.filename);
+        const webpFilename = `avatar-${parsed.name}.webp`;
+        const inputPath = path.join(uploadsDir, avFile.filename);
+        const webpPath = path.join(uploadsDir, webpFilename);
+        const thumbWebpPath = path.join(uploadsDir, `thumb-${webpFilename}`);
+
+        await sharp(inputPath)
+          .resize(500, 500, { fit: 'cover' })
+          .webp({ quality: 82, effort: 4 })
+          .toFile(webpPath);
+
+        await sharp(webpPath)
+          .resize(200, 200, { fit: 'cover' })
+          .webp({ quality: 78, effort: 4 })
+          .toFile(thumbWebpPath);
+
+        updates.avatar = webpFilename;
+        if (inputPath !== webpPath && fs.existsSync(inputPath)) {
+          try { fs.unlinkSync(inputPath); } catch {}
+        }
+      } catch (err) {
+        console.error('Erreur conversion avatar WebP:', err);
+        updates.avatar = avFile.filename;
+      }
     }
-    if (files && files['banner']) {
-      updates.bannerImage = files['banner'][0].filename;
+
+    if (files && files['banner'] && files['banner'][0]) {
+      const bnFile = files['banner'][0];
+      try {
+        const parsed = path.parse(bnFile.filename);
+        const webpFilename = `banner-${parsed.name}.webp`;
+        const inputPath = path.join(uploadsDir, bnFile.filename);
+        const webpPath = path.join(uploadsDir, webpFilename);
+        const thumbWebpPath = path.join(uploadsDir, `thumb-${webpFilename}`);
+
+        await sharp(inputPath)
+          .resize(1920, null, { fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 82, effort: 4 })
+          .toFile(webpPath);
+
+        await sharp(webpPath)
+          .resize(800, null, { fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 78, effort: 4 })
+          .toFile(thumbWebpPath);
+
+        updates.bannerImage = webpFilename;
+        if (inputPath !== webpPath && fs.existsSync(inputPath)) {
+          try { fs.unlinkSync(inputPath); } catch {}
+        }
+      } catch (err) {
+        console.error('Erreur conversion banner WebP:', err);
+        updates.bannerImage = bnFile.filename;
+      }
     }
 
     if (showcaseAlbums) updates.showcaseAlbums = JSON.parse(showcaseAlbums);

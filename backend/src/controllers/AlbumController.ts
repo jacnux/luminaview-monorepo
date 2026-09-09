@@ -6,6 +6,8 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
+import sharp from 'sharp';
+
 // Configuration Multer pour l'upload de couverture
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -27,6 +29,39 @@ export const createAlbum = async (req: Request, res: Response) => {
     const userId = (req as any).user.userId;
 
     let coverImage = req.file ? req.file.filename : undefined;
+
+    // Traitement WebP HD et miniature si une image de couverture est uploadée
+    if (req.file) {
+      try {
+        const uploadsDir = path.join(__dirname, '../../uploads');
+        const parsed = path.parse(req.file.filename);
+        const webpFilename = `${parsed.name}.webp`;
+        const inputPath = path.join(uploadsDir, req.file.filename);
+        const webpPath = path.join(uploadsDir, webpFilename);
+        const thumbWebpPath = path.join(uploadsDir, `thumb-${webpFilename}`);
+
+        // Conversion HD WebP (qualité 82)
+        await sharp(inputPath)
+          .resize(1920, null, { fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 82, effort: 4 })
+          .toFile(webpPath);
+
+        // Génération miniature WebP (800px, qualité 78)
+        await sharp(webpPath)
+          .resize(800, null, { fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 78, effort: 4 })
+          .toFile(thumbWebpPath);
+
+        coverImage = webpFilename;
+
+        // Nettoyer le fichier temporaire original si différent
+        if (inputPath !== webpPath && fs.existsSync(inputPath)) {
+          try { fs.unlinkSync(inputPath); } catch {}
+        }
+      } catch (sharpErr) {
+        console.error("Erreur traitement WebP couverture album:", sharpErr);
+      }
+    }
 
     const albumData: any = {
       userId,

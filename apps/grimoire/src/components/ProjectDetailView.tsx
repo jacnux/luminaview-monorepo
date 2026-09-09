@@ -13,7 +13,7 @@ interface ProjectDetailViewProps {
   onBack: () => void;
 }
 
-import { getPhotoUrl } from '@luminaview/utils';
+import { getPhotoUrl, getThumbUrl } from '@luminaview/utils';
 
 const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, onBack }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -115,7 +115,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
       ) : (
         <div className="grimoire-gallery-grid">
           {albumPhotos.map((photo: any, index: number) => {
-            const imageUrl = getPhotoUrl(photo);
+            const imageUrl = getThumbUrl(photo) || getPhotoUrl(photo);
             if (!imageUrl) return null;
 
             return (
