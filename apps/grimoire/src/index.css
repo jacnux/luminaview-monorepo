@@ -405,6 +405,10 @@ html, body {
     padding: 1.5rem;
   }
 
+  .grimoire-bg-container {
+    display: none;
+  }
+
   .grimoire-hero-content {
     display: none;
   }

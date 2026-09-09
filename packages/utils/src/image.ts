@@ -34,7 +34,9 @@ export const getThumbUrl = (photo: PhotoSource): string => {
   if (rawPath.startsWith('http://') || rawPath.startsWith('https://')) {
     return rawPath;
   }
-  const cleanName = rawPath.replace(/^\/uploads\//, '');
+  let cleanName = rawPath.replace(/^\/uploads\//, '');
+  // Remplacer l'extension par .webp pour bénéficier directement des miniatures WebP générées
+  cleanName = cleanName.replace(/\.(jpg|jpeg|png)$/i, '.webp');
   if (cleanName.startsWith('thumb-')) {
     return `/uploads/${cleanName}`;
   }

@@ -91,22 +91,32 @@ app.use(express.urlencoded({ limit: '100mb', extended: true }));
 const uploadsDir = path.resolve(__dirname, '../uploads');
 
 app.use('/uploads', (req, res, next) => {
-  // 1. Fallback transparent si une miniature thumb-* n'existe pas -> renvoyer l'original
+  // 1. Gestion des requêtes de miniatures thumb-*
   if (req.path.startsWith('/thumb-')) {
-    const thumbPath = path.join(uploadsDir, req.path);
-    if (!fs.existsSync(thumbPath)) {
-      const origWebpPath = path.join(uploadsDir, req.path.replace(/^\/thumb-/, '/'));
-      if (fs.existsSync(origWebpPath)) {
-        return res.sendFile(origWebpPath, { maxAge: '7d' });
-      }
-      const origJpgPath = origWebpPath.replace(/\.webp$/i, '.jpg');
-      if (fs.existsSync(origJpgPath)) {
-        return res.sendFile(origJpgPath, { maxAge: '7d' });
-      }
+    // a. Fichier miniature exact demandé
+    const exactThumbPath = path.join(uploadsDir, req.path);
+    if (fs.existsSync(exactThumbPath)) {
+      return res.sendFile(exactThumbPath, { maxAge: '7d' });
+    }
+
+    // b. Version .webp de la miniature (ex: /thumb-123.jpg -> /thumb-123.webp)
+    const webpThumbPath = path.join(uploadsDir, req.path.replace(/\.(jpg|jpeg|png)$/i, '.webp'));
+    if (fs.existsSync(webpThumbPath)) {
+      return res.sendFile(webpThumbPath, { maxAge: '7d' });
+    }
+
+    // c. Fallback transparent si aucune miniature n'existe -> servir l'original (en WebP si dispo)
+    const origWebpPath = path.join(uploadsDir, req.path.replace(/^\/thumb-/, '/').replace(/\.(jpg|jpeg|png)$/i, '.webp'));
+    if (fs.existsSync(origWebpPath)) {
+      return res.sendFile(origWebpPath, { maxAge: '7d' });
+    }
+    const origPath = path.join(uploadsDir, req.path.replace(/^\/thumb-/, '/'));
+    if (fs.existsSync(origPath)) {
+      return res.sendFile(origPath, { maxAge: '7d' });
     }
   }
 
-  // 2. Si requête pour .jpg/.png, servir la version .webp si disponible
+  // 2. Si requête pour .jpg/.png standard, servir la version .webp si disponible
   if (/\.(jpg|jpeg|png)$/i.test(req.path)) {
     const webpPath = path.join(uploadsDir, req.path.replace(/\.(jpg|jpeg|png)$/i, '.webp'));
     if (fs.existsSync(webpPath)) {
