@@ -139,17 +139,17 @@ const Header: React.FC<HeaderProps> = ({
               {/* ICÔNES SOCIAUX EN BAS DE MENU */}
               <div className="grimoire-right-socials">
                 {profile?.email && (
-                  <a href={`mailto:${profile.email}`} title="Email" className="grimoire-social-icon">
+                  <a href={`mailto:${profile.email}`} title="Email" aria-label="Envoyer un email" className="grimoire-social-icon">
                     <Mail size={16} />
                   </a>
                 )}
                 {profile?.socialLinks?.instagram && (
-                  <a href={profile.socialLinks.instagram} target="_blank" rel="noreferrer" title="Instagram" className="grimoire-social-icon">
+                  <a href={profile.socialLinks.instagram} target="_blank" rel="noopener noreferrer" title="Instagram" aria-label="Profil Instagram" className="grimoire-social-icon">
                     <Instagram size={16} />
                   </a>
                 )}
                 {profile?.socialLinks?.website && (
-                  <a href={profile.socialLinks.website} target="_blank" rel="noreferrer" title="Site Web" className="grimoire-social-icon">
+                  <a href={profile.socialLinks.website} target="_blank" rel="noopener noreferrer" title="Site Web" aria-label="Site Web" className="grimoire-social-icon">
                     <Globe size={16} />
                   </a>
                 )}

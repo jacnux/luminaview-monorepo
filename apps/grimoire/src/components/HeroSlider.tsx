@@ -149,10 +149,12 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum 
         {totalSlides > 1 && (
           <div className="grimoire-slider-indicators" style={{ marginTop: '2.5rem' }}>
             {Array.from({ length: totalSlides }).map((_, idx) => (
-              <span
+              <button
+                type="button"
                 key={idx}
                 className={`grimoire-indicator-dot ${idx === currentSlideIndex ? 'active' : ''}`}
                 onClick={() => setCurrentSlideIndex(idx)}
+                aria-label={`Aller à la diapositive ${idx + 1}`}
               />
             ))}
           </div>
