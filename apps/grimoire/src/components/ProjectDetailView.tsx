@@ -133,7 +133,11 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
                     src={imageUrl}
                     alt={photo.title || photo.caption || album.title}
                     className="grimoire-gallery-img"
-                    loading="lazy"
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "auto"}
+                    decoding="async"
+                    width={800}
+                    height={600}
                   />
                   <div className="grimoire-gallery-overlay">
                     <Maximize2 size={20} className="grimoire-gallery-icon" />

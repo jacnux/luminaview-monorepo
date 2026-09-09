@@ -77,6 +77,10 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum 
             src={getActiveImageUrl()}
             alt="Hero Exposition"
             className="grimoire-bg-image"
+            fetchPriority="high"
+            decoding="async"
+            width={1920}
+            height={1080}
             initial={{ opacity: 0, scale: 1.04 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
@@ -157,7 +161,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum 
 
       {/* VUE MOBILE EN VIGNETTES / CARTE VERTICALE */}
       <div className="grimoire-mobile-grid">
-        {albums.map((album) => {
+        {albums.map((album, idx) => {
           const coverUrl = resolveImageUrl(album.coverImage) || getActiveImageUrl();
           return (
             <a
@@ -174,7 +178,11 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum 
                   src={coverUrl}
                   alt={album.title}
                   className="grimoire-mobile-thumb"
-                  loading="lazy"
+                  loading={idx === 0 ? "eager" : "lazy"}
+                  fetchPriority={idx === 0 ? "high" : "auto"}
+                  decoding="async"
+                  width={600}
+                  height={400}
                 />
               </div>
               <div className="grimoire-mobile-card-title">{album.title}</div>
