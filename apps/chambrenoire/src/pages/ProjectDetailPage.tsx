@@ -189,8 +189,8 @@ const ProjectDetailPage: React.FC = () => {
         )}
 
         {project.notesMarkdown && (
-          <div className="bg-amber-950/20 border border-amber-500/30 rounded-2xl p-6 space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-white">
               💡 Notes, intentions & inspirations
             </span>
             <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white text-white max-w-none leading-relaxed">
@@ -200,8 +200,8 @@ const ProjectDetailPage: React.FC = () => {
         )}
 
         {project.makingOf && (
-          <div className="bg-purple-950/20 border border-purple-500/30 rounded-2xl p-6 space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-white">
               🎬 Secret de fabrication & Démarche artistique
             </span>
             <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white text-white max-w-none leading-relaxed">
@@ -248,7 +248,7 @@ const ProjectDetailPage: React.FC = () => {
                 )}
                 {photo.shootingIntent && (
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">Note artistique</span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-white">Note artistique</span>
                     <p className="text-white leading-relaxed italic">
                       "{photo.shootingIntent}"
                     </p>
@@ -256,7 +256,7 @@ const ProjectDetailPage: React.FC = () => {
                 )}
                 {photo.makingOf && (
                   <div className="space-y-1 pt-2">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">Secret de fabrication</span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-white">Secret de fabrication</span>
                     <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white text-white max-w-none">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{photo.makingOf}</ReactMarkdown>
                     </div>
@@ -267,14 +267,14 @@ const ProjectDetailPage: React.FC = () => {
               {/* Technical side */}
               <div className="md:col-span-5 bg-white/[0.04] border border-white/10 rounded-2xl p-5 space-y-5 text-sm shadow-lg">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/25 px-2.5 py-1 rounded-full">
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white border border-white/20 px-2.5 py-1 rounded-full">
                     {photo.isAnalog || photo.filmId ? '🎞️ Fiche Argentique' : '⚡ Fiche Numérique'}
                   </span>
                 </div>
 
                 {/* Exif block */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">Réglages prise de vue</h4>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Réglages prise de vue</h4>
                   <table className="w-full text-xs text-white">
                     <tbody>
                       {photo.gearCameraId && (
@@ -321,7 +321,7 @@ const ProjectDetailPage: React.FC = () => {
                           <td className="py-1.5 text-right font-medium text-white">
                             {photo.exposureSettings.light}
                             {(photo.exposureSettings.lightingBrand || photo.exposureSettings.lightingModel || photo.exposureSettings.lightingType || photo.exposureSettings.lightingPower) && (
-                              <span className="block text-[11px] text-amber-300 font-normal">
+                              <span className="block text-[11px] text-white/90 font-normal">
                                 {photo.exposureSettings.lightingType === 'flash' ? '⚡ Flash' : photo.exposureSettings.lightingType === 'continuous' ? '☀️ Continue' : ''}
                                 {(photo.exposureSettings.lightingBrand || photo.exposureSettings.lightingModel) && ` ${photo.exposureSettings.lightingBrand} ${photo.exposureSettings.lightingModel}`.trim()}
                                 {photo.exposureSettings.lightingPower && ` @ ${photo.exposureSettings.lightingPower}`}
@@ -355,7 +355,7 @@ const ProjectDetailPage: React.FC = () => {
                 {/* Development block for Analog / Film */}
                 {(photo.isAnalog || photo.filmId || photo.developmentSettings?.developer) && (
                   <div className="space-y-3 pt-2">
-                    <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider border-t border-white/10 pt-3">Chimie & Labo</h4>
+                    <h4 className="text-xs font-bold text-white uppercase tracking-wider border-t border-white/10 pt-3">Chimie & Labo</h4>
                     <table className="w-full text-xs text-white">
                       <tbody>
                         {photo.filmId && (

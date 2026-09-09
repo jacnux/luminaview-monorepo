@@ -103,13 +103,23 @@ body {
 .prose h3,
 .prose h4,
 .prose h5,
-.prose h6 {
-  font-weight: 700;
+.prose h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #ffffff !important;
+  font-weight: 700 !important;
   letter-spacing: -0.01em;
 }
 
 .prose strong,
 .prose-invert strong,
-.prose b {
-  font-weight: 700;
+.prose b,
+strong,
+b {
+  color: #ffffff !important;
+  font-weight: 700 !important;
 }
