@@ -123,13 +123,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <main className="relative flex-1">{children}</main>
 
         {/* FOOTER */}
-        <footer className="relative z-10 py-6 text-center text-muted text-sm border-t border-line bg-surface-2">
+        <footer className="relative z-10 py-6 text-center text-white text-sm border-t border-white/10 bg-black/40">
           <img
             src="/brand-logo.svg"
             alt="Chambre Noire"
             className="h-14 w-auto mx-auto mb-3 drop-shadow-[0_2px_10px_rgba(232,176,75,0.25)]"
           />
-          <p>© 2026 Chambre Noire. Tous droits réservés.</p>
+          <p className="text-white">© 2026 Chambre Noire. Tous droits réservés.</p>
         </footer>
       </div>
     </div>
