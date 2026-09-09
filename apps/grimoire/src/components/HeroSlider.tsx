@@ -75,7 +75,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum 
             src={getActiveImageUrl()}
             alt="Hero Exposition"
             className="grimoire-bg-image"
-            fetchPriority="high"
+            fetchPriority="auto"
             decoding="async"
             width={1920}
             height={1080}
@@ -178,8 +178,8 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum 
                   src={coverUrl}
                   alt={album.title}
                   className="grimoire-mobile-thumb"
-                  loading={idx === 0 ? "eager" : "lazy"}
-                  fetchPriority={idx === 0 ? "high" : "auto"}
+                  loading={idx < 2 ? "eager" : "lazy"}
+                  fetchPriority={idx < 2 ? "high" : "auto"}
                   decoding="async"
                   width={600}
                   height={400}
