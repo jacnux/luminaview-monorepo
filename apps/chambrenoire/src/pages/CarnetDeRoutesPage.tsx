@@ -266,7 +266,7 @@ const CarnetDeRoutesPage: React.FC = () => {
       ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {/* Project cards */}
-          {projects.map(project => (
+          {projects.map((project, pIdx) => (
             <div
               key={`proj-${project._id}`}
               className="relative group bg-white dark:bg-gray-900 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl shadow-md hover:shadow-xl hover:border-amber-500/30 dark:hover:border-amber-500/30 transition-all duration-300 overflow-hidden flex flex-col justify-between"
@@ -282,8 +282,11 @@ const CarnetDeRoutesPage: React.FC = () => {
                     <img
                       src={`/uploads/thumb-${project.coverImage}`}
                       alt={project.name}
-                      loading="lazy"
+                      loading={pIdx === 0 ? "eager" : "lazy"}
+                      fetchPriority={pIdx === 0 ? "high" : "auto"}
                       decoding="async"
+                      width={800}
+                      height={600}
                       className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
@@ -361,7 +364,7 @@ const CarnetDeRoutesPage: React.FC = () => {
           ))}
 
           {/* Standalone Photos */}
-          {standalonePhotos.map(photo => (
+          {standalonePhotos.map((photo, sIdx) => (
             <div
               key={`photo-${photo._id}`}
               onClick={() => setLightboxPhoto(photo)}
@@ -373,8 +376,11 @@ const CarnetDeRoutesPage: React.FC = () => {
                   <img
                     src={`/uploads/thumb-${photo.filename}`}
                     alt={photo.title}
-                    loading="lazy"
+                    loading={sIdx === 0 && projects.length === 0 ? "eager" : "lazy"}
+                    fetchPriority={sIdx === 0 && projects.length === 0 ? "high" : "auto"}
                     decoding="async"
+                    width={800}
+                    height={600}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
