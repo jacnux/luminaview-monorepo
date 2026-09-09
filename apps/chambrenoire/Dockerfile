@@ -28,6 +28,12 @@ RUN echo 'server { \
         root /usr/share/nginx/html; \
         index index.html index.htm; \
         try_files $uri $uri/ /index.html; \
+        add_header Cache-Control "no-cache, no-store, must-revalidate"; \
+    } \
+    location /assets/ { \
+        root /usr/share/nginx/html; \
+        expires 1y; \
+        add_header Cache-Control "public, immutable"; \
     } \
     location /api/ { \
         proxy_pass http://backend:3000/api/; \
