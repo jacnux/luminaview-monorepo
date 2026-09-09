@@ -57,22 +57,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   if (isEmbedRoute) {
     return (
-      <div
-        className={`relative min-h-screen w-full overflow-hidden ${
-          theme === 'dark' ? 'bg-gray-950 text-white' : 'bg-gray-100 text-gray-900'
-        }`}
-      >
+      <div className="dark relative min-h-screen w-full overflow-hidden bg-gray-950 text-white">
         <main className="w-full relative z-10">{children}</main>
       </div>
     );
   }
 
   return (
-    <div
-      className={`relative min-h-screen w-full overflow-hidden ${
-        theme === 'dark' ? 'bg-gray-950 text-white' : 'bg-gray-100 text-gray-900'
-      }`}
-    >
+    <div className="dark relative min-h-screen w-full overflow-hidden bg-gray-950 text-gray-100">
       {/* Fond global partie connectée */}
       {showBackgroundImage && (
         <>
@@ -85,11 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       )}
 
       {!showBackgroundImage && (
-        <div
-          className={`fixed inset-0 z-0 ${
-            theme === 'dark' ? 'bg-gray-950' : 'bg-gray-100'
-          }`}
-        />
+        <div className="fixed inset-0 z-0 bg-gray-950" />
       )}
 
       {/* Contenu */}

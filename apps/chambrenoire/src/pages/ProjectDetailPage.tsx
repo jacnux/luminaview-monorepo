@@ -241,23 +241,23 @@ const ProjectDetailPage: React.FC = () => {
               <div className="md:col-span-7 space-y-4">
                 <h3 className="text-xl font-bold text-gray-100">{photo.title}</h3>
                 {photo.location && (
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                  <p className="text-xs text-gray-300 dark:text-gray-300">
                     📍 {photo.location}
                     {photo.captureDate && ` • 📅 ${new Date(photo.captureDate).toLocaleDateString('fr-FR')}`}
                   </p>
                 )}
                 {photo.shootingIntent && (
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-amber-500">Note artistique</span>
-                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed italic">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">Note artistique</span>
+                    <p className="text-gray-200 dark:text-gray-200 leading-relaxed italic">
                       "{photo.shootingIntent}"
                     </p>
                   </div>
                 )}
                 {photo.makingOf && (
                   <div className="space-y-1 pt-2">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-amber-500">Secret de fabrication</span>
-                    <div className="prose prose-sm dark:prose-invert prose-headings:text-white dark:prose-headings:text-white prose-p:text-gray-300 dark:prose-p:text-gray-300 prose-strong:text-white dark:prose-strong:text-white max-w-none">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">Secret de fabrication</span>
+                    <div className="prose prose-sm dark:prose-invert prose-headings:text-white dark:prose-headings:text-white prose-p:text-gray-200 dark:prose-p:text-gray-200 prose-strong:text-white dark:prose-strong:text-white max-w-none">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{photo.makingOf}</ReactMarkdown>
                     </div>
                   </div>
@@ -265,63 +265,63 @@ const ProjectDetailPage: React.FC = () => {
               </div>
 
               {/* Technical side */}
-              <div className="md:col-span-5 bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-2xl p-5 space-y-5 text-sm">
+              <div className="md:col-span-5 bg-white/[0.04] border border-white/10 rounded-2xl p-5 space-y-5 text-sm shadow-lg">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/25 px-2.5 py-1 rounded-full">
                     {photo.isAnalog || photo.filmId ? '🎞️ Fiche Argentique' : '⚡ Fiche Numérique'}
                   </span>
                 </div>
 
                 {/* Exif block */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Réglages prise de vue</h4>
-                  <table className="w-full text-xs text-gray-600 dark:text-gray-400">
+                  <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">Réglages prise de vue</h4>
+                  <table className="w-full text-xs text-gray-300">
                     <tbody>
                       {photo.gearCameraId && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Boîtier</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">{photo.gearCameraId.brand} {photo.gearCameraId.model}</td>
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Boîtier</td>
+                          <td className="py-1.5 text-right font-medium text-white">{photo.gearCameraId.brand} {photo.gearCameraId.model}</td>
                         </tr>
                       )}
                       {photo.gearLensId && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Objectif</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">{photo.gearLensId.brand} {photo.gearLensId.model}</td>
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Objectif</td>
+                          <td className="py-1.5 text-right font-medium text-white">{photo.gearLensId.brand} {photo.gearLensId.model}</td>
                         </tr>
                       )}
                       {photo.exposureSettings?.aperture && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Ouverture</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">{photo.exposureSettings.aperture}</td>
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Ouverture</td>
+                          <td className="py-1.5 text-right font-medium text-white">{photo.exposureSettings.aperture}</td>
                         </tr>
                       )}
                       {photo.exposureSettings?.shutterSpeed && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Vitesse d'obturation</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">{photo.exposureSettings.shutterSpeed}</td>
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Vitesse d'obturation</td>
+                          <td className="py-1.5 text-right font-medium text-white">{photo.exposureSettings.shutterSpeed}</td>
                         </tr>
                       )}
                       {(photo.exposureSettings?.iso || photo.filmId?.isoUsed || photo.filmId?.iso) && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Sensibilité</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Sensibilité</td>
+                          <td className="py-1.5 text-right font-medium text-white">
                             {photo.exposureSettings?.iso || photo.filmId?.isoUsed || photo.filmId?.iso} ISO
                           </td>
                         </tr>
                       )}
                       {photo.exposureSettings?.focalLength && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Focale</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">{photo.exposureSettings.focalLength}</td>
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Focale</td>
+                          <td className="py-1.5 text-right font-medium text-white">{photo.exposureSettings.focalLength}</td>
                         </tr>
                       )}
                       {photo.exposureSettings?.light && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Lumière</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Lumière</td>
+                          <td className="py-1.5 text-right font-medium text-white">
                             {photo.exposureSettings.light}
                             {(photo.exposureSettings.lightingBrand || photo.exposureSettings.lightingModel || photo.exposureSettings.lightingType || photo.exposureSettings.lightingPower) && (
-                              <span className="block text-[11px] text-yellow-400 font-normal">
+                              <span className="block text-[11px] text-amber-300 font-normal">
                                 {photo.exposureSettings.lightingType === 'flash' ? '⚡ Flash' : photo.exposureSettings.lightingType === 'continuous' ? '☀️ Continue' : ''}
                                 {(photo.exposureSettings.lightingBrand || photo.exposureSettings.lightingModel) && ` ${photo.exposureSettings.lightingBrand} ${photo.exposureSettings.lightingModel}`.trim()}
                                 {photo.exposureSettings.lightingPower && ` @ ${photo.exposureSettings.lightingPower}`}
@@ -331,21 +331,21 @@ const ProjectDetailPage: React.FC = () => {
                         </tr>
                       )}
                       {photo.exposureSettings?.filter && photo.exposureSettings.filter !== 'Aucun' && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Filtre</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">{photo.exposureSettings.filter}</td>
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Filtre</td>
+                          <td className="py-1.5 text-right font-medium text-white">{photo.exposureSettings.filter}</td>
                         </tr>
                       )}
                       {photo.exposureSettings?.ndFilter && photo.exposureSettings.ndFilter !== 'Aucun' && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Filtre ND</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">{photo.exposureSettings.ndFilter}</td>
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Filtre ND</td>
+                          <td className="py-1.5 text-right font-medium text-white">{photo.exposureSettings.ndFilter}</td>
                         </tr>
                       )}
                       {photo.exposureSettings?.lensHood && (
-                        <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                          <td className="py-1.5 font-light">Parasoleil</td>
-                          <td className="py-1.5 text-right font-medium text-gray-100">Oui</td>
+                        <tr className="border-b border-white/[0.08]">
+                          <td className="py-1.5 font-light text-gray-300">Parasoleil</td>
+                          <td className="py-1.5 text-right font-medium text-white">Oui</td>
                         </tr>
                       )}
                     </tbody>
@@ -355,14 +355,14 @@ const ProjectDetailPage: React.FC = () => {
                 {/* Development block for Analog / Film */}
                 {(photo.isAnalog || photo.filmId || photo.developmentSettings?.developer) && (
                   <div className="space-y-3 pt-2">
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider border-t border-black/[0.06] dark:border-white/[0.06] pt-3">Chimie & Labo</h4>
-                    <table className="w-full text-xs text-gray-600 dark:text-gray-400">
+                    <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider border-t border-white/10 pt-3">Chimie & Labo</h4>
+                    <table className="w-full text-xs text-gray-300">
                       <tbody>
                         {photo.filmId && (
                           <>
-                            <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                              <td className="py-1.5 font-light">Pellicule</td>
-                              <td className="py-1.5 text-right font-medium text-gray-100">
+                            <tr className="border-b border-white/[0.08]">
+                              <td className="py-1.5 font-light text-gray-300">Pellicule</td>
+                              <td className="py-1.5 text-right font-medium text-white">
                                 {(() => {
                                   const brand = (photo.filmId.brand || '').trim();
                                   const type = (photo.filmId.filmType || '').trim();
@@ -374,83 +374,83 @@ const ProjectDetailPage: React.FC = () => {
                                 })()} (Nominale : {photo.filmId.iso} ISO)
                               </td>
                             </tr>
-                            <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                              <td className="py-1.5 font-light">Type / Format</td>
-                              <td className="py-1.5 text-right font-medium text-gray-100">
+                            <tr className="border-b border-white/[0.08]">
+                              <td className="py-1.5 font-light text-gray-300">Type / Format</td>
+                              <td className="py-1.5 text-right font-medium text-white">
                                 {photo.filmId.type === 'BW' ? 'Noir & Blanc' : photo.filmId.type === 'color' ? 'Couleur Négatif' : 'Couleur Diapo'} • Format {photo.filmId.format}
                               </td>
                             </tr>
                           </>
                         )}
                         {(photo.developmentSettings?.developer || photo.filmId?.developmentSettings?.developer) && (
-                          <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                            <td className="py-1.5 font-light">Révélateur</td>
-                            <td className="py-1.5 text-right font-medium text-gray-100">
+                          <tr className="border-b border-white/[0.08]">
+                            <td className="py-1.5 font-light text-gray-300">Révélateur</td>
+                            <td className="py-1.5 text-right font-medium text-white">
                               {photo.developmentSettings?.developer || photo.filmId?.developmentSettings?.developer}
                             </td>
                           </tr>
                         )}
                         {(photo.developmentSettings?.dilution || photo.filmId?.developmentSettings?.dilution) && (
-                          <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                            <td className="py-1.5 font-light">Dilution</td>
-                            <td className="py-1.5 text-right font-medium text-gray-100">
+                          <tr className="border-b border-white/[0.08]">
+                            <td className="py-1.5 font-light text-gray-300">Dilution</td>
+                            <td className="py-1.5 text-right font-medium text-white">
                               {photo.developmentSettings?.dilution || photo.filmId?.developmentSettings?.dilution}
                             </td>
                           </tr>
                         )}
                         {(photo.developmentSettings?.time || photo.filmId?.developmentSettings?.time) && (
-                          <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                            <td className="py-1.5 font-light">Temps dév.</td>
-                            <td className="py-1.5 text-right font-medium text-gray-100">
+                          <tr className="border-b border-white/[0.08]">
+                            <td className="py-1.5 font-light text-gray-300">Temps dév.</td>
+                            <td className="py-1.5 text-right font-medium text-white">
                               {photo.developmentSettings?.time || photo.filmId?.developmentSettings?.time}
                             </td>
                           </tr>
                         )}
                         {(photo.developmentSettings?.temperature || photo.filmId?.developmentSettings?.temperature) && (
-                          <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                            <td className="py-1.5 font-light">Température</td>
-                            <td className="py-1.5 text-right font-medium text-gray-100">
+                          <tr className="border-b border-white/[0.08]">
+                            <td className="py-1.5 font-light text-gray-300">Température</td>
+                            <td className="py-1.5 text-right font-medium text-white">
                               {photo.developmentSettings?.temperature || photo.filmId?.developmentSettings?.temperature}
                             </td>
                           </tr>
                         )}
                         {(photo.developmentSettings?.agitation || photo.filmId?.developmentSettings?.agitation) && (
-                          <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                            <td className="py-1.5 font-light">Agitation</td>
-                            <td className="py-1.5 text-right font-medium text-gray-100">
+                          <tr className="border-b border-white/[0.08]">
+                            <td className="py-1.5 font-light text-gray-300">Agitation</td>
+                            <td className="py-1.5 text-right font-medium text-white">
                               {photo.developmentSettings?.agitation || photo.filmId?.developmentSettings?.agitation}
                             </td>
                           </tr>
                         )}
                         {(photo.developmentSettings?.pushPull || photo.filmId?.developmentSettings?.pushPull) && 
                          (photo.developmentSettings?.pushPull !== 'Aucun' && photo.filmId?.developmentSettings?.pushPull !== 'Aucun') && (
-                          <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                            <td className="py-1.5 font-light">Push/Pull</td>
-                            <td className="py-1.5 text-right font-medium text-gray-100">
+                          <tr className="border-b border-white/[0.08]">
+                            <td className="py-1.5 font-light text-gray-300">Push/Pull</td>
+                            <td className="py-1.5 text-right font-medium text-white">
                               {photo.developmentSettings?.pushPull || photo.filmId?.developmentSettings?.pushPull}
                             </td>
                           </tr>
                         )}
                         {(photo.developmentSettings?.fixerBrand || photo.filmId?.developmentSettings?.fixerBrand) && (
-                          <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                            <td className="py-1.5 font-light">Fixateur</td>
-                            <td className="py-1.5 text-right font-medium text-gray-100">
+                          <tr className="border-b border-white/[0.08]">
+                            <td className="py-1.5 font-light text-gray-300">Fixateur</td>
+                            <td className="py-1.5 text-right font-medium text-white">
                               {photo.developmentSettings?.fixerBrand || photo.filmId?.developmentSettings?.fixerBrand}
                             </td>
                           </tr>
                         )}
                         {(photo.developmentSettings?.fixerDilution || photo.filmId?.developmentSettings?.fixerDilution) && (
-                          <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                            <td className="py-1.5 font-light">Dilution fixateur</td>
-                            <td className="py-1.5 text-right font-medium text-gray-100">
+                          <tr className="border-b border-white/[0.08]">
+                            <td className="py-1.5 font-light text-gray-300">Dilution fixateur</td>
+                            <td className="py-1.5 text-right font-medium text-white">
                               {photo.developmentSettings?.fixerDilution || photo.filmId?.developmentSettings?.fixerDilution}
                             </td>
                           </tr>
                         )}
                         {(photo.developmentSettings?.fixerTime || photo.filmId?.developmentSettings?.fixerTime) && (
-                          <tr className="border-b border-black/[0.04] dark:border-white/[0.04]">
-                            <td className="py-1.5 font-light">Temps fixage</td>
-                            <td className="py-1.5 text-right font-medium text-gray-100">
+                          <tr className="border-b border-white/[0.08]">
+                            <td className="py-1.5 font-light text-gray-300">Temps fixage</td>
+                            <td className="py-1.5 text-right font-medium text-white">
                               {photo.developmentSettings?.fixerTime || photo.filmId?.developmentSettings?.fixerTime}
                             </td>
                           </tr>
