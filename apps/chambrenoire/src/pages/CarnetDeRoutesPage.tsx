@@ -269,7 +269,7 @@ const CarnetDeRoutesPage: React.FC = () => {
           {projects.map((project, pIdx) => (
             <div
               key={`proj-${project._id}`}
-              className="relative group bg-white dark:bg-gray-900 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl shadow-md hover:shadow-xl hover:border-amber-500/30 dark:hover:border-amber-500/30 transition-all duration-300 overflow-hidden flex flex-col justify-between"
+              className="relative group bg-gray-900 border border-white/[0.08] rounded-2xl shadow-md hover:shadow-xl hover:border-amber-500/30 transition-all duration-300 overflow-hidden flex flex-col justify-between"
             >
               <Link
                 to={`/project/${project.slug}`}
@@ -277,7 +277,7 @@ const CarnetDeRoutesPage: React.FC = () => {
               >
               <div>
                 {/* Cover Image */}
-                <div className="aspect-[4/3] w-full bg-black/5 dark:bg-white/5 relative overflow-hidden">
+                <div className="aspect-[4/3] w-full bg-white/5 relative overflow-hidden">
                   {project.coverImage ? (
                     <img
                       src={`/uploads/thumb-${project.coverImage}`}
@@ -310,33 +310,33 @@ const CarnetDeRoutesPage: React.FC = () => {
                 </div>
                 {/* Card details */}
                 <div className="p-5 space-y-2">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-amber-500 transition-colors">
+                  <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
                     {project.name}
                   </h3>
                   {Array.isArray(project.tags) && project.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {project.tags.map((t: string, i: number) => (
-                        <span key={i} className="text-[9px] bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded">
+                        <span key={i} className="text-[9px] bg-white/10 text-white px-1.5 py-0.5 rounded">
                           #{t}
                         </span>
                       ))}
                     </div>
                   )}
 
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                  <p className="text-xs text-white">
                     Publié le {new Date(project.createdAt).toLocaleDateString('fr-FR', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     })}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                  <p className="text-sm text-white line-clamp-3 leading-relaxed font-light">
                     {project.description}
                   </p>
                 </div>
               </div>
               <div className="p-5 pt-0">
-                <span className="inline-flex items-center text-xs font-semibold text-amber-500 group-hover:translate-x-1 transition-transform">
+                <span className="inline-flex items-center text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition-transform">
                   Ouvrir le carnet de route &rarr;
                 </span>
               </div>
@@ -368,11 +368,11 @@ const CarnetDeRoutesPage: React.FC = () => {
             <div
               key={`photo-${photo._id}`}
               onClick={() => setLightboxPhoto(photo)}
-              className="relative group bg-white dark:bg-gray-900 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl shadow-md hover:shadow-xl hover:border-amber-500/30 dark:hover:border-amber-500/30 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between"
+              className="relative group bg-gray-900 border border-white/[0.08] rounded-2xl shadow-md hover:shadow-xl hover:border-amber-500/30 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between"
             >
               <div>
                 {/* Photo container */}
-                <div className="aspect-[4/3] w-full bg-black/5 dark:bg-white/5 relative overflow-hidden">
+                <div className="aspect-[4/3] w-full bg-white/5 relative overflow-hidden">
                   <img
                     src={`/uploads/thumb-${photo.filename}`}
                     alt={photo.title}
@@ -410,22 +410,22 @@ const CarnetDeRoutesPage: React.FC = () => {
                 </div>
                 {/* Photo details */}
                 <div className="p-5 space-y-2">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-amber-500 transition-colors">
+                  <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
                     {photo.title}
                   </h3>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                  <p className="text-xs text-white">
                     {photo.location ? `📍 ${photo.location}` : ''}
                     {photo.captureDate ? ` • 📅 ${new Date(photo.captureDate).toLocaleDateString('fr-FR')}` : ''}
                   </p>
                   {photo.shootingIntent && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed italic">
+                    <p className="text-sm text-white line-clamp-3 leading-relaxed italic">
                       "{photo.shootingIntent}"
                     </p>
                   )}
                 </div>
               </div>
               <div className="p-5 pt-0">
-                <span className="inline-flex items-center text-xs font-semibold text-amber-500">
+                <span className="inline-flex items-center text-xs font-semibold text-amber-400">
                   Afficher la fiche technique &rarr;
                 </span>
               </div>
@@ -459,8 +459,8 @@ const CarnetDeRoutesPage: React.FC = () => {
                 <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">
                   {lightboxPhoto.isAnalog ? '🎞️ Argentique' : '⚡ Numérique'}
                 </span>
-                <h2 className="text-xl font-bold mt-2">{lightboxPhoto.title}</h2>
-                <p className="text-xs text-gray-400 mt-1">
+                <h2 className="text-xl font-bold mt-2 text-white">{lightboxPhoto.title}</h2>
+                <p className="text-xs text-white mt-1">
                   {lightboxPhoto.location && `📍 ${lightboxPhoto.location}`}
                   {lightboxPhoto.captureDate && ` • 📅 ${new Date(lightboxPhoto.captureDate).toLocaleDateString('fr-FR')}`}
                 </p>
@@ -468,59 +468,59 @@ const CarnetDeRoutesPage: React.FC = () => {
 
               {lightboxPhoto.shootingIntent && (
                 <div className="space-y-1">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-500">Intention</h4>
-                  <p className="text-sm text-gray-300 leading-relaxed italic">"{lightboxPhoto.shootingIntent}"</p>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400">Intention</h4>
+                  <p className="text-sm text-white leading-relaxed italic">"{lightboxPhoto.shootingIntent}"</p>
                 </div>
               )}
 
               {/* Technical block */}
               <div className="space-y-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-500 border-b border-white/10 pb-1">Prise de vue</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400 border-b border-white/10 pb-1">Prise de vue</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   {lightboxPhoto.gearCameraId && (
                     <div className="col-span-2">
-                      <span className="text-xs text-gray-500 block">Appareil</span>
-                      <span className="font-medium text-gray-200">{lightboxPhoto.gearCameraId.brand} {lightboxPhoto.gearCameraId.model}</span>
+                      <span className="text-xs text-white font-light block">Appareil</span>
+                      <span className="font-medium text-white">{lightboxPhoto.gearCameraId.brand} {lightboxPhoto.gearCameraId.model}</span>
                     </div>
                   )}
                   {lightboxPhoto.gearLensId && (
                     <div className="col-span-2">
-                      <span className="text-xs text-gray-500 block">Objectif</span>
-                      <span className="font-medium text-gray-200">{lightboxPhoto.gearLensId.brand} {lightboxPhoto.gearLensId.model}</span>
+                      <span className="text-xs text-white font-light block">Objectif</span>
+                      <span className="font-medium text-white">{lightboxPhoto.gearLensId.brand} {lightboxPhoto.gearLensId.model}</span>
                     </div>
                   )}
                   {lightboxPhoto.exposureSettings?.aperture && (
                     <div>
-                      <span className="text-xs text-gray-500 block">Ouverture</span>
-                      <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.aperture}</span>
+                      <span className="text-xs text-white font-light block">Ouverture</span>
+                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.aperture}</span>
                     </div>
                   )}
                   {lightboxPhoto.exposureSettings?.shutterSpeed && (
                     <div>
-                      <span className="text-xs text-gray-500 block">Vitesse</span>
-                      <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.shutterSpeed}</span>
+                      <span className="text-xs text-white font-light block">Vitesse</span>
+                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.shutterSpeed}</span>
                     </div>
                   )}
                   {(lightboxPhoto.exposureSettings?.iso || lightboxPhoto.filmId?.isoUsed || lightboxPhoto.filmId?.iso) && (
                     <div>
-                      <span className="text-xs text-gray-500 block">Sensibilité</span>
-                      <span className="font-medium text-gray-200">
+                      <span className="text-xs text-white font-light block">Sensibilité</span>
+                      <span className="font-medium text-white">
                         {lightboxPhoto.exposureSettings?.iso || lightboxPhoto.filmId?.isoUsed || lightboxPhoto.filmId?.iso} ISO
                       </span>
                     </div>
                   )}
                   {lightboxPhoto.exposureSettings?.focalLength && (
                     <div>
-                      <span className="text-xs text-gray-500 block">Focale</span>
-                      <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.focalLength}</span>
+                      <span className="text-xs text-white font-light block">Focale</span>
+                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.focalLength}</span>
                     </div>
                   )}
                   {lightboxPhoto.exposureSettings?.light && (
                     <div>
-                      <span className="text-xs text-gray-500 block">Lumière</span>
-                      <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.light}</span>
+                      <span className="text-xs text-white font-light block">Lumière</span>
+                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.light}</span>
                       {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel || lightboxPhoto.exposureSettings.lightingType || lightboxPhoto.exposureSettings.lightingPower) && (
-                        <span className="block text-[11px] text-yellow-400 font-normal mt-0.5">
+                        <span className="block text-[11px] text-amber-300 font-normal mt-0.5">
                           {lightboxPhoto.exposureSettings.lightingType === 'flash' ? '⚡ Flash' : lightboxPhoto.exposureSettings.lightingType === 'continuous' ? '☀️ Continue' : ''}
                           {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel) && ` ${lightboxPhoto.exposureSettings.lightingBrand} ${lightboxPhoto.exposureSettings.lightingModel}`.trim()}
                           {lightboxPhoto.exposureSettings.lightingPower && ` @ ${lightboxPhoto.exposureSettings.lightingPower}`}
@@ -530,20 +530,20 @@ const CarnetDeRoutesPage: React.FC = () => {
                   )}
                   {lightboxPhoto.exposureSettings?.filter && lightboxPhoto.exposureSettings.filter !== 'Aucun' && (
                     <div>
-                      <span className="text-xs text-gray-500 block">Filtre</span>
-                      <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.filter}</span>
+                      <span className="text-xs text-white font-light block">Filtre</span>
+                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.filter}</span>
                     </div>
                   )}
                   {lightboxPhoto.exposureSettings?.ndFilter && lightboxPhoto.exposureSettings.ndFilter !== 'Aucun' && (
                     <div>
-                      <span className="text-xs text-gray-500 block">Filtre ND</span>
-                      <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.ndFilter}</span>
+                      <span className="text-xs text-white font-light block">Filtre ND</span>
+                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.ndFilter}</span>
                     </div>
                   )}
                   {lightboxPhoto.exposureSettings?.lensHood && (
                     <div>
-                      <span className="text-xs text-gray-500 block">Parasoleil</span>
-                      <span className="font-medium text-gray-200">Oui</span>
+                      <span className="text-xs text-white font-light block">Parasoleil</span>
+                      <span className="font-medium text-white">Oui</span>
                     </div>
                   )}
                 </div>
@@ -552,18 +552,18 @@ const CarnetDeRoutesPage: React.FC = () => {
               {/* Chemical block for analog */}
               {(lightboxPhoto.isAnalog || lightboxPhoto.filmId || lightboxPhoto.developmentSettings?.developer) && (
                 <div className="space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-500 border-b border-white/10 pb-1">Chimie & Labo</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400 border-b border-white/10 pb-1">Chimie & Labo</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     {lightboxPhoto.filmId && (
                       <div className="col-span-2">
-                        <span className="text-xs text-gray-500 block">Pellicule</span>
-                        <span className="font-medium text-gray-200">
+                        <span className="text-xs text-white font-light block">Pellicule</span>
+                        <span className="font-medium text-white">
                           {(() => {
                             const brand = lightboxPhoto.filmId.brand || '';
                             const type = lightboxPhoto.filmId.filmType || '';
                             return type.toLowerCase().startsWith(brand.toLowerCase()) ? type : `${brand} ${type}`;
                           })()} (Nominale : {lightboxPhoto.filmId.iso} ISO)
-                          <span className="text-xs text-gray-400 block mt-0.5">
+                          <span className="text-xs text-white block mt-0.5">
                             Type : {lightboxPhoto.filmId.type === 'BW' ? 'Noir & Blanc' : lightboxPhoto.filmId.type === 'color' ? 'Couleur Négatif' : 'Couleur Diapo'} • Format : {lightboxPhoto.filmId.format}
                           </span>
                         </span>
@@ -571,32 +571,32 @@ const CarnetDeRoutesPage: React.FC = () => {
                     )}
                     {(lightboxPhoto.developmentSettings?.developer || lightboxPhoto.filmId?.developmentSettings?.developer) && (
                       <div>
-                        <span className="text-xs text-gray-500 block">Révélateur</span>
-                        <span className="font-medium text-gray-200">
+                        <span className="text-xs text-white font-light block">Révélateur</span>
+                        <span className="font-medium text-white">
                           {lightboxPhoto.developmentSettings?.developer || lightboxPhoto.filmId?.developmentSettings?.developer}
                         </span>
                       </div>
                     )}
                     {(lightboxPhoto.developmentSettings?.dilution || lightboxPhoto.filmId?.developmentSettings?.dilution) && (
                       <div>
-                        <span className="text-xs text-gray-500 block">Dilution</span>
-                        <span className="font-medium text-gray-200">
+                        <span className="text-xs text-white font-light block">Dilution</span>
+                        <span className="font-medium text-white">
                           {lightboxPhoto.developmentSettings?.dilution || lightboxPhoto.filmId?.developmentSettings?.dilution}
                         </span>
                       </div>
                     )}
                     {(lightboxPhoto.developmentSettings?.time || lightboxPhoto.filmId?.developmentSettings?.time) && (
                       <div>
-                        <span className="text-xs text-gray-500 block">Temps dév.</span>
-                        <span className="font-medium text-gray-200">
+                        <span className="text-xs text-white font-light block">Temps dév.</span>
+                        <span className="font-medium text-white">
                           {lightboxPhoto.developmentSettings?.time || lightboxPhoto.filmId?.developmentSettings?.time}
                         </span>
                       </div>
                     )}
                     {(lightboxPhoto.developmentSettings?.temperature || lightboxPhoto.filmId?.developmentSettings?.temperature) && (
                       <div>
-                        <span className="text-xs text-gray-500 block">Température</span>
-                        <span className="font-medium text-gray-200">
+                        <span className="text-xs text-white font-light block">Température</span>
+                        <span className="font-medium text-white">
                           {lightboxPhoto.developmentSettings?.temperature || lightboxPhoto.filmId?.developmentSettings?.temperature}
                         </span>
                       </div>
@@ -604,32 +604,32 @@ const CarnetDeRoutesPage: React.FC = () => {
                     {(lightboxPhoto.developmentSettings?.pushPull || lightboxPhoto.filmId?.developmentSettings?.pushPull) && 
                      (lightboxPhoto.developmentSettings?.pushPull !== 'Aucun' && lightboxPhoto.filmId?.developmentSettings?.pushPull !== 'Aucun') && (
                       <div>
-                        <span className="text-xs text-gray-500 block">Push/Pull</span>
-                        <span className="font-medium text-gray-200">
+                        <span className="text-xs text-white font-light block">Push/Pull</span>
+                        <span className="font-medium text-white">
                           {lightboxPhoto.developmentSettings?.pushPull || lightboxPhoto.filmId?.developmentSettings?.pushPull}
                         </span>
                       </div>
                     )}
                     {(lightboxPhoto.developmentSettings?.fixerBrand || lightboxPhoto.filmId?.developmentSettings?.fixerBrand) && (
                       <div>
-                        <span className="text-xs text-gray-500 block">Fixateur</span>
-                        <span className="font-medium text-gray-200">
+                        <span className="text-xs text-white font-light block">Fixateur</span>
+                        <span className="font-medium text-white">
                           {lightboxPhoto.developmentSettings?.fixerBrand || lightboxPhoto.filmId?.developmentSettings?.fixerBrand}
                         </span>
                       </div>
                     )}
                     {(lightboxPhoto.developmentSettings?.fixerDilution || lightboxPhoto.filmId?.developmentSettings?.fixerDilution) && (
                       <div>
-                        <span className="text-xs text-gray-500 block">Dilution fixateur</span>
-                        <span className="font-medium text-gray-200">
+                        <span className="text-xs text-white font-light block">Dilution fixateur</span>
+                        <span className="font-medium text-white">
                           {lightboxPhoto.developmentSettings?.fixerDilution || lightboxPhoto.filmId?.developmentSettings?.fixerDilution}
                         </span>
                       </div>
                     )}
                     {(lightboxPhoto.developmentSettings?.fixerTime || lightboxPhoto.filmId?.developmentSettings?.fixerTime) && (
                       <div>
-                        <span className="text-xs text-gray-500 block">Temps fixage</span>
-                        <span className="font-medium text-gray-200">
+                        <span className="text-xs text-white font-light block">Temps fixage</span>
+                        <span className="font-medium text-white">
                           {lightboxPhoto.developmentSettings?.fixerTime || lightboxPhoto.filmId?.developmentSettings?.fixerTime}
                         </span>
                       </div>

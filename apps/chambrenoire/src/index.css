@@ -47,33 +47,38 @@ body {
 }
 
 /* ============================================================
-   TYPOGRAPHIE MARKDOWN — Titres en blanc pur pour lisibilité
+   TYPOGRAPHIE MARKDOWN — Titres et textes en blanc pur
    ============================================================ */
+.prose,
+.prose *,
+.prose p,
+.prose li,
+.prose span,
+.prose strong,
+.prose em,
 .prose h1,
 .prose h2,
 .prose h3,
 .prose h4,
 .prose h5,
 .prose h6,
-.prose-invert h1,
-.prose-invert h2,
-.prose-invert h3,
-.prose-invert h4,
-.prose-invert h5,
-.prose-invert h6,
-.dark .prose h1,
-.dark .prose h2,
-.dark .prose h3,
-.dark .prose h4,
-.dark .prose h5,
-.dark .prose h6 {
+.prose blockquote,
+.prose-invert,
+.prose-invert * {
   color: #ffffff !important;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 .prose strong,
-.prose-invert strong,
-.dark .prose strong {
-  color: #ffffff !important;
+.prose-invert strong {
+  font-weight: 600;
 }
