@@ -183,7 +183,7 @@ const ProjectDetailPage: React.FC = () => {
         )}
 
         {project.description && (
-          <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed font-light text-lg">
+          <div className="prose dark:prose-invert prose-headings:text-white dark:prose-headings:text-white prose-p:text-gray-200 dark:prose-p:text-gray-200 prose-strong:text-white dark:prose-strong:text-white max-w-none leading-relaxed font-light text-lg">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.description}</ReactMarkdown>
           </div>
         )}
@@ -193,7 +193,7 @@ const ProjectDetailPage: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
               💡 Notes, intentions & inspirations
             </span>
-            <div className="prose prose-sm dark:prose-invert max-w-none text-gray-300 leading-relaxed">
+            <div className="prose prose-sm dark:prose-invert prose-headings:text-white dark:prose-headings:text-white prose-p:text-gray-200 dark:prose-p:text-gray-200 prose-strong:text-white dark:prose-strong:text-white max-w-none leading-relaxed">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.notesMarkdown}</ReactMarkdown>
             </div>
           </div>
@@ -204,7 +204,7 @@ const ProjectDetailPage: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
               🎬 Secret de fabrication & Démarche artistique
             </span>
-            <div className="prose prose-sm dark:prose-invert max-w-none text-gray-300 leading-relaxed">
+            <div className="prose prose-sm dark:prose-invert prose-headings:text-white dark:prose-headings:text-white prose-p:text-gray-200 dark:prose-p:text-gray-200 prose-strong:text-white dark:prose-strong:text-white max-w-none leading-relaxed">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.makingOf}</ReactMarkdown>
             </div>
           </div>
@@ -257,7 +257,7 @@ const ProjectDetailPage: React.FC = () => {
                 {photo.makingOf && (
                   <div className="space-y-1 pt-2">
                     <span className="text-[10px] uppercase font-bold tracking-wider text-amber-500">Secret de fabrication</span>
-                    <div className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400">
+                    <div className="prose prose-sm dark:prose-invert prose-headings:text-white dark:prose-headings:text-white prose-p:text-gray-300 dark:prose-p:text-gray-300 prose-strong:text-white dark:prose-strong:text-white max-w-none">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{photo.makingOf}</ReactMarkdown>
                     </div>
                   </div>

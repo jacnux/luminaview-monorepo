@@ -250,7 +250,7 @@ const CarnetDeRoutesPage: React.FC = () => {
           <h1 className="text-4xl font-extrabold tracking-tight text-gray-950 dark:text-white sm:text-5xl">
             📓 Carnet de Routes
           </h1>
-          <div className="text-white dark:text-white prose-p:text-white dark:prose-p:text-white prose-strong:text-white prose-a:text-amber-400 font-normal leading-relaxed prose dark:prose-invert max-w-none text-center">
+          <div className="text-white dark:text-white prose-p:text-white dark:prose-p:text-white prose-headings:text-white dark:prose-headings:text-white prose-strong:text-white prose-a:text-amber-400 font-normal leading-relaxed prose dark:prose-invert max-w-none text-center">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {userProfile?.carnetIntro || "Découvrez la mémoire artistique et technique de mes sorties photo. Pour chaque projet, retrouvez l'intention initiale, les boîtiers, objectifs et pellicules utilisés, ainsi que les paramètres de prise de vue et de développement."}
             </ReactMarkdown>

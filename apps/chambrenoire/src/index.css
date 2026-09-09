@@ -1,7 +1,7 @@
+@import './styles/lv-components.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import './styles/lv-components.css';
 
 /* ============================================================
    DESIGN TOKENS — Chambre Noire (minimal / plat, dual theme)
@@ -44,4 +44,36 @@ body {
   background-color: var(--c-bg);
   color: var(--c-fg);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================================
+   TYPOGRAPHIE MARKDOWN — Titres en blanc pur pour lisibilité
+   ============================================================ */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6,
+.prose-invert h1,
+.prose-invert h2,
+.prose-invert h3,
+.prose-invert h4,
+.prose-invert h5,
+.prose-invert h6,
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose h5,
+.dark .prose h6 {
+  color: #ffffff !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.prose strong,
+.prose-invert strong,
+.dark .prose strong {
+  color: #ffffff !important;
 }
