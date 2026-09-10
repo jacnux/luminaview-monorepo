@@ -1677,327 +1677,346 @@ const CarnetRoutesManager: React.FC = () => {
               </div>
 
               {/* Formulaire Projet */}
+              {/* Formulaire Projet (Disposition 2 colonnes) */}
               {showAddProject && (
-                <form onSubmit={handleSaveProject} className={`rounded-2xl p-6 space-y-4 max-w-2xl border ${
-                  isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-md'
+                <form onSubmit={handleSaveProject} className={`rounded-2xl p-6 sm:p-8 space-y-6 max-w-6xl w-full border shadow-xl ${
+                  isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200'
                 }`}>
-                  <h3 className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
-                    {editingItem ? 'Modifier le projet' : 'Créer un nouveau projet'}
-                  </h3>
+                  <div className="border-b border-white/10 pb-3 flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-yellow-600 dark:text-yellow-400 flex items-center gap-2">
+                      <span>📁</span>
+                      <span>{editingItem ? 'Modifier le projet' : 'Créer un nouveau projet'}</span>
+                    </h3>
+                    <span className="text-xs text-gray-400 font-medium">
+                      Configuration générale & Secrets de fabrication
+                    </span>
+                  </div>
 
-                  <div className="grid gap-4">
-                    <div>
-                      <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Nom du projet *</label>
-                      <input
-                        type="text"
-                        value={projectName}
-                        onChange={e => setProjectName(e.target.value)}
-                        className={`w-full rounded-lg p-2 text-sm border focus:outline-none focus:border-yellow-500 ${
-                          isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        }`}
-                        placeholder="ex: Matinées brumeuses, Lisbonne en été..."
-                        required
-                      />
-                    </div>
-
-                    {/* Choix du Médium */}
-                    <div>
-                      <label className={`block text-xs font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Médium photographique</label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {[
-                          { key: 'DIGITAL', label: '⚡ Numérique', desc: 'Boîtiers & EXIF' },
-                          { key: 'ANALOG', label: '🎞️ Argentique', desc: 'Films & Chimie' },
-                          { key: 'HYBRID', label: '🔀 Hybride', desc: 'Mixte' }
-                        ].map(m => (
-                          <button
-                            type="button"
-                            key={m.key}
-                            onClick={() => setProjectMedium(m.key as any)}
-                            className={`p-2.5 rounded-xl border text-left transition ${
-                              projectMedium === m.key
-                                ? 'border-yellow-500 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 font-bold'
-                                : isDark
-                                ? 'border-white/10 bg-black/30 text-gray-400 hover:text-white'
-                                : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                            }`}
-                          >
-                            <div className="font-bold text-xs">{m.label}</div>
-                            <div className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{m.desc}</div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Choix du Statut */}
-                    <div>
-                      <label className={`block text-xs font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Statut du projet</label>
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                        {[
-                          { key: 'IDEA', label: '💡 Idée' },
-                          { key: 'PREPARATION', label: '📋 En prépa' },
-                          { key: 'IN_PROGRESS', label: '📸 En cours' },
-                          { key: 'COMPLETED', label: '✨ Finalisé' },
-                          { key: 'ARCHIVED', label: '📦 Archivé' }
-                        ].map(s => (
-                          <button
-                            type="button"
-                            key={s.key}
-                            onClick={() => setProjectStatus(s.key as any)}
-                            className={`p-2 rounded-lg border text-center transition text-xs font-semibold ${
-                              projectStatus === s.key
-                                ? 'border-yellow-500 bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 font-bold shadow-sm'
-                                : isDark
-                                ? 'border-white/10 bg-black/30 text-gray-400 hover:text-white'
-                                : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                            }`}
-                          >
-                            {s.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    {/* COLONNE GAUCHE : Informations du Projet */}
+                    <div className="lg:col-span-6 space-y-4">
                       <div>
-                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Tags (séparés par virgules)</label>
+                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Nom du projet *</label>
                         <input
                           type="text"
-                          value={projectTags}
-                          onChange={e => setProjectTags(e.target.value)}
-                          className={`w-full rounded-lg p-2 text-xs border focus:outline-none focus:border-yellow-500 ${
+                          value={projectName}
+                          onChange={e => setProjectName(e.target.value)}
+                          className={`w-full rounded-lg p-2.5 text-sm border focus:outline-none focus:border-yellow-500 ${
                             isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
                           }`}
-                          placeholder="ex: architecture, été, 35mm"
+                          placeholder="ex: Matinées brumeuses, Lisbonne en été..."
+                          required
                         />
                       </div>
+
+                      {/* Choix du Médium */}
                       <div>
-                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Date cible / Prévue</label>
-                        <input
-                          type="date"
-                          value={projectTargetDate}
-                          onChange={e => setProjectTargetDate(e.target.value)}
-                          className={`w-full rounded-lg p-2 text-xs border focus:outline-none focus:border-yellow-500 ${
+                        <label className={`block text-xs font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Médium photographique</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            { key: 'DIGITAL', label: '⚡ Numérique', desc: 'Boîtiers & EXIF' },
+                            { key: 'ANALOG', label: '🎞️ Argentique', desc: 'Films & Chimie' },
+                            { key: 'HYBRID', label: '🔀 Hybride', desc: 'Mixte' }
+                          ].map(m => (
+                            <button
+                              type="button"
+                              key={m.key}
+                              onClick={() => setProjectMedium(m.key as any)}
+                              className={`p-2.5 rounded-xl border text-left transition ${
+                                projectMedium === m.key
+                                  ? 'border-yellow-500 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 font-bold'
+                                  : isDark
+                                  ? 'border-white/10 bg-black/30 text-gray-400 hover:text-white'
+                                  : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                              }`}
+                            >
+                              <div className="font-bold text-xs">{m.label}</div>
+                              <div className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{m.desc}</div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Choix du Statut */}
+                      <div>
+                        <label className={`block text-xs font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Statut du projet</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          {[
+                            { key: 'IDEA', label: '💡 Idée' },
+                            { key: 'PREPARATION', label: '📋 En prépa' },
+                            { key: 'IN_PROGRESS', label: '📸 En cours' },
+                            { key: 'COMPLETED', label: '✨ Finalisé' },
+                            { key: 'ARCHIVED', label: '📦 Archivé' }
+                          ].map(s => (
+                            <button
+                              type="button"
+                              key={s.key}
+                              onClick={() => setProjectStatus(s.key as any)}
+                              className={`p-2 rounded-lg border text-center transition text-xs font-semibold ${
+                                projectStatus === s.key
+                                  ? 'border-yellow-500 bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 font-bold shadow-sm'
+                                  : isDark
+                                  ? 'border-white/10 bg-black/30 text-gray-400 hover:text-white'
+                                  : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                              }`}
+                            >
+                              {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Tags (séparés par virgules)</label>
+                          <input
+                            type="text"
+                            value={projectTags}
+                            onChange={e => setProjectTags(e.target.value)}
+                            className={`w-full rounded-lg p-2 text-xs border focus:outline-none focus:border-yellow-500 ${
+                              isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                            placeholder="ex: architecture, été, 35mm"
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Date cible / Prévue</label>
+                          <input
+                            type="date"
+                            value={projectTargetDate}
+                            onChange={e => setProjectTargetDate(e.target.value)}
+                            className={`w-full rounded-lg p-2 text-xs border focus:outline-none focus:border-yellow-500 ${
+                              isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Description courte / Résumé</label>
+                        <textarea
+                          value={projectDesc}
+                          onChange={e => setProjectDesc(e.target.value)}
+                          rows={3}
+                          className={`w-full rounded-lg p-2.5 text-sm resize-none border focus:outline-none focus:border-yellow-500 ${
                             isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
                           }`}
+                          placeholder="Résumé court du projet..."
                         />
                       </div>
-                    </div>
 
-                    <div>
-                      <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Description courte / Résumé</label>
-                      <textarea
-                        value={projectDesc}
-                        onChange={e => setProjectDesc(e.target.value)}
-                        rows={2}
-                        className={`w-full rounded-lg p-2 text-sm resize-none border focus:outline-none focus:border-yellow-500 ${
-                          isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        }`}
-                        placeholder="Résumé court du projet..."
-                      />
-                    </div>
+                      <div>
+                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Image de couverture (Nom de fichier)</label>
+                        <input
+                          type="text"
+                          value={projectCover}
+                          onChange={e => setProjectCover(e.target.value)}
+                          className={`w-full rounded-lg p-2 text-sm font-mono border focus:outline-none focus:border-yellow-500 ${
+                            isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                          placeholder="ex: 1772987727758.jpg (optionnel)"
+                        />
+                      </div>
 
-                    {/* Markdown Notes & Intentions du Projet */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-xs font-semibold text-yellow-600 dark:text-yellow-400">
-                          📝 Notes & Intentions (Idée & Préparation - Markdown complet)
+                      <div className="flex items-center gap-2 pt-2">
+                        <input
+                          type="checkbox"
+                          id="pub"
+                          checked={projectPublished}
+                          onChange={e => setProjectPublished(e.target.checked)}
+                          className="w-4 h-4 rounded text-yellow-500 focus:ring-0 bg-black/40 border-white/10 animate-none cursor-pointer"
+                        />
+                        <label htmlFor="pub" className={`text-sm select-none cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-700 font-medium'}`}>
+                          Publier (Visible dans le Carnet de routes)
                         </label>
-                        <div className="flex gap-2">
-                          <label
-                            htmlFor="project-notes-image-upload"
-                            className={`cursor-pointer text-[10px] font-bold uppercase px-2 py-1 rounded border transition ${
-                              projectNotesUploading
-                                ? 'border-yellow-400/30 text-yellow-500/50'
-                                : 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10'
-                            }`}
-                            title="Insérer une image d'inspiration ou de référence"
-                          >
-                            {projectNotesUploading ? '⏳ Upload...' : '📎 Image / Référence'}
+                      </div>
+                    </div>
+
+                    {/* COLONNE DROITE : Secrets de fabrication & Notes / Intentions */}
+                    <div className="lg:col-span-6 space-y-5">
+                      {/* SECRET DE FABRICATION PROJET */}
+                      <div className={`rounded-xl p-4 space-y-3 border ${
+                        isDark ? 'bg-purple-950/20 border-purple-500/30' : 'bg-purple-50/50 border-purple-200'
+                      }`}>
+                        <div className="flex items-center justify-between">
+                          <label className="block text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                            🎬 Secret de fabrication & Démarche
                           </label>
-                          <input
-                            id="project-notes-image-upload"
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            disabled={projectNotesUploading}
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              setProjectNotesUploading(true);
-                              try {
-                                const formData = new FormData();
-                                formData.append('image', file);
-                                const res = await api.post('/photos/making-of/upload', formData, {
-                                  headers: { 'Content-Type': 'multipart/form-data' }
-                                });
-                                const url = res.data.url;
-                                const mdSnippet = `\n![Image d'inspiration](${url})\n`;
-                                setProjectNotesMarkdown(prev => prev + mdSnippet);
-                              } catch (err) {
-                                alert('Erreur lors du téléversement de l\'image');
-                              } finally {
-                                setProjectNotesUploading(false);
-                                e.target.value = '';
-                              }
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setProjectNotesPreview(!projectNotesPreview)}
-                            className={`text-[10px] font-bold uppercase px-2 py-1 rounded border transition ${
-                              projectNotesPreview
-                                ? 'bg-yellow-500 text-black border-yellow-500'
-                                : 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10'
+                          <div className="flex gap-2">
+                            <label
+                              htmlFor="project-making-of-upload"
+                              className={`cursor-pointer text-[10px] font-bold uppercase px-2 py-1 rounded border transition ${
+                                projectMakingOfUploading
+                                  ? 'border-purple-400/30 text-purple-400/50'
+                                  : 'border-purple-500/50 text-purple-600 dark:text-purple-400 hover:bg-purple-500/10'
+                              }`}
+                              title="Insérer une image"
+                            >
+                              {projectMakingOfUploading ? '⏳ Upload...' : '📎 Image'}
+                            </label>
+                            <input
+                              id="project-making-of-upload"
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={projectMakingOfUploading}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setProjectMakingOfUploading(true);
+                                try {
+                                  const formData = new FormData();
+                                  formData.append('image', file);
+                                  const res = await api.post('/photos/making-of/upload', formData, {
+                                    headers: { 'Content-Type': 'multipart/form-data' }
+                                  });
+                                  const url = res.data.url;
+                                  const mdSnippet = `\n![${file.name}](${url})\n`;
+                                  setProjectMakingOf(prev => prev + mdSnippet);
+                                } catch (err) {
+                                  alert('Erreur lors de l\'upload de l\'image');
+                                } finally {
+                                  setProjectMakingOfUploading(false);
+                                  e.target.value = '';
+                                }
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setProjectMakingOfPreview(p => !p)}
+                              className="text-[10px] font-bold uppercase px-2.5 py-1 rounded border border-purple-500/50 text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 transition"
+                            >
+                              {projectMakingOfPreview ? '✏️ Éditer' : '👁 Aperçu'}
+                            </button>
+                          </div>
+                        </div>
+                        <p className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Markdown supporté : **gras**, *italique*, # titres, listes, ![alt](url)</p>
+                        {projectMakingOfPreview ? (
+                          <div
+                            className={`w-full min-h-[140px] max-h-80 rounded-lg p-3 text-sm max-w-none overflow-auto border ${
+                              isDark
+                                ? 'bg-black/40 border-white/10 text-gray-200 prose prose-invert'
+                                : 'bg-purple-50/40 border-gray-200 text-gray-800 prose prose-neutral'
                             }`}
                           >
-                            {projectNotesPreview ? '✏️ Édition' : '👁️ Aperçu'}
-                          </button>
-                        </div>
+                            {projectMakingOf ? (
+                              <MarkdownRenderer>{projectMakingOf}</MarkdownRenderer>
+                            ) : (
+                              <span className="text-gray-400 italic text-xs">Aucun contenu de secret de fabrication rédigé.</span>
+                            )}
+                          </div>
+                        ) : (
+                          <textarea
+                            value={projectMakingOf}
+                            onChange={e => setProjectMakingOf(e.target.value)}
+                            rows={6}
+                            placeholder={`Racontez les secrets de fabrication, anecdotes et coulisses de ce projet...\n\nEx: # Démarche artistique\nVoici la genèse du projet...\n\n![Croquis préparatoire](/uploads/making-of/exemple.jpg)`}
+                            className={`w-full rounded-lg p-3 text-xs resize-y font-mono leading-relaxed border focus:outline-none focus:border-purple-500 ${
+                              isDark
+                                ? 'bg-black/40 border-white/10 text-white placeholder-gray-600'
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                          />
+                        )}
                       </div>
 
-                      {projectNotesPreview ? (
-                        <div className={`w-full min-h-[120px] max-h-72 overflow-y-auto p-3 rounded-lg border text-sm prose prose-sm max-w-none ${
-                          isDark ? 'bg-black/30 border-white/10 text-gray-200 prose-invert' : 'bg-gray-50 border-gray-300 text-gray-800'
-                        }`}>
-                          {projectNotesMarkdown ? (
-                            <MarkdownRenderer>{projectNotesMarkdown}</MarkdownRenderer>
-                          ) : (
-                            <span className="text-gray-400 italic text-xs">Aucune note rédigée. Basculez en mode édition pour commencer.</span>
-                          )}
-                        </div>
-                      ) : (
-                        <textarea
-                          rows={4}
-                          value={projectNotesMarkdown}
-                          onChange={e => setProjectNotesMarkdown(e.target.value)}
-                          className={`w-full rounded-lg p-2 text-xs font-mono border focus:outline-none focus:border-yellow-500 ${
-                            isDark ? 'bg-black/40 border-white/10 text-white placeholder-gray-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                          placeholder="Rédigez les intentions du projet, inspirations, références, checklist... (Markdown supporté : **gras**, listes, images)"
-                        />
-                      )}
-                    </div>
-
-                    <div>
-                      <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Image de couverture (Nom de fichier)</label>
-                      <input
-                        type="text"
-                        value={projectCover}
-                        onChange={e => setProjectCover(e.target.value)}
-                        className={`w-full rounded-lg p-2 text-sm font-mono border focus:outline-none focus:border-yellow-500 ${
-                          isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-white border-gray-300 text-gray-900'
-                        }`}
-                        placeholder="ex: 1772987727758.jpg (optionnel)"
-                      />
-                    </div>
-
-                    {/* SECRET DE FABRICATION PROJET */}
-                    <div className={`border-t pt-4 space-y-3 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
-                      <div className="flex items-center justify-between">
-                        <label className="block text-xs font-semibold text-purple-600 dark:text-purple-400">🎬 Secret de fabrication (Optionnel)</label>
-                        <div className="flex gap-2">
-                          <label
-                            htmlFor="project-making-of-upload"
-                            className={`cursor-pointer text-[10px] font-bold uppercase px-2 py-1 rounded border transition ${
-                              projectMakingOfUploading
-                                ? 'border-purple-400/30 text-purple-400/50'
-                                : 'border-purple-500/50 text-purple-600 dark:text-purple-400 hover:bg-purple-500/10'
-                            }`}
-                            title="Insérer une image"
-                          >
-                            {projectMakingOfUploading ? '⏳ Upload...' : '📎 Image'}
+                      {/* Markdown Notes & Intentions du Projet */}
+                      <div className={`rounded-xl p-4 space-y-3 border ${
+                        isDark ? 'bg-yellow-950/20 border-yellow-500/30' : 'bg-yellow-50/50 border-yellow-200'
+                      }`}>
+                        <div className="flex items-center justify-between">
+                          <label className="block text-xs font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-wider">
+                            📝 Notes & Intentions (Idée & Préparation)
                           </label>
-                          <input
-                            id="project-making-of-upload"
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            disabled={projectMakingOfUploading}
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              setProjectMakingOfUploading(true);
-                              try {
-                                const formData = new FormData();
-                                formData.append('image', file);
-                                const res = await api.post('/photos/making-of/upload', formData, {
-                                  headers: { 'Content-Type': 'multipart/form-data' }
-                                });
-                                const url = res.data.url;
-                                const mdSnippet = `\n![${file.name}](${url})\n`;
-                                setProjectMakingOf(prev => prev + mdSnippet);
-                              } catch (err) {
-                                alert('Erreur lors de l\'upload de l\'image');
-                              } finally {
-                                setProjectMakingOfUploading(false);
-                                e.target.value = '';
-                              }
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setProjectMakingOfPreview(p => !p)}
-                            className="text-[10px] font-bold uppercase px-2 py-1 rounded border border-purple-500/50 text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 transition"
-                          >
-                            {projectMakingOfPreview ? '✏️ Éditer' : '👁 Aperçu'}
-                          </button>
+                          <div className="flex gap-2">
+                            <label
+                              htmlFor="project-notes-image-upload"
+                              className={`cursor-pointer text-[10px] font-bold uppercase px-2 py-1 rounded border transition ${
+                                projectNotesUploading
+                                  ? 'border-yellow-400/30 text-yellow-500/50'
+                                  : 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10'
+                              }`}
+                              title="Insérer une image d'inspiration ou de référence"
+                            >
+                              {projectNotesUploading ? '⏳ Upload...' : '📎 Image / Réf.'}
+                            </label>
+                            <input
+                              id="project-notes-image-upload"
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={projectNotesUploading}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setProjectNotesUploading(true);
+                                try {
+                                  const formData = new FormData();
+                                  formData.append('image', file);
+                                  const res = await api.post('/photos/making-of/upload', formData, {
+                                    headers: { 'Content-Type': 'multipart/form-data' }
+                                  });
+                                  const url = res.data.url;
+                                  const mdSnippet = `\n![Image d'inspiration](${url})\n`;
+                                  setProjectNotesMarkdown(prev => prev + mdSnippet);
+                                } catch (err) {
+                                  alert('Erreur lors du téléversement de l\'image');
+                                } finally {
+                                  setProjectNotesUploading(false);
+                                  e.target.value = '';
+                                }
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setProjectNotesPreview(!projectNotesPreview)}
+                              className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded border transition ${
+                                projectNotesPreview
+                                  ? 'bg-yellow-500 text-black border-yellow-500'
+                                  : 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10'
+                              }`}
+                            >
+                              {projectNotesPreview ? '✏️ Édition' : '👁️ Aperçu'}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      <p className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Markdown supporté : **gras**, *italique*, # titres, ![alt](url)</p>
-                      {projectMakingOfPreview ? (
-                        <div
-                          className={`w-full min-h-[120px] rounded-lg p-3 text-sm max-w-none overflow-auto border ${
-                            isDark
-                              ? 'bg-black/40 border-white/10 text-gray-200 prose prose-invert'
-                              : 'bg-purple-50/40 border-gray-200 text-gray-800 prose prose-neutral'
-                          }`}
-                        >
-                          {projectMakingOf ? (
-                            <MarkdownRenderer>{projectMakingOf}</MarkdownRenderer>
-                          ) : (
-                            <span className="text-gray-400 italic">Aucun contenu</span>
-                          )}
-                        </div>
-                      ) : (
-                        <textarea
-                          value={projectMakingOf}
-                          onChange={e => setProjectMakingOf(e.target.value)}
-                          rows={4}
-                          placeholder={`Racontez le secret de fabrication de ce projet...\n\nEx: # Recherches préparatoires\nVoici mes dessins de recherche pour ce projet...\n\n![Dessin préparatoire](/uploads/making-of/croquis.jpg)`}
-                          className={`w-full rounded-lg p-3 text-xs resize-y font-mono leading-relaxed border focus:outline-none focus:border-purple-500 ${
-                            isDark
-                              ? 'bg-black/40 border-white/10 text-white placeholder-gray-600'
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                          }`}
-                        />
-                      )}
-                    </div>
 
-                    <div className="flex items-center gap-2 pt-2">
-                      <input
-                        type="checkbox"
-                        id="pub"
-                        checked={projectPublished}
-                        onChange={e => setProjectPublished(e.target.checked)}
-                        className="w-4 h-4 rounded text-yellow-500 focus:ring-0 bg-black/40 border-white/10 animate-none"
-                      />
-                      <label htmlFor="pub" className={`text-sm select-none cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-700 font-medium'}`}>
-                        Publier (Visible dans le Carnet de routes)
-                      </label>
+                        {projectNotesPreview ? (
+                          <div className={`w-full min-h-[140px] max-h-80 overflow-y-auto p-3 rounded-lg border text-sm prose prose-sm max-w-none ${
+                            isDark ? 'bg-black/30 border-white/10 text-gray-200 prose-invert' : 'bg-gray-50 border-gray-300 text-gray-800'
+                          }`}>
+                            {projectNotesMarkdown ? (
+                              <MarkdownRenderer>{projectNotesMarkdown}</MarkdownRenderer>
+                            ) : (
+                              <span className="text-gray-400 italic text-xs">Aucune note rédigée. Basculez en mode édition pour commencer.</span>
+                            )}
+                          </div>
+                        ) : (
+                          <textarea
+                            rows={6}
+                            value={projectNotesMarkdown}
+                            onChange={e => setProjectNotesMarkdown(e.target.value)}
+                            className={`w-full rounded-lg p-3 text-xs font-mono border focus:outline-none focus:border-yellow-500 ${
+                              isDark ? 'bg-black/40 border-white/10 text-white placeholder-gray-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            placeholder="Rédigez les intentions du projet, inspirations, références, checklist... (Markdown supporté : **gras**, listes, images)"
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex gap-3 pt-2">
+                  <div className="flex gap-3 pt-4 border-t border-white/10">
                     <button
                       type="submit"
-                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition"
+                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition shadow-md"
                     >
-                      {editingItem ? 'Enregistrer' : 'Créer'}
+                      {editingItem ? 'Enregistrer les modifications' : 'Créer le projet'}
                     </button>
                     <button
                       type="button"
                       onClick={resetForm}
-                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition border ${
+                      className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition border ${
                         isDark
                           ? 'bg-white/10 hover:bg-white/20 text-gray-300 border-transparent'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200'
