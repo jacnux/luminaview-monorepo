@@ -230,12 +230,12 @@ const ProjectDetailPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* COLONNE GAUCHE : Photo & Contexte artistique */}
               <div className="lg:col-span-7 space-y-4">
-                {/* Visual */}
-                <div className="bg-black/40 rounded-2xl overflow-hidden shadow-md aspect-[3/2] relative group border border-white/10">
+                {/* Visual - Photo entière sans recadrage */}
+                <div className="bg-black/60 rounded-2xl overflow-hidden shadow-md relative group border border-white/10 flex items-center justify-center">
                   <img
                     src={`/uploads/${photo.filename}`}
                     alt={photo.title || `Photo ${idx + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                    className="w-full h-auto max-h-[75vh] object-contain rounded-2xl transition-transform duration-500 group-hover:scale-[1.01]"
                   />
                   <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-black/80 text-white px-2.5 py-1 rounded-full border border-white/20 backdrop-blur-md">
                     {idx + 1} / {photos.length}
