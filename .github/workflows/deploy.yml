@@ -24,10 +24,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install Monorepo Dependencies
-        run: npm ci || npm install
+        run: npm install
 
       - name: Build Shared Packages
         run: |
