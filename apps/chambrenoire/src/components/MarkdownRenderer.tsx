@@ -9,14 +9,14 @@ const schema = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
-    '*':      ['style', 'className'],
-    'img':    ['src', 'alt', 'width', 'height', 'style'],
-    'a':      ['href', 'target', 'rel'],
+    '*':      ['style', 'className', 'class'],
+    'img':    ['src', 'alt', 'width', 'height', 'style', 'className', 'class', 'loading'],
+    'a':      ['href', 'target', 'rel', 'title'],
     'iframe': [],
   },
   tagNames: [
     ...(defaultSchema.tagNames ?? []),
-    'div', 'span', 'section',
+    'div', 'span', 'section', 'figure', 'figcaption', 'img', 'p', 'br',
   ],
 };
 

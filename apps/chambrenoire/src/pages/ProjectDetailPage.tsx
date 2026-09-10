@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import { getUserSlug } from '../utils/domain';
 
 const ProjectDetailPage: React.FC = () => {
@@ -184,7 +183,7 @@ const ProjectDetailPage: React.FC = () => {
 
         {project.description && (
           <div className="prose dark:prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white text-white max-w-none leading-relaxed font-light text-lg">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.description}</ReactMarkdown>
+            <MarkdownRenderer>{project.description}</MarkdownRenderer>
           </div>
         )}
 
@@ -194,7 +193,7 @@ const ProjectDetailPage: React.FC = () => {
               💡 Notes, intentions & inspirations
             </span>
             <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white text-white max-w-none leading-relaxed">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.notesMarkdown}</ReactMarkdown>
+              <MarkdownRenderer>{project.notesMarkdown}</MarkdownRenderer>
             </div>
           </div>
         )}
@@ -205,7 +204,7 @@ const ProjectDetailPage: React.FC = () => {
               🎬 Secret de fabrication & Démarche artistique
             </span>
             <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white text-white max-w-none leading-relaxed">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.makingOf}</ReactMarkdown>
+              <MarkdownRenderer>{project.makingOf}</MarkdownRenderer>
             </div>
           </div>
         )}
@@ -510,7 +509,7 @@ const ProjectDetailPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{photo.makingOf}</ReactMarkdown>
+                  <MarkdownRenderer>{photo.makingOf}</MarkdownRenderer>
                 </div>
               </div>
             )}
