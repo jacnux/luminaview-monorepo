@@ -172,11 +172,11 @@ const ProjectDetailPage: React.FC = () => {
         </div>
 
         {project.coverImage && (
-          <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[21/9] max-h-96 relative border border-white/10">
+          <div className="rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 bg-black/40 flex items-center justify-center">
             <img
               src={`/uploads/${project.coverImage}`}
               alt={project.name}
-              className="w-full h-full object-cover"
+              className="w-full h-auto max-h-[600px] object-contain rounded-3xl"
             />
           </div>
         )}
