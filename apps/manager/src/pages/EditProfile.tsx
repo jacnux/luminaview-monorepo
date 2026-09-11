@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 const EditProfile: React.FC = () => {
   const { updateUser } = useAuth();
@@ -25,6 +26,19 @@ const EditProfile: React.FC = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [servicesTab, setServicesTab] = useState<'edit' | 'preview'>('edit');
+  const [bioTab, setBioTab] = useState<'edit' | 'preview'>('edit');
+  const [portfolioIntroTab, setPortfolioIntroTab] = useState<'edit' | 'preview'>('edit');
+  const [carnetIntroTab, setCarnetIntroTab] = useState<'edit' | 'preview'>('edit');
+
+  const insertSnippet = (
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    before: string,
+    after: string = ''
+  ) => {
+    setter(prev => (prev ? `${prev}\n${before}${after}` : `${before}${after}`));
+  };
 
   const { theme } = useTheme();
 
@@ -433,55 +447,308 @@ const EditProfile: React.FC = () => {
                   </div>
                 )}
 
+                {/* Biographie */}
                 <div>
-                  <label className={labelClass}>Biographie (À propos) (8 lignes visibles)</label>
-                  <textarea
-                    value={bio}
-                    onChange={e => setBio(e.target.value)}
-                    rows={8}
-                    className={inputClass}
-                    placeholder="Racontez votre parcours, votre passion..."
-                  />
+                  <div className="flex items-center justify-between mb-2">
+                    <label className={labelClass} style={{ marginBottom: 0 }}>Biographie (À propos)</label>
+                    <div className="flex items-center bg-black/20 p-0.5 rounded-lg border border-white/5 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => setBioTab('edit')}
+                        className={`px-2.5 py-0.5 rounded font-medium transition ${
+                          bioTab === 'edit'
+                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Édition
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBioTab('preview')}
+                        className={`px-2.5 py-0.5 rounded font-medium transition ${
+                          bioTab === 'preview'
+                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Aperçu
+                      </button>
+                    </div>
+                  </div>
+                  {bioTab === 'edit' ? (
+                    <textarea
+                      value={bio}
+                      onChange={e => setBio(e.target.value)}
+                      rows={8}
+                      className={inputClass}
+                      placeholder="Racontez votre parcours, votre passion... Markdown & HTML supportés."
+                    />
+                  ) : (
+                    <div className="rounded-xl border border-white/10 bg-black/30 p-4 min-h-[160px] overflow-auto">
+                      {bio ? (
+                        <div className="prose prose-invert max-w-none text-gray-200 text-sm">
+                          <MarkdownRenderer>{bio}</MarkdownRenderer>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 italic text-xs">Aucune biographie rédigée.</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
+                {/* Introduction Portfolio */}
                 <div>
-                  <label className={labelClass}>Introduction du Portfolio (4 lignes visibles)</label>
-                  <textarea
-                    value={portfolioIntro}
-                    onChange={e => setPortfolioIntro(e.target.value)}
-                    rows={4}
-                    className={inputClass}
-                    placeholder="Un court message de bienvenue en haut de la page principale..."
-                  />
+                  <div className="flex items-center justify-between mb-2">
+                    <label className={labelClass} style={{ marginBottom: 0 }}>Introduction du Portfolio</label>
+                    <div className="flex items-center bg-black/20 p-0.5 rounded-lg border border-white/5 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => setPortfolioIntroTab('edit')}
+                        className={`px-2.5 py-0.5 rounded font-medium transition ${
+                          portfolioIntroTab === 'edit'
+                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Édition
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPortfolioIntroTab('preview')}
+                        className={`px-2.5 py-0.5 rounded font-medium transition ${
+                          portfolioIntroTab === 'preview'
+                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Aperçu
+                      </button>
+                    </div>
+                  </div>
+                  {portfolioIntroTab === 'edit' ? (
+                    <textarea
+                      value={portfolioIntro}
+                      onChange={e => setPortfolioIntro(e.target.value)}
+                      rows={4}
+                      className={inputClass}
+                      placeholder="Un court message de bienvenue en haut de la page principale... Markdown & HTML supportés."
+                    />
+                  ) : (
+                    <div className="rounded-xl border border-white/10 bg-black/30 p-4 min-h-[100px] overflow-auto">
+                      {portfolioIntro ? (
+                        <div className="prose prose-invert max-w-none text-gray-200 text-sm">
+                          <MarkdownRenderer>{portfolioIntro}</MarkdownRenderer>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 italic text-xs">Aucune introduction renseignée.</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
+                {/* Introduction Carnet de Routes */}
                 <div>
-                  <label className={labelClass}>Introduction du Carnet de Routes (4 lignes visibles - Markdown supporté)</label>
-                  <textarea
-                    value={carnetIntro}
-                    onChange={e => setCarnetIntro(e.target.value)}
-                    rows={4}
-                    className={inputClass}
-                    placeholder="Saisissez un message d'introduction pour les visiteurs de votre carnet de routes..."
-                  />
+                  <div className="flex items-center justify-between mb-2">
+                    <label className={labelClass} style={{ marginBottom: 0 }}>Introduction du Carnet de Routes</label>
+                    <div className="flex items-center bg-black/20 p-0.5 rounded-lg border border-white/5 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => setCarnetIntroTab('edit')}
+                        className={`px-2.5 py-0.5 rounded font-medium transition ${
+                          carnetIntroTab === 'edit'
+                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Édition
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCarnetIntroTab('preview')}
+                        className={`px-2.5 py-0.5 rounded font-medium transition ${
+                          carnetIntroTab === 'preview'
+                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Aperçu
+                      </button>
+                    </div>
+                  </div>
+                  {carnetIntroTab === 'edit' ? (
+                    <textarea
+                      value={carnetIntro}
+                      onChange={e => setCarnetIntro(e.target.value)}
+                      rows={4}
+                      className={inputClass}
+                      placeholder="Saisissez un message d'introduction pour les visiteurs de votre carnet de routes... Markdown & HTML supportés."
+                    />
+                  ) : (
+                    <div className="rounded-xl border border-white/10 bg-black/30 p-4 min-h-[100px] overflow-auto">
+                      {carnetIntro ? (
+                        <div className="prose prose-invert max-w-none text-gray-200 text-sm">
+                          <MarkdownRenderer>{carnetIntro}</MarkdownRenderer>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 italic text-xs">Aucune introduction renseignée.</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* CARD 4 : OFFRES & PRESTATIONS */}
+              {/* CARD 4 : OFFRES & PRESTATIONS / PROJETS & SERVICES */}
               <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
-                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                  <span className="text-yellow-500">✦</span> Projets & Services
-                </h3>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-3 gap-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                  <h3 className="text-lg font-bold flex items-center gap-2">
+                    <span className="text-yellow-500">✦</span> Projets & Services
+                  </h3>
+                  <div className="flex items-center bg-black/20 p-1 rounded-lg border border-white/10 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setServicesTab('edit')}
+                      className={`px-3 py-1 rounded-md font-medium transition ${
+                        servicesTab === 'edit'
+                          ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      ✏️ Édition
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setServicesTab('preview')}
+                      className={`px-3 py-1 rounded-md font-medium transition ${
+                        servicesTab === 'preview'
+                          ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      👁️ Aperçu rendu
+                    </button>
+                  </div>
+                </div>
 
                 <div>
-                  <label className={labelClass}>Description des Prestations (Markdown supporté - 12 lignes visibles)</label>
-                  <textarea
-                    value={servicesDescription}
-                    onChange={e => setServicesDescription(e.target.value)}
-                    rows={12}
-                    className={inputClass}
-                    placeholder="Décrivez vos offres, tarifs, séances... Ce texte est affiché dans l'onglet Services du portfolio."
-                  />
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <label className={labelClass} style={{ marginBottom: 0 }}>
+                      Description des Prestations & Projets
+                    </label>
+                    <span className="text-[11px] text-yellow-500/90 bg-yellow-500/10 px-2 py-0.5 rounded border border-yellow-500/20">
+                      Markdown complet + HTML + Images
+                    </span>
+                  </div>
+
+                  {servicesTab === 'edit' ? (
+                    <div className="space-y-3">
+                      {/* Barre d'outils rapide */}
+                      <div className="flex flex-wrap gap-1.5 p-2 rounded-lg bg-black/20 border border-white/5 text-xs">
+                        <button
+                          type="button"
+                          onClick={() => insertSnippet(setServicesDescription, '**', '**')}
+                          className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-gray-300 font-bold"
+                          title="Gras"
+                        >
+                          B
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => insertSnippet(setServicesDescription, '*', '*')}
+                          className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-gray-300 italic"
+                          title="Italique"
+                        >
+                          I
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => insertSnippet(setServicesDescription, '### Titre')}
+                          className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-gray-300"
+                          title="Titre H3"
+                        >
+                          H3
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => insertSnippet(setServicesDescription, '- ')}
+                          className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-gray-300"
+                          title="Liste à puces"
+                        >
+                          • Liste
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => insertSnippet(setServicesDescription, '[Texte du lien](https://example.com)')}
+                          className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-gray-300"
+                          title="Lien"
+                        >
+                          🔗 Lien
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => insertSnippet(setServicesDescription, '![Description](https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=80)')}
+                          className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-yellow-400/90 font-medium"
+                          title="Image Markdown"
+                        >
+                          🖼️ Image (MD)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => insertSnippet(setServicesDescription, '<img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=80" alt="Description" style="max-width:100%; border-radius:12px; margin: 12px 0;" />')}
+                          className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-yellow-400/90 font-medium"
+                          title="Image HTML"
+                        >
+                          💻 Image (HTML)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => insertSnippet(setServicesDescription, '| Service | Tarif | Détails |\n|---|---|---|\n| Séance Portrait | 150 € | 1h de shooting + 10 photos retouchées |')}
+                          className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-gray-300"
+                          title="Tableau Markdown"
+                        >
+                          📊 Tableau
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => insertSnippet(setServicesDescription, '<div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin: 12px 0;">\n  <h4 style="color: #facc15; margin: 0 0 8px 0;">Offre Spéciale</h4>\n  <p style="margin: 0; color: #d1d5db;">Votre texte ici...</p>\n</div>')}
+                          className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-amber-400/90 font-mono text-[11px]"
+                          title="Bloc HTML personnalisé"
+                        >
+                          &lt;div&gt;
+                        </button>
+                      </div>
+
+                      <textarea
+                        value={servicesDescription}
+                        onChange={e => setServicesDescription(e.target.value)}
+                        rows={12}
+                        className={inputClass}
+                        placeholder="Décrivez vos offres, tarifs, séances, projets... Le Markdown standard, les balises HTML (<p>, <div>, <img>, etc.) et les images sont intégralement supportés."
+                      />
+                      <p className="text-[11px] text-gray-400">
+                        💡 Astuce : Vous pouvez insérer des images via Markdown <code>![titre](url)</code> ou via HTML <code>&lt;img src="url" style="width:100%" /&gt;</code>, ainsi que des tableaux, listes et blocs HTML stylisés.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-white/10 bg-black/40 p-6 min-h-[280px] overflow-auto">
+                      {servicesDescription ? (
+                        <div className="prose prose-invert max-w-none text-gray-200">
+                          <MarkdownRenderer>{servicesDescription}</MarkdownRenderer>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                          <p className="text-sm italic mb-2">Aucun contenu renseigné pour le moment.</p>
+                          <button
+                            type="button"
+                            onClick={() => setServicesTab('edit')}
+                            className="text-xs text-yellow-400 hover:underline"
+                          >
+                            Cliquez ici pour rédiger votre contenu
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

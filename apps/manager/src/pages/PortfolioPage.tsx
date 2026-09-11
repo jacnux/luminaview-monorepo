@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { getAppUrl } from '../utils/urls';
@@ -283,7 +283,7 @@ const PortfolioHero = ({ user, authUser, onContact }: any) => {
                   {user.name}
                 </h1>
                 <div className="text-sm md:text-base text-gray-300 mt-2 italic max-w-2xl [&_p]:m-0">
-                  <ReactMarkdown>{tagline}</ReactMarkdown>
+                  <MarkdownRenderer>{tagline}</MarkdownRenderer>
                 </div>
               </div>
             </div>
@@ -484,7 +484,7 @@ const HomeIntro = ({ title, portfolioIntro }: HomeIntroProps) => (
 
       {portfolioIntro ? (
         <div className="prose prose-invert max-w-none text-left prose-p:my-3 prose-p:text-gray-200 prose-headings:text-yellow-200 prose-strong:text-white prose-a:text-yellow-300">
-          <ReactMarkdown>{portfolioIntro}</ReactMarkdown>
+          <MarkdownRenderer>{portfolioIntro}</MarkdownRenderer>
         </div>
       ) : (
         <p className="text-gray-400 text-lg italic text-left">Découvrez mes projets et ensembles photographiques.</p>
@@ -732,7 +732,7 @@ const ContentTab = ({ title, content, emptyText, ctaLabel, onCtaClick }: Content
       <h2 className="text-2xl md:text-3xl font-bold text-yellow-400 mb-6 tracking-tight">{title}</h2>
       {content ? (
         <div className="prose prose-invert max-w-none prose-p:text-gray-200 prose-headings:text-white prose-strong:text-white prose-a:text-yellow-300">
-          <ReactMarkdown>{content}</ReactMarkdown>
+          <MarkdownRenderer>{content}</MarkdownRenderer>
         </div>
       ) : (
         <p className="text-gray-500 italic">{emptyText}</p>

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Maximize2 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import MarkdownRenderer from './MarkdownRenderer';
 import axios from 'axios';
 import { Lightbox, CommentModal, ReportModal } from '@luminaview/ui';
 import { Album, Photo } from '../types';
@@ -102,7 +101,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
         )}
         {album.description && (
           <div style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: '1.7' }}>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{album.description}</ReactMarkdown>
+            <MarkdownRenderer>{album.description}</MarkdownRenderer>
           </div>
         )}
       </div>

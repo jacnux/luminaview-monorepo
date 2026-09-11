@@ -47,6 +47,9 @@ export interface UserProfile {
   email: string;
   bio?: string;
   portfolioIntro?: string;
+  carnetIntro?: string;
+  servicesDescription?: string;
+  presentationVideo?: string;
   tagline?: string;
   bannerImage?: string;
   avatar?: string;

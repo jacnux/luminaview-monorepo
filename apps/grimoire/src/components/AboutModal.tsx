@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Camera } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import MarkdownRenderer from './MarkdownRenderer';
 import { UserProfile } from '../types';
 
 interface AboutModalProps {
@@ -94,12 +93,12 @@ const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose, profile }) => 
 
             {profile?.tagline && (
               <blockquote className="grimoire-about-quote">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{profile.tagline}</ReactMarkdown>
+                <MarkdownRenderer>{profile.tagline}</MarkdownRenderer>
               </blockquote>
             )}
 
             <div className="grimoire-about-markdown">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{bio}</ReactMarkdown>
+              <MarkdownRenderer>{bio}</MarkdownRenderer>
             </div>
           </div>
 

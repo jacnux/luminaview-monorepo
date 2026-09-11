@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
+import MarkdownRenderer from '../../components/MarkdownRenderer';
 import { getBlogSlug } from '../../utils/getBlogSlug';
 import { API_PREFIX } from '../../utils/blogApi';
 
@@ -40,7 +40,7 @@ const AboutPage: React.FC = () => {
 
       {profile.tagline && (
         <div className="mb-6 px-4 py-2 border border-black/[0.06] dark:border-white/[0.06] bg-black/[0.02] dark:bg-white/[0.02] rounded-full text-sm italic text-gray-500 dark:text-gray-400 max-w-md text-center shadow-sm [&_p]:m-0">
-          <ReactMarkdown>{profile.tagline}</ReactMarkdown>
+          <MarkdownRenderer>{profile.tagline}</MarkdownRenderer>
         </div>
       )}
       
@@ -50,7 +50,7 @@ const AboutPage: React.FC = () => {
       
       <div className="w-full border-t border-black/[0.06] dark:border-white/[0.06] pt-8 mb-8 text-left">
         <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed font-light">
-          <ReactMarkdown>{profile.bio || 'Aucune biographie disponible pour le moment.'}</ReactMarkdown>
+          <MarkdownRenderer>{profile.bio || 'Aucune biographie disponible pour le moment.'}</MarkdownRenderer>
         </div>
       </div>
       
