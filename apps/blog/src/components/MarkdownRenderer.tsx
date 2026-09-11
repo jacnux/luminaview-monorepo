@@ -44,13 +44,21 @@ const MarkdownRenderer: React.FC<Props> = ({ children, className }) => (
     remarkPlugins={[remarkGfm]}
     rehypePlugins={[rehypeRaw as any, [rehypeSanitize, schema] as any]}
     components={{
-      img: ({ node, className: imgClass, ...props }) => (
-        <img
-          className={`max-w-full h-auto rounded-lg shadow-md my-3 inline-block ${imgClass || ''}`}
-          loading="lazy"
-          {...props}
-        />
-      ),
+      img: ({ node, className: imgClass, src, alt, ...props }) => {
+        let resolvedSrc = src || '';
+        if (resolvedSrc && !resolvedSrc.startsWith('http://') && !resolvedSrc.startsWith('https://') && !resolvedSrc.startsWith('/') && !resolvedSrc.startsWith('data:')) {
+          resolvedSrc = `/uploads/${resolvedSrc}`;
+        }
+        return (
+          <img
+            src={resolvedSrc}
+            alt={alt || ''}
+            className={`max-w-full h-auto rounded-lg shadow-md my-3 inline-block ${imgClass || ''}`}
+            loading="lazy"
+            {...props}
+          />
+        );
+      },
       a: ({ node, ...props }) => (
         <a target="_blank" rel="noopener noreferrer" {...props} />
       ),
