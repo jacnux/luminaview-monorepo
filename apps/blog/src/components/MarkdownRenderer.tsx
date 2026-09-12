@@ -44,15 +44,51 @@ const MarkdownRenderer: React.FC<Props> = ({ children, className }) => (
     remarkPlugins={[remarkGfm]}
     rehypePlugins={[rehypeRaw as any, [rehypeSanitize, schema] as any]}
     components={{
-      img: ({ node, className: imgClass, src, alt, ...props }) => {
+      img: ({ node, className: imgClass, src, alt, style, title, width, height, ...props }) => {
         let resolvedSrc = src || '';
+        let customStyle: React.CSSProperties = { ...(style as React.CSSProperties) };
+
+        if (width) {
+          const w = String(width);
+          const widthVal = w.endsWith('%') || w.endsWith('px') || w.endsWith('rem') ? w : `${w}px`;
+          customStyle.width = widthVal;
+          customStyle.maxWidth = widthVal;
+        }
+
+        if (resolvedSrc.includes('#')) {
+          const parts = resolvedSrc.split('#');
+          resolvedSrc = parts[0];
+          const hash = parts[1];
+          const match = hash.match(/(\d+(?:[.,]\d+)?)%/);
+          if (match) {
+            const pct = match[1].replace(',', '.');
+            customStyle.width = `${pct}%`;
+            customStyle.maxWidth = `${pct}%`;
+          } else if (hash.endsWith('px') || hash.endsWith('rem') || /^\d+$/.test(hash)) {
+            const val = /^\d+$/.test(hash) ? `${hash}%` : hash;
+            customStyle.width = val;
+            customStyle.maxWidth = val;
+          }
+        }
+
+        const altText = alt || '';
+        const widthMatch = altText.match(/(\d+(?:[.,]\d+)?)%/);
+        if (widthMatch) {
+          const pct = widthMatch[1].replace(',', '.');
+          customStyle.width = `${pct}%`;
+          customStyle.maxWidth = `${pct}%`;
+        }
+
         if (resolvedSrc && !resolvedSrc.startsWith('http://') && !resolvedSrc.startsWith('https://') && !resolvedSrc.startsWith('/') && !resolvedSrc.startsWith('data:')) {
           resolvedSrc = `/uploads/${resolvedSrc}`;
         }
+
         return (
           <img
             src={resolvedSrc}
-            alt={alt || ''}
+            alt={altText}
+            title={title}
+            style={customStyle}
             className={`max-w-full h-auto rounded-lg shadow-md my-3 inline-block ${imgClass || ''}`}
             loading="lazy"
             {...props}
