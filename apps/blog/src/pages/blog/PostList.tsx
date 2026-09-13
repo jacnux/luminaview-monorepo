@@ -3,13 +3,26 @@ import { Link, useLocation } from 'react-router-dom';
 import { getBlogSlug } from '../../utils/getBlogSlug';
 import { API_PREFIX } from '../../utils/blogApi';
 
-const extractFirstImage = (content: string): string | null => {
-  const match = content.match(/!\[.*?\]\((.*?)\)/);
-  let url = match ? match[1] : null;
-  if (url) {
-    url = url.replace(/https?:\/\/(www\.)?jac-photo\.fr(\/uploads)/g, '$2');
+const extractFirstImage = (content?: string, coverImage?: string): string | null => {
+  if (coverImage) {
+    let url = coverImage.replace(/https?:\/\/(www\.)?jac-photo\.fr(\/uploads)/g, '$2');
+    if (url.includes('#')) url = url.split('#')[0];
+    return url;
   }
-  return url;
+  if (!content) return null;
+  const mdMatch = content.match(/!\[.*?\]\((.*?)\)/);
+  if (mdMatch) {
+    let url = mdMatch[1];
+    if (url.includes('#')) url = url.split('#')[0];
+    return url.replace(/https?:\/\/(www\.)?jac-photo\.fr(\/uploads)/g, '$2');
+  }
+  const htmlMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (htmlMatch) {
+    let url = htmlMatch[1];
+    if (url.includes('#')) url = url.split('#')[0];
+    return url.replace(/https?:\/\/(www\.)?jac-photo\.fr(\/uploads)/g, '$2');
+  }
+  return null;
 };
 
 const PostList: React.FC = () => {
@@ -48,7 +61,7 @@ const PostList: React.FC = () => {
   }
 
   const [latest, ...others] = posts;
-  const latestImg = extractFirstImage(latest.content);
+  const latestImg = extractFirstImage(latest.content, latest.coverImage);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
@@ -56,12 +69,17 @@ const PostList: React.FC = () => {
       <Link to={`/post/${latest.slug}${s}`} className="group block mb-12 transition-all duration-300">
         <article className="bg-white dark:bg-slate-900/60 border border-black/[0.06] dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col md:flex-row min-h-[360px]">
           {latestImg && (
-            <div className="md:w-1/2 overflow-hidden relative min-h-[280px]">
+            <div className="md:w-1/2 overflow-hidden relative min-h-[280px] bg-slate-950/5 dark:bg-slate-950/40 flex items-center justify-center p-3 border-b md:border-b-0 md:border-r border-black/[0.04] dark:border-white/[0.04]">
+              {/* Arrière-plan flouté pour habiller le fond sans tronquer l'image principale */}
               <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                className="absolute inset-0 bg-cover bg-center blur-xl opacity-20 dark:opacity-30 scale-110"
                 style={{ backgroundImage: `url(${latestImg})` }}
               />
-              <div className="absolute inset-0 bg-black/10 dark:bg-black/20" />
+              <img
+                src={latestImg}
+                alt={latest.title}
+                className="relative max-h-[320px] w-auto max-w-full object-contain rounded-lg shadow-sm transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+              />
             </div>
           )}
           <div className={`md:w-1/2 p-8 md:p-12 flex flex-col justify-center ${!latestImg ? 'md:w-full' : ''}`}>
@@ -89,21 +107,25 @@ const PostList: React.FC = () => {
       {/* Grille des autres articles */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {others.map(post => {
-          const img = extractFirstImage(post.content);
+          const img = extractFirstImage(post.content, post.coverImage);
           return (
             <Link to={`/post/${post.slug}${s}`} key={post._id} className="group block h-full">
               <article className="bg-white dark:bg-slate-900/60 border border-black/[0.06] dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
                 {img ? (
-                  <div className="h-48 overflow-hidden relative">
+                  <div className="h-52 overflow-hidden relative bg-slate-950/5 dark:bg-slate-950/40 flex items-center justify-center p-2.5 border-b border-black/[0.04] dark:border-white/[0.04]">
+                    {/* Fond flouté pour un rendu harmonieux sans recadrage */}
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center blur-lg opacity-20 dark:opacity-25 scale-110"
+                      style={{ backgroundImage: `url(${img})` }}
+                    />
                     <img 
                       src={img} 
                       alt="" 
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" 
+                      className="relative max-h-full w-auto max-w-full object-contain rounded shadow-sm transition-transform duration-500 ease-out group-hover:scale-[1.03]" 
                     />
-                    <div className="absolute inset-0 bg-black/5 dark:bg-black/10" />
                   </div>
                 ) : (
-                  <div className="h-48 bg-gradient-to-br from-amber-500/5 to-amber-600/5 dark:from-amber-950/10 dark:to-amber-950/5 flex items-center justify-center border-b border-black/[0.04] dark:border-white/[0.04]">
+                  <div className="h-52 bg-gradient-to-br from-amber-500/5 to-amber-600/5 dark:from-amber-950/10 dark:to-amber-950/5 flex items-center justify-center border-b border-black/[0.04] dark:border-white/[0.04]">
                     <span className="text-amber-600 dark:text-amber-500/70 text-xs font-semibold uppercase tracking-wider">Hélioscope</span>
                   </div>
                 )}
