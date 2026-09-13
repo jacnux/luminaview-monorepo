@@ -124,3 +124,41 @@ export interface Project {
   updatedAt?: string;
 }
 
+export interface Film {
+  _id: string;
+  userId?: string;
+  name: string;
+  brand: string;
+  filmType: string;
+  iso: number;
+  isoUsed?: number;
+  format: string;
+  maxViews: number;
+  type: 'BW' | 'color' | 'slide';
+  isArchived?: boolean;
+  photosCount?: number;
+  isUsed?: boolean;
+  gearCameraId?: any;
+  gearLensId?: any;
+  defaultExposureSettings?: {
+    aperture?: string;
+    shutterSpeed?: string;
+    filter?: string;
+    ndFilter?: string;
+    lensHood?: boolean;
+  };
+  developmentSettings?: {
+    developer?: string;
+    dilution?: string;
+    time?: string;
+    temperature?: string;
+    agitation?: string;
+    pushPull?: string;
+    fixerBrand?: string;
+    fixerDilution?: string;
+    fixerTime?: string;
+  };
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

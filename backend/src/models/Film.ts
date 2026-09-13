@@ -31,6 +31,7 @@ export interface IFilm {
     fixerTime?: string;
   };
   notes?: string;
+  isArchived?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -65,7 +66,8 @@ const FilmSchema = new Schema<IFilm>({
     fixerDilution: { type: String, default: '1+4' },
     fixerTime: { type: String, default: '5mn' }
   },
-  notes: { type: String, default: '' }
+  notes: { type: String, default: '' },
+  isArchived: { type: Boolean, default: false }
 }, { timestamps: true });
 
 // Un utilisateur ne peut pas avoir deux rouleaux de film avec le même nom

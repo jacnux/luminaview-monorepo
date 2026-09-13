@@ -432,11 +432,28 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
                     required
                   >
                     <option value="">Sélectionner la pellicule</option>
-                    {films.map(f => (
-                      <option key={f._id} value={f._id}>
-                        {f.name} ({f.brand} {f.filmType} | {f.format === '135' ? '35mm' : f.format})
-                      </option>
-                    ))}
+                    {films.filter(f => !f.isArchived && (f.photosCount || 0) === 0).length > 0 && (
+                      <optgroup label="🟡 Pellicules en cours / vierges">
+                        {films
+                          .filter(f => !f.isArchived && (f.photosCount || 0) === 0)
+                          .map(f => (
+                            <option key={f._id} value={f._id}>
+                              {f.name} ({f.brand} {f.filmType} | {f.format === '135' ? '35mm' : f.format})
+                            </option>
+                          ))}
+                      </optgroup>
+                    )}
+                    {films.filter(f => f.isArchived || (f.photosCount || 0) > 0).length > 0 && (
+                      <optgroup label="📦 Pellicules archivées / utilisées">
+                        {films
+                          .filter(f => f.isArchived || (f.photosCount || 0) > 0)
+                          .map(f => (
+                            <option key={f._id} value={f._id}>
+                              {f.name} ({f.brand} {f.filmType} | {f.format === '135' ? '35mm' : f.format}) {f.photosCount ? `[${f.photosCount} photo(s)]` : ''}
+                            </option>
+                          ))}
+                      </optgroup>
+                    )}
                   </select>
                 </div>
 

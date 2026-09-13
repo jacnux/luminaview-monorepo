@@ -128,11 +128,13 @@ const CarnetRoutesManager: React.FC = () => {
   const [filmDefaultNdFilter, setFilmDefaultNdFilter] = useState('Aucun');
   const [filmDefaultLensHood, setFilmDefaultLensHood] = useState(false);
   const [filmNotes, setFilmNotes] = useState('');
+  const [filmIsArchived, setFilmIsArchived] = useState(false);
 
   // Rechercher/Filtrer dans le picker de photo
   const [pickerSearch, setPickerSearch] = useState('');
   const [searchPhotoQuery, setSearchPhotoQuery] = useState('');
   const [searchFilmQuery, setSearchFilmQuery] = useState('');
+  const [filterFilmStatus, setFilterFilmStatus] = useState<'active' | 'archived' | 'all'>('active');
   const [filterByCameraTag, setFilterByCameraTag] = useState(false);
 
   // Pellicule - Développement
@@ -438,7 +440,8 @@ const CarnetRoutesManager: React.FC = () => {
           fixerDilution: devFixerDilution,
           fixerTime: devFixerTime
         },
-        notes: filmNotes
+        notes: filmNotes,
+        isArchived: filmIsArchived
       };
 
       if (editingItem) {
@@ -472,6 +475,7 @@ const CarnetRoutesManager: React.FC = () => {
     setFilmDefaultNdFilter(f.defaultExposureSettings?.ndFilter || 'Aucun');
     setFilmDefaultLensHood(f.defaultExposureSettings?.lensHood || false);
     setFilmNotes(f.notes || '');
+    setFilmIsArchived(Boolean(f.isArchived));
 
     setDevDeveloper(f.developmentSettings?.developer || '');
     setDevDilution(f.developmentSettings?.dilution || '');
@@ -498,6 +502,15 @@ const CarnetRoutesManager: React.FC = () => {
     }
   };
 
+  const handleToggleArchiveFilm = async (f: any) => {
+    try {
+      await api.patch(`/films/${f._id}/archive`, { isArchived: !f.isArchived });
+      fetchData();
+    } catch (err: any) {
+      alert(err.response?.data?.error || "Erreur lors de l'archivage de la pellicule.");
+    }
+  };
+
   const handleDuplicateFilm = async (film: any) => {
     const newName = window.prompt("Nom de la copie de la pellicule / châssis :", `${film.name} (Copie)`);
     if (!newName || !newName.trim()) return;
@@ -515,7 +528,8 @@ const CarnetRoutesManager: React.FC = () => {
         gearLensId: film.gearLensId?._id || film.gearLensId || null,
         defaultExposureSettings: film.defaultExposureSettings,
         developmentSettings: film.developmentSettings,
-        notes: film.notes
+        notes: film.notes,
+        isArchived: false
       });
       fetchData();
     } catch (err: any) {
@@ -711,6 +725,7 @@ const CarnetRoutesManager: React.FC = () => {
     setFilmDefaultNdFilter('Aucun');
     setFilmDefaultLensHood(false);
     setFilmNotes('');
+    setFilmIsArchived(false);
 
     setFilmIsoUsed('');
     setDevDeveloper('');
@@ -2986,7 +3001,60 @@ const CarnetRoutesManager: React.FC = () => {
           {activeTab === 'films' && (
             <div className="space-y-6">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Mes Pellicules (Rouleaux & Châssis)</h2>
+                <div>
+                  <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Mes Pellicules (Rouleaux & Châssis)</h2>
+                  {/* Filtres Statut */}
+                  <div className="flex items-center gap-2 p-1 mt-2 rounded-xl border bg-black/5 dark:bg-white/5 border-gray-200 dark:border-white/10 w-fit">
+                    <button
+                      type="button"
+                      onClick={() => setFilterFilmStatus('active')}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                        filterFilmStatus === 'active'
+                          ? 'bg-yellow-500 text-black shadow-sm'
+                          : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <span>🟡 En cours / Vierges</span>
+                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                        filterFilmStatus === 'active' ? 'bg-black/20 text-black' : isDark ? 'bg-white/10 text-gray-300' : 'bg-gray-200 text-gray-700'
+                      }`}>
+                        {films.filter(f => !f.isArchived && (f.photosCount || 0) === 0).length}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFilterFilmStatus('archived')}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                        filterFilmStatus === 'archived'
+                          ? 'bg-yellow-500 text-black shadow-sm'
+                          : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <span>📦 Archivées</span>
+                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                        filterFilmStatus === 'archived' ? 'bg-black/20 text-black' : isDark ? 'bg-white/10 text-gray-300' : 'bg-gray-200 text-gray-700'
+                      }`}>
+                        {films.filter(f => f.isArchived || (f.photosCount || 0) > 0).length}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFilterFilmStatus('all')}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                        filterFilmStatus === 'all'
+                          ? 'bg-yellow-500 text-black shadow-sm'
+                          : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <span>🗂️ Toutes</span>
+                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                        filterFilmStatus === 'all' ? 'bg-black/20 text-black' : isDark ? 'bg-white/10 text-gray-300' : 'bg-gray-200 text-gray-700'
+                      }`}>
+                        {films.length}
+                      </span>
+                    </button>
+                  </div>
+                </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
                   <input
                     type="text"
@@ -3004,7 +3072,7 @@ const CarnetRoutesManager: React.FC = () => {
                       onClick={() => { resetForm(); setShowAddFilm(true); }}
                       className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-yellow-950/20 whitespace-nowrap"
                     >
-                      + Enregistrer une Pellicule (Rouleau/Châssis)
+                      + Enregistrer une Pellicule
                     </button>
                   )}
                 </div>
@@ -3505,6 +3573,19 @@ const CarnetRoutesManager: React.FC = () => {
                         placeholder="ex: Exposé à 320 ISO, développement à façon..."
                       />
                     </div>
+
+                    <div className="sm:col-span-2 flex items-center gap-2 pt-1">
+                      <input
+                        type="checkbox"
+                        id="film-is-archived"
+                        checked={filmIsArchived}
+                        onChange={e => setFilmIsArchived(e.target.checked)}
+                        className="w-4 h-4 text-yellow-500 rounded bg-transparent border-white/20 focus:ring-0 cursor-pointer"
+                      />
+                      <label htmlFor="film-is-archived" className={`text-xs font-semibold select-none cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        📦 Archiver cette pellicule (Pellicule terminée / utilisée / archivée)
+                      </label>
+                    </div>
                   </div>
                   <div className="flex gap-3 pt-2">
                     <button
@@ -3527,123 +3608,160 @@ const CarnetRoutesManager: React.FC = () => {
               )}
 
               {(() => {
-                const filteredFilms = films.filter(f =>
-                  (f.name || '').toLowerCase().includes(searchFilmQuery.toLowerCase()) ||
-                  (f.brand || '').toLowerCase().includes(searchFilmQuery.toLowerCase()) ||
-                  (f.filmType || '').toLowerCase().includes(searchFilmQuery.toLowerCase())
-                );
+                const filteredFilms = films.filter(f => {
+                  const matchesSearch =
+                    (f.name || '').toLowerCase().includes(searchFilmQuery.toLowerCase()) ||
+                    (f.brand || '').toLowerCase().includes(searchFilmQuery.toLowerCase()) ||
+                    (f.filmType || '').toLowerCase().includes(searchFilmQuery.toLowerCase());
+                  
+                  const isArchived = Boolean(f.isArchived || (f.photosCount && f.photosCount > 0));
+
+                  if (!matchesSearch) return false;
+                  if (filterFilmStatus === 'active') return !isArchived;
+                  if (filterFilmStatus === 'archived') return isArchived;
+                  return true;
+                });
+
                 return films.length === 0 ? (
                   <div className={`text-center py-12 rounded-2xl border ${isDark ? 'text-gray-500 bg-white/5 border-white/5' : 'text-gray-600 bg-white border-gray-200'}`}>
                     Aucune pellicule (rouleau/châssis) enregistrée.
                   </div>
                 ) : filteredFilms.length === 0 ? (
                   <div className={`text-center py-12 rounded-2xl border ${isDark ? 'text-gray-500 bg-white/5 border-white/5' : 'text-gray-600 bg-white border-gray-200'}`}>
-                    Aucune pellicule ne correspond à votre recherche.
+                    Aucune pellicule ne correspond à vos filtres ({filterFilmStatus === 'active' ? 'vierges / en cours' : filterFilmStatus === 'archived' ? 'archivées' : 'toutes'}).
                   </div>
                 ) : (
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredFilms.map(f => (
-                      <div
-                        key={f._id}
-                        className={`border rounded-xl p-5 flex flex-col justify-between transition ${
-                          isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-gray-200 shadow-sm hover:shadow-md'
-                        }`}
-                      >
-                        <div>
-                          <div className="flex justify-between items-start gap-2">
-                            <div>
-                              <h3 className={`font-bold text-sm truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>{f.name}</h3>
-                            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                              {f.brand} {f.filmType} (ISO {f.iso})
-                            </p>
-                          </div>
-                          <span
-                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                              f.format?.toLowerCase().includes('4x5') || f.format?.toLowerCase().includes('9x12') || f.format === 'plan-film'
-                                ? 'bg-purple-600/30 text-purple-700 dark:text-purple-300'
-                                : f.format === '120'
-                                ? 'bg-blue-600/30 text-blue-700 dark:text-blue-300'
-                                : 'bg-green-600/30 text-green-700 dark:text-green-300'
-                            }`}
-                          >
-                            {f.format === '135' ? '35mm' : f.format}
-                          </span>
-                        </div>
-
-                        <div className={`text-xs mt-2 space-y-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                          <p>
-                            Capacité : <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{f.maxViews} vues</span>
-                          </p>
-                          {f.gearCameraId && (
-                            <p>
-                              Boîtier :{' '}
-                              <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                {f.gearCameraId.brand} {f.gearCameraId.model}
-                              </span>
-                            </p>
-                          )}
-                          {f.gearLensId && (
-                            <p>
-                              Objectif :{' '}
-                              <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                {f.gearLensId.brand} {f.gearLensId.model}
-                              </span>
-                            </p>
-                          )}
-                          {f.defaultExposureSettings && (f.defaultExposureSettings.shutterSpeed || f.defaultExposureSettings.aperture || (f.defaultExposureSettings.filter && f.defaultExposureSettings.filter !== 'Aucun') || (f.defaultExposureSettings.ndFilter && f.defaultExposureSettings.ndFilter !== 'Aucun') || f.defaultExposureSettings.lensHood) && (
-                            <p>
-                              Prise de vue :{' '}
-                              <span className={`font-medium font-mono text-[10px] ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                {f.defaultExposureSettings.shutterSpeed && `${f.defaultExposureSettings.shutterSpeed} `}
-                                {f.defaultExposureSettings.aperture && `@ ${f.defaultExposureSettings.aperture} `}
-                                {f.defaultExposureSettings.filter && f.defaultExposureSettings.filter !== 'Aucun' && `[Filtre: ${f.defaultExposureSettings.filter}] `}
-                                {f.defaultExposureSettings.ndFilter && f.defaultExposureSettings.ndFilter !== 'Aucun' && `[ND: ${f.defaultExposureSettings.ndFilter}] `}
-                                {f.defaultExposureSettings.lensHood && `[Parasoleil]`}
-                              </span>
-                            </p>
-                          )}
-                          {f.developmentSettings?.developer && (
-                            <p>
-                              Chimie :{' '}
-                              <span className="text-yellow-600 dark:text-yellow-500 font-mono font-medium">
-                                {f.developmentSettings.developer} ({f.developmentSettings.dilution})
-                              </span>
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className={`flex flex-col gap-2 pt-4 border-t mt-4 ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
-                        <button
-                          onClick={() => setSelectedFilmRoll(f)}
-                          className="w-full text-center text-xs font-bold text-black bg-yellow-500 hover:bg-yellow-600 py-1.5 rounded-lg transition"
+                    {filteredFilms.map(f => {
+                      const isArchived = Boolean(f.isArchived || (f.photosCount && f.photosCount > 0));
+                      return (
+                        <div
+                          key={f._id}
+                          className={`border rounded-xl p-5 flex flex-col justify-between transition ${
+                            isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-gray-200 shadow-sm hover:shadow-md'
+                          }`}
                         >
-                          👁️ Voir la Planche-Contact
-                        </button>
-                         <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEditFilm(f)}
-                            className="flex-1 text-center text-xs font-semibold text-yellow-600 dark:text-yellow-400 bg-yellow-500/10 hover:bg-yellow-500/20 py-1.5 rounded-lg transition"
-                          >
-                            Modifier
-                          </button>
-                          <button
-                            onClick={() => handleDuplicateFilm(f)}
-                            className="flex-1 text-center text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 py-1.5 rounded-lg transition"
-                          >
-                            Dupliquer
-                          </button>
-                          <button
-                            onClick={() => handleDeleteFilm(f._id)}
-                            className="flex-1 text-center text-xs font-semibold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 py-1.5 rounded-lg transition"
-                          >
-                            Supprimer
-                          </button>
+                          <div>
+                            <div className="flex justify-between items-start gap-2">
+                              <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h3 className={`font-bold text-sm truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>{f.name}</h3>
+                                  {isArchived ? (
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                                      📦 Archivée {f.photosCount ? `(${f.photosCount})` : ''}
+                                    </span>
+                                  ) : (
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                                      🟡 Vierge
+                                    </span>
+                                  )}
+                                </div>
+                                <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  {f.brand} {f.filmType} (ISO {f.iso})
+                                </p>
+                              </div>
+                              <span
+                                className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                                  f.format?.toLowerCase().includes('4x5') || f.format?.toLowerCase().includes('9x12') || f.format === 'plan-film'
+                                    ? 'bg-purple-600/30 text-purple-700 dark:text-purple-300'
+                                    : f.format === '120'
+                                    ? 'bg-blue-600/30 text-blue-700 dark:text-blue-300'
+                                    : 'bg-green-600/30 text-green-700 dark:text-green-300'
+                                }`}
+                              >
+                                {f.format === '135' ? '35mm' : f.format}
+                              </span>
+                            </div>
+
+                            <div className={`text-xs mt-3 space-y-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                              <p>
+                                Capacité : <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{f.maxViews} vues</span>
+                                {f.photosCount !== undefined && (
+                                  <span className="ml-1 text-[11px] opacity-80">({f.photosCount} vue{f.photosCount > 1 ? 's' : ''} associée{f.photosCount > 1 ? 's' : ''})</span>
+                                )}
+                              </p>
+                              {f.gearCameraId && (
+                                <p>
+                                  Boîtier :{' '}
+                                  <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {f.gearCameraId.brand} {f.gearCameraId.model}
+                                  </span>
+                                </p>
+                              )}
+                              {f.gearLensId && (
+                                <p>
+                                  Objectif :{' '}
+                                  <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {f.gearLensId.brand} {f.gearLensId.model}
+                                  </span>
+                                </p>
+                              )}
+                              {f.defaultExposureSettings && (f.defaultExposureSettings.shutterSpeed || f.defaultExposureSettings.aperture || (f.defaultExposureSettings.filter && f.defaultExposureSettings.filter !== 'Aucun') || (f.defaultExposureSettings.ndFilter && f.defaultExposureSettings.ndFilter !== 'Aucun') || f.defaultExposureSettings.lensHood) && (
+                                <p>
+                                  Prise de vue :{' '}
+                                  <span className={`font-medium font-mono text-[10px] ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    {f.defaultExposureSettings.shutterSpeed && `${f.defaultExposureSettings.shutterSpeed} `}
+                                    {f.defaultExposureSettings.aperture && `@ ${f.defaultExposureSettings.aperture} `}
+                                    {f.defaultExposureSettings.filter && f.defaultExposureSettings.filter !== 'Aucun' && `[Filtre: ${f.defaultExposureSettings.filter}] `}
+                                    {f.defaultExposureSettings.ndFilter && f.defaultExposureSettings.ndFilter !== 'Aucun' && `[ND: ${f.defaultExposureSettings.ndFilter}] `}
+                                    {f.defaultExposureSettings.lensHood && `[Parasoleil]`}
+                                  </span>
+                                </p>
+                              )}
+                              {f.developmentSettings?.developer && (
+                                <p>
+                                  Chimie :{' '}
+                                  <span className="text-yellow-600 dark:text-yellow-500 font-mono font-medium">
+                                    {f.developmentSettings.developer} ({f.developmentSettings.dilution})
+                                  </span>
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className={`flex flex-col gap-2 pt-4 border-t mt-4 ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
+                            <button
+                              onClick={() => setSelectedFilmRoll(f)}
+                              className="w-full text-center text-xs font-bold text-black bg-yellow-500 hover:bg-yellow-600 py-1.5 rounded-lg transition"
+                            >
+                              👁️ Voir la Planche-Contact
+                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleToggleArchiveFilm(f)}
+                                className={`flex-1 text-center text-xs font-semibold py-1.5 rounded-lg transition ${
+                                  isArchived
+                                    ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
+                                    : 'text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20'
+                                }`}
+                                title={isArchived ? "Désarchiver la pellicule" : "Archiver la pellicule"}
+                              >
+                                {isArchived ? '🟡 Désarchiver' : '📦 Archiver'}
+                              </button>
+                              <button
+                                onClick={() => handleEditFilm(f)}
+                                className="flex-1 text-center text-xs font-semibold text-yellow-600 dark:text-yellow-400 bg-yellow-500/10 hover:bg-yellow-500/20 py-1.5 rounded-lg transition"
+                              >
+                                Modifier
+                              </button>
+                              <button
+                                onClick={() => handleDuplicateFilm(f)}
+                                className="flex-1 text-center text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 py-1.5 rounded-lg transition"
+                              >
+                                Dupliquer
+                              </button>
+                              <button
+                                onClick={() => handleDeleteFilm(f._id)}
+                                className="flex-1 text-center text-xs font-semibold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 py-1.5 rounded-lg transition"
+                              >
+                                Supprimer
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                      );
+                    })}
+                  </div>
                 );
               })()}
             </div>
