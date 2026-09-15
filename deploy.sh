@@ -50,14 +50,14 @@ fi
 
 # 3. Mise à jour du code source Git
 echo -e "\n${YELLOW}📥 Étape 2/5 : Récupération des dernières sources depuis Git...${NC}"
-git fetch --all --tags --prune
+git fetch --all --tags --force --prune || git fetch origin --tags --force
 
 if [[ "$TARGET" =~ ^v[0-9]+\.[0-9]+ ]]; then
     echo -e "Basculement sur le tag : ${GREEN}$TARGET${NC}"
-    git checkout "$TARGET"
+    git checkout -f "$TARGET"
 else
     echo -e "Mise à jour sur la branche : ${GREEN}$TARGET${NC}"
-    git checkout "$TARGET"
+    git checkout -f "$TARGET"
     git pull origin "$TARGET"
 fi
 
