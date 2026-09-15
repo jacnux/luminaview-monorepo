@@ -196,46 +196,56 @@ const Lightbox: React.FC<LightboxProps> = ({
         )}
       </div>
 
-      {/* Footer descriptif */}
-      <div className="lightbox-footer">
-        <span>{currentIndex + 1} / {photos.length}</span>
+      {/* Footer descriptif & Actions */}
+      <div className="lightbox-footer-container">
         {showDescription && currentPhoto.description && (
-          <p className="lightbox-desc">{currentPhoto.description}</p>
+          <div className="lightbox-desc-container">
+            <p className="lightbox-desc">{currentPhoto.description}</p>
+          </div>
         )}
-      </div>
 
-      {/* BOUTONS D'ACTION FLOTTANTS EN BAS À DROITE */}
-      <div className="lightbox-actions">
-        {currentPhoto.description && (
-          <button 
-            className={`lightbox-action-btn desc-toggle-btn ${showDescription ? 'active' : ''}`}
-            onClick={() => setShowDescription(!showDescription)}
-            title={showDescription ? "Masquer la description" : "Afficher la description"}
-          >
-            ℹ️
-          </button>
-        )}
-        <button 
-          className="lightbox-action-btn fullscreen-btn" 
-          onClick={toggleFullscreen}
-          title={isFullscreen ? "Quitter le plein écran" : "Plein écran"}
-        >
-          {isFullscreen ? "🗗" : "⛶"}
-        </button>
-        <button 
-          className="lightbox-action-btn comment-btn" 
-          onClick={() => onComment(currentIndex)}
-          title="Ajouter un commentaire"
-        >
-          💬
-        </button>
-        <button 
-          className="lightbox-action-btn report-btn" 
-          onClick={() => onReport(currentIndex)}
-          title="Signaler l'image"
-        >
-          🚩
-        </button>
+        <div className="lightbox-footer-bar">
+          <div className="lightbox-counter">
+            <span>{currentIndex + 1} / {photos.length}</span>
+          </div>
+
+          <div className="lightbox-actions">
+            {currentPhoto.description && (
+              <button 
+                className={`lightbox-action-btn desc-toggle-btn ${showDescription ? 'active' : ''}`}
+                onClick={() => setShowDescription(!showDescription)}
+                title={showDescription ? "Masquer la description" : "Afficher la description"}
+                aria-label="Description"
+              >
+                ℹ️
+              </button>
+            )}
+            <button 
+              className="lightbox-action-btn fullscreen-btn" 
+              onClick={toggleFullscreen}
+              title={isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+              aria-label="Plein écran"
+            >
+              {isFullscreen ? "🗗" : "⛶"}
+            </button>
+            <button 
+              className="lightbox-action-btn comment-btn" 
+              onClick={() => onComment(currentIndex)}
+              title="Ajouter un commentaire"
+              aria-label="Ajouter un commentaire"
+            >
+              💬
+            </button>
+            <button 
+              className="lightbox-action-btn report-btn" 
+              onClick={() => onReport(currentIndex)}
+              title="Signaler l'image"
+              aria-label="Signaler l'image"
+            >
+              🚩
+            </button>
+          </div>
+        </div>
       </div>
     </motion.div>
   );
