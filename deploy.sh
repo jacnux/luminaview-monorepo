@@ -66,12 +66,12 @@ echo -e "Commit actif : ${GREEN}${CURRENT_COMMIT}${NC}"
 
 # 4. Reconstruction des images Docker
 echo -e "\n${YELLOW}🔨 Étape 3/5 : Construction des images Docker de production...${NC}"
-# Nettoyer d'éventuelles sessions Buildx fantômes
-docker builder prune -f 2>/dev/null || true
-docker compose -f "$COMPOSE_FILE" build || {
+echo -e "${BLUE}ℹ️ Les logs de build sont disponibles en temps réel dans /tmp/build.log${NC}"
+# Note: on NE fait PAS de builder prune ici pour conserver le cache et accélérer le build
+if ! docker compose -f "$COMPOSE_FILE" build --progress=plain 2>&1 | tee /tmp/build.log; then
     echo -e "${YELLOW}⚠️ Échec Buildx, basculement en mode de build standard...${NC}"
-    DOCKER_BUILDKIT=0 docker compose -f "$COMPOSE_FILE" build
-}
+    DOCKER_BUILDKIT=0 docker compose -f "$COMPOSE_FILE" build 2>&1 | tee /tmp/build.log
+fi
 
 # 5. Redémarrage des services en production
 echo -e "\n${YELLOW}🔄 Étape 4/5 : Déploiement et redémarrage des conteneurs...${NC}"
