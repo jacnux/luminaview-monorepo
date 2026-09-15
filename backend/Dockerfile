@@ -1,29 +1,42 @@
-# Image de base Node.js Alpine
-FROM node:18-alpine
+# ==============================================================================
+# Étape 1 — Build : compilation TypeScript → JavaScript
+# ==============================================================================
+FROM node:18-alpine AS builder
 
-# Répertoire de travail dans le conteneur
 WORKDIR /app
 
-# INSTALLATION DES OUTILS DE CONSTRUCTION
-# Sharp a besoin de Python et de C++ pour être compilé sur Alpine
+# Outils natifs nécessaires à Sharp
 RUN apk add --no-cache python3 make g++
 
-# --- NOUVEAU : Installation des polices pour le filigrane ---
-RUN apk add --no-cache fontconfig ttf-dejavu
-# ----------------------------------------------------------
-
-# Copie des fichiers de gestion des paquets
+# Installation de toutes les dépendances (y compris devDeps pour tsc)
 COPY package*.json ./
-
-# Installation de TOUTES les dépendances (y compris Sharp)
 RUN npm install
 
-# Copie du reste du code source
+# Copie des sources et compilation
 COPY . .
+RUN npm run build
 
+# ==============================================================================
+# Étape 2 — Production : image légère sans devDependencies ni code source TS
+# ==============================================================================
+FROM node:18-alpine AS production
 
-# Exposition du port
+WORKDIR /app
+
+# Outils natifs pour Sharp + polices pour le filigrane
+RUN apk add --no-cache python3 make g++ fontconfig ttf-dejavu
+
+# Uniquement les dépendances de production
+COPY package*.json ./
+RUN npm install --omit=dev
+
+# Copie du build compilé depuis l'étape builder
+COPY --from=builder /app/dist ./dist
+
+# Copie des éventuels assets statiques (uploads, etc.) si nécessaire
+# COPY --from=builder /app/uploads ./uploads
+
 EXPOSE 3000
 
-# Commande de démarrage (celle définie dans package.json : "npm run dev")
-CMD ["npm", "run", "dev"]
+# Démarrage en mode production : node sur le JS compilé
+CMD ["node", "dist/server.js"]
