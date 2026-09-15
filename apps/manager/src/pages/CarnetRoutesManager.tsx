@@ -98,7 +98,7 @@ const CarnetRoutesManager: React.FC = () => {
   const [projectMakingOfPreview, setProjectMakingOfPreview] = useState(false);
   const [projectMakingOfUploading, setProjectMakingOfUploading] = useState(false);
   const [searchProjectQuery, setSearchProjectQuery] = useState('');
-  const [filterProjectStatus, setFilterProjectStatus] = useState<string>('ALL');
+  const [filterProjectTab, setFilterProjectTab] = useState<'active' | 'archived' | 'all'>('active');
   const [filterProjectMedium, setFilterProjectMedium] = useState<string>('ALL');
 
   // Matériel
@@ -332,6 +332,19 @@ const CarnetRoutesManager: React.FC = () => {
       fetchData();
     } catch (err) {
       alert('Erreur lors de la suppression');
+    }
+  };
+
+  const handleToggleArchiveProject = async (project: any) => {
+    try {
+      if (project.status !== 'ARCHIVED' && project.status !== 'COMPLETED') {
+        alert("Un projet doit d'abord être déclaré 'Terminé' (✨ Finalisé) avant de pouvoir être archivé.");
+        return;
+      }
+      await api.patch(`/projects/${project._id}/archive`);
+      fetchData();
+    } catch (err: any) {
+      alert(err.response?.data?.error || "Erreur lors de l'archivage du projet.");
     }
   };
 
@@ -1620,12 +1633,12 @@ const CarnetRoutesManager: React.FC = () => {
                 )}
               </div>
 
-              {/* Barre de filtres par statut et par médium */}
+              {/* Barre de filtres : Onglets Projets (En cours / Archivés / Tous) et Médiums */}
               <div className={`flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center p-4 rounded-2xl border ${
                 isDark ? 'bg-black/20 border-white/5' : 'bg-white border-gray-200 shadow-sm'
               }`}>
                 {/* Recherche */}
-                <div className="w-full lg:w-64">
+                <div className="w-full lg:w-60">
                   <input
                     type="text"
                     placeholder="Filtrer par nom, description, tag..."
@@ -1637,6 +1650,58 @@ const CarnetRoutesManager: React.FC = () => {
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-yellow-500'
                     }`}
                   />
+                </div>
+
+                {/* Onglets Projets : En cours / Archivés / Tous */}
+                <div className={`flex items-center gap-1 p-1 rounded-xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-gray-200'}`}>
+                  <button
+                    type="button"
+                    onClick={() => setFilterProjectTab('active')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                      filterProjectTab === 'active'
+                        ? 'bg-yellow-500 text-black shadow-sm'
+                        : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <span>📸 Projets en cours</span>
+                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      filterProjectTab === 'active' ? 'bg-black/20 text-black' : isDark ? 'bg-white/10 text-gray-300' : 'bg-gray-200 text-gray-700'
+                    }`}>
+                      {activeProjectsList.filter(p => p.status !== 'ARCHIVED').length}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFilterProjectTab('archived')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                      filterProjectTab === 'archived'
+                        ? 'bg-yellow-500 text-black shadow-sm'
+                        : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <span>📦 Projets archivés</span>
+                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      filterProjectTab === 'archived' ? 'bg-black/20 text-black' : isDark ? 'bg-white/10 text-gray-300' : 'bg-gray-200 text-gray-700'
+                    }`}>
+                      {activeProjectsList.filter(p => p.status === 'ARCHIVED').length}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFilterProjectTab('all')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                      filterProjectTab === 'all'
+                        ? 'bg-yellow-500 text-black shadow-sm'
+                        : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <span>🗂️ Tous les projets</span>
+                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      filterProjectTab === 'all' ? 'bg-black/20 text-black' : isDark ? 'bg-white/10 text-gray-300' : 'bg-gray-200 text-gray-700'
+                    }`}>
+                      {activeProjectsList.length}
+                    </span>
+                  </button>
                 </div>
 
                 {/* Filtres Médiums */}
@@ -1660,32 +1725,6 @@ const CarnetRoutesManager: React.FC = () => {
                       }`}
                     >
                       {m.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Filtres Statuts */}
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className={`text-[11px] font-semibold mr-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Statut :</span>
-                  {[
-                    { key: 'ALL', label: 'Tous' },
-                    { key: 'PREPARATION', label: '📋 En prépa' },
-                    { key: 'IN_PROGRESS', label: '📸 En cours' },
-                    { key: 'COMPLETED', label: '✨ Finalisé' },
-                    { key: 'ARCHIVED', label: '📦 Archivé' }
-                  ].map(s => (
-                    <button
-                      key={s.key}
-                      onClick={() => setFilterProjectStatus(s.key)}
-                      className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition ${
-                        filterProjectStatus === s.key
-                          ? 'bg-yellow-500 text-black font-bold'
-                          : isDark
-                          ? 'bg-white/5 text-gray-400 hover:text-white'
-                          : 'bg-gray-100 text-gray-700 hover:text-gray-900 border border-gray-200'
-                      }`}
-                    >
-                      {s.label}
                     </button>
                   ))}
                 </div>
@@ -2046,8 +2085,9 @@ const CarnetRoutesManager: React.FC = () => {
               {/* Grille des Projets */}
               {(() => {
                 const filteredProjects = activeProjectsList.filter(p => {
+                  if (filterProjectTab === 'active' && p.status === 'ARCHIVED') return false;
+                  if (filterProjectTab === 'archived' && p.status !== 'ARCHIVED') return false;
                   if (filterProjectMedium !== 'ALL' && p.medium !== filterProjectMedium) return false;
-                  if (filterProjectStatus !== 'ALL' && p.status !== filterProjectStatus) return false;
                   if (searchProjectQuery) {
                     const q = searchProjectQuery.toLowerCase();
                     const matchName = (p.name || '').toLowerCase().includes(q);
@@ -2063,7 +2103,7 @@ const CarnetRoutesManager: React.FC = () => {
                     <div className={`text-center py-12 rounded-2xl border ${
                       isDark ? 'text-gray-500 bg-white/5 border-white/5' : 'text-gray-600 bg-white border-gray-200 shadow-sm'
                     }`}>
-                      Aucun projet correspondant aux critères de filtre.
+                      Aucun projet ne correspond à vos critères ({filterProjectTab === 'active' ? 'en cours' : filterProjectTab === 'archived' ? 'archivés' : 'tous'}).
                     </div>
                   );
                 }
@@ -2141,18 +2181,55 @@ const CarnetRoutesManager: React.FC = () => {
                             Slug : {p.slug}
                           </div>
                         </div>
-                        <div className={`flex justify-between items-center pt-3 border-t ${isDark ? 'border-white/5' : 'border-gray-200'}`}>
-                          <div className="flex gap-2">
+                        <div className={`flex flex-wrap justify-between items-center gap-2 pt-3 border-t ${isDark ? 'border-white/5' : 'border-gray-200'}`}>
+                          <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleToggleProjectPublish(p)}
-                              className={`text-xs px-2 py-1 rounded transition font-bold ${
+                              className={`text-xs px-2.5 py-1 rounded-lg transition font-bold ${
                                 p.isPublished
-                                  ? 'bg-green-700/80 hover:bg-green-600 text-white'
+                                  ? 'bg-green-700/80 hover:bg-green-600 text-white shadow-sm'
                                   : 'bg-gray-700/80 hover:bg-gray-600 text-gray-300'
                               }`}
                             >
                               {p.isPublished ? 'En Ligne' : 'Hors Ligne'}
                             </button>
+
+                            {/* Action Archiver / Désarchiver (strictement conditionné à Terminé) */}
+                            {p.status === 'ARCHIVED' ? (
+                              <button
+                                onClick={() => handleToggleArchiveProject(p)}
+                                className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition border flex items-center gap-1 ${
+                                  isDark
+                                    ? 'text-yellow-400 hover:text-yellow-300 bg-yellow-500/20 hover:bg-yellow-500/30 border-yellow-500/30'
+                                    : 'text-yellow-800 hover:text-yellow-900 bg-yellow-100 hover:bg-yellow-200 border-yellow-300'
+                                }`}
+                                title="Désarchiver le projet (repasser au statut Finalisé)"
+                              >
+                                🟡 Désarchiver
+                              </button>
+                            ) : p.status === 'COMPLETED' ? (
+                              <button
+                                onClick={() => handleToggleArchiveProject(p)}
+                                className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition border flex items-center gap-1 ${
+                                  isDark
+                                    ? 'text-purple-300 hover:text-white bg-purple-600/30 hover:bg-purple-600/50 border-purple-500/40'
+                                    : 'text-purple-700 hover:text-purple-900 bg-purple-100 hover:bg-purple-200 border-purple-300'
+                                }`}
+                                title="Archiver ce projet terminé"
+                              >
+                                📦 Archiver
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => alert("Le projet doit d'abord être déclaré 'Terminé' (✨ Finalisé) pour pouvoir être archivé.")}
+                                className={`text-xs font-medium px-2 py-1 rounded-lg transition border opacity-40 cursor-not-allowed flex items-center gap-1 ${
+                                  isDark ? 'text-gray-500 border-white/10 bg-white/5' : 'text-gray-400 border-gray-200 bg-gray-50'
+                                }`}
+                                title="Déclarez d'abord le projet 'Finalisé' pour pouvoir l'archiver"
+                              >
+                                📦 Archiver
+                              </button>
+                            )}
                           </div>
                           <div className="flex gap-2">
                             {p.notesMarkdown && (

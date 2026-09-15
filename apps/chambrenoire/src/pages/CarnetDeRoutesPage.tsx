@@ -11,6 +11,7 @@ const CarnetDeRoutesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lightboxPhoto, setLightboxPhoto] = useState<any | null>(null);
   const [shareItem, setShareItem] = useState<{ type: 'project' | 'photo'; title: string; url: string; embedUrl: string } | null>(null);
+  const [projectTab, setProjectTab] = useState<'all' | 'active' | 'archived'>('all');
 
   useEffect(() => {
     setLoading(true);
@@ -51,7 +52,17 @@ const CarnetDeRoutesPage: React.FC = () => {
     );
   }
 
-  const totalItems = projects.length + standalonePhotos.length;
+  const activeProjects = projects.filter(p => p.status !== 'ARCHIVED');
+  const archivedProjects = projects.filter(p => p.status === 'ARCHIVED');
+
+  const displayedProjects = projectTab === 'active'
+    ? activeProjects
+    : projectTab === 'archived'
+    ? archivedProjects
+    : projects;
+
+  const displayedPhotos = projectTab === 'archived' ? [] : standalonePhotos;
+  const totalItems = displayedProjects.length + displayedPhotos.length;
 
   const isEmbedded = window.location.pathname.startsWith('/embed/');
 
@@ -258,14 +269,71 @@ const CarnetDeRoutesPage: React.FC = () => {
         </div>
       )}
 
+      {/* Barre d'onglets Projets : Tous / En cours / Archivés */}
+      <div className="flex justify-center">
+        <div className="inline-flex flex-wrap justify-center items-center gap-1.5 p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md shadow-xl">
+          <button
+            onClick={() => setProjectTab('all')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              projectTab === 'all'
+                ? 'bg-amber-500 text-black shadow-md'
+                : 'text-gray-300 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <span>🗂️ Tous les projets</span>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              projectTab === 'all' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
+            }`}>
+              {projects.length}
+            </span>
+          </button>
+          <button
+            onClick={() => setProjectTab('active')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              projectTab === 'active'
+                ? 'bg-amber-500 text-black shadow-md'
+                : 'text-gray-300 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <span>📸 Projets en cours</span>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              projectTab === 'active' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
+            }`}>
+              {activeProjects.length}
+            </span>
+          </button>
+          <button
+            onClick={() => setProjectTab('archived')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              projectTab === 'archived'
+                ? 'bg-amber-500 text-black shadow-md'
+                : 'text-gray-300 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <span>📦 Projets archivés</span>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              projectTab === 'archived' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
+            }`}>
+              {archivedProjects.length}
+            </span>
+          </button>
+        </div>
+      </div>
+
       {totalItems === 0 ? (
         <div className="text-center py-20 bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-3xl">
-          <p className="text-gray-500 dark:text-gray-400 text-sm">Aucun carnet de route publié pour le moment.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            {projectTab === 'archived' 
+              ? 'Aucun projet archivé pour le moment.' 
+              : projectTab === 'active'
+              ? 'Aucun projet en cours pour le moment.'
+              : 'Aucun carnet de route publié pour le moment.'}
+          </p>
         </div>
       ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {/* Project cards */}
-          {projects.map((project, pIdx) => (
+          {displayedProjects.map((project, pIdx) => (
             <div
               key={`proj-${project._id}`}
               className="relative group bg-gray-900 border border-white/[0.08] rounded-2xl shadow-md hover:shadow-xl hover:border-amber-500/30 transition-all duration-300 overflow-hidden flex flex-col justify-between"
@@ -294,7 +362,7 @@ const CarnetDeRoutesPage: React.FC = () => {
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-                  {/* Badge médium & projet */}
+                  {/* Badge médium & projet & archivé */}
                   <div className="absolute top-3 left-3 flex gap-1 items-center">
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                       project.medium === 'DIGITAL'
@@ -305,6 +373,11 @@ const CarnetDeRoutesPage: React.FC = () => {
                     }`}>
                       {project.medium === 'DIGITAL' ? '⚡ Numérique' : project.medium === 'ANALOG' ? '🎞️ Argentique' : project.medium === 'HYBRID' ? '🔀 Hybride' : 'Projet'}
                     </span>
+                    {project.status === 'ARCHIVED' && (
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-900/90 text-purple-200 border border-purple-500/40">
+                        📦 Archivé
+                      </span>
+                    )}
                   </div>
                 </div>
                 {/* Card details */}
@@ -363,7 +436,7 @@ const CarnetDeRoutesPage: React.FC = () => {
           ))}
 
           {/* Standalone Photos */}
-          {standalonePhotos.map((photo, sIdx) => (
+          {displayedPhotos.map((photo, sIdx) => (
             <div
               key={`photo-${photo._id}`}
               onClick={() => setLightboxPhoto(photo)}

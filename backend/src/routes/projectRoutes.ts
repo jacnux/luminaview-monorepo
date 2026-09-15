@@ -28,10 +28,14 @@ router.get('/public/all', async (req: Request, res: Response) => {
     let query: any = { isPublished: true };
 
     if (statusParam) {
-      query.status = statusParam;
+      if (statusParam === 'ALL') {
+        query.status = { $in: ['IN_PROGRESS', 'COMPLETED', 'ARCHIVED'] };
+      } else {
+        query.status = statusParam;
+      }
     } else {
-      // Par défaut pour la chambre noire / public, afficher les projets actifs ou terminés
-      query.status = { $in: ['IN_PROGRESS', 'COMPLETED'] };
+      // Par défaut pour la chambre noire / public, inclure les projets actifs, terminés et archivés
+      query.status = { $in: ['IN_PROGRESS', 'COMPLETED', 'ARCHIVED'] };
     }
 
     if (mediumParam && mediumParam !== 'ALL') {
@@ -256,7 +260,36 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// 6. DELETE PROJECT / IDEA
+// 6. ARCHIVE / UNARCHIVE PROJECT (SEULEMENT SI TERMINÉ)
+router.patch('/:id/archive', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Projet introuvable' });
+    if (project.userId.toString() !== req.user.userId) {
+      return res.status(403).json({ error: 'Action non autorisée' });
+    }
+
+    if (project.status === 'ARCHIVED') {
+      // Désarchiver -> rétablit le projet au statut COMPLETED (Terminé)
+      project.status = 'COMPLETED';
+    } else {
+      // Règle stricte : on ne peut archiver que si le projet est déclaré terminé (COMPLETED)
+      if (project.status !== 'COMPLETED') {
+        return res.status(400).json({
+          error: "Un projet doit d'abord être déclaré 'Terminé' (✨ Finalisé) avant de pouvoir être archivé."
+        });
+      }
+      project.status = 'ARCHIVED';
+    }
+
+    await project.save();
+    res.json(project);
+  } catch (error) {
+    res.status(500).json({ error: "Erreur lors de l'archivage du projet" });
+  }
+});
+
+// 7. DELETE PROJECT / IDEA
 router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const project = await Project.findById(req.params.id);
