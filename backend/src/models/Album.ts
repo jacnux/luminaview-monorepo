@@ -29,7 +29,10 @@ const AlbumSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 
   // Options de tri
-  sortOrder: { type: String, enum: ['date_desc', 'date_asc', 'manual'], default: 'date_desc' }
+  sortOrder: { type: String, enum: ['date_desc', 'date_asc', 'manual'], default: 'date_desc' },
+
+  // Tags pour les albums virtuels (filtrage par tags)
+  tags: { type: [String], default: [] }
 
 },
 

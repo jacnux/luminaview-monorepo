@@ -6,7 +6,7 @@
 import mongoose from 'mongoose';
 import app from './app';
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // ============================================================
 // BASE DE DONNÉES
