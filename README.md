@@ -78,7 +78,7 @@ Le déploiement en production utilise `docker-compose.prod.yml` avec **Caddy** e
 
 ```bash
 # Sur le serveur de production :
-git pull origin main
-docker compose -f docker-compose.prod.yml build
-docker compose -f docker-compose.prod.yml up -d
+./deploy.sh            # Déploie la dernière version de la branche main
+# OU
+./deploy.sh v1.7.2     # Déploie un tag spécifique
 ```
