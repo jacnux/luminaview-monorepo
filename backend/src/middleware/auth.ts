@@ -36,7 +36,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   // IMPORTANT : Utiliser la meme clé secrète que dans authRoutes
   const secret = process.env.JWT_SECRET || 'default_secret';
 
-  jwt.verify(token, secret, (err, user) => {
+  jwt.verify(token, secret, (err, user: any) => {
     if (err) {
       return res.status(401).json({ error: 'Token invalide ou expiré.' });
     }
