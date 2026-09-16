@@ -1382,8 +1382,9 @@ const CarnetRoutesManager: React.FC = () => {
                                 const url = res.data.url;
                                 const mdSnippet = `\n![${file.name}](${url})\n`;
                                 setIdeaNotesMarkdown(prev => prev + mdSnippet);
-                              } catch (err) {
-                                alert('Erreur lors de l\'upload de l\'image');
+                              } catch (err: any) {
+                                const msg = err.response?.data?.error || err.message || "Erreur de communication avec le serveur";
+                                alert(`Erreur lors de l'upload de l'image : ${msg}`);
                               } finally {
                                 setIdeaUploadingImage(false);
                                 e.target.value = '';
@@ -1927,8 +1928,9 @@ const CarnetRoutesManager: React.FC = () => {
                                   const url = res.data.url;
                                   const mdSnippet = `\n![${file.name}](${url})\n`;
                                   setProjectMakingOf(prev => prev + mdSnippet);
-                                } catch (err) {
-                                  alert('Erreur lors de l\'upload de l\'image');
+                                } catch (err: any) {
+                                  const msg = err.response?.data?.error || err.message || "Erreur de communication avec le serveur";
+                                  alert(`Erreur lors de l'upload de l'image : ${msg}`);
                                 } finally {
                                   setProjectMakingOfUploading(false);
                                   e.target.value = '';
@@ -2013,8 +2015,9 @@ const CarnetRoutesManager: React.FC = () => {
                                   const url = res.data.url;
                                   const mdSnippet = `\n![Image d'inspiration](${url})\n`;
                                   setProjectNotesMarkdown(prev => prev + mdSnippet);
-                                } catch (err) {
-                                  alert('Erreur lors du téléversement de l\'image');
+                                } catch (err: any) {
+                                  const msg = err.response?.data?.error || err.message || "Erreur de communication avec le serveur";
+                                  alert(`Erreur lors du téléversement de l'image : ${msg}`);
                                 } finally {
                                   setProjectNotesUploading(false);
                                   e.target.value = '';

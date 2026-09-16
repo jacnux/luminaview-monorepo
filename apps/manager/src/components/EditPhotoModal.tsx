@@ -994,8 +994,9 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
                           const url = res.data.url;
                           const mdSnippet = `\n![${file.name}](${url})\n`;
                           setMakingOf(prev => prev + mdSnippet);
-                        } catch (err) {
-                          alert('Erreur lors de l\'upload de l\'image');
+                        } catch (err: any) {
+                          const msg = err.response?.data?.error || err.message || "Erreur de communication avec le serveur";
+                          alert(`Erreur lors de l'upload de l'image : ${msg}`);
                         } finally {
                           setMakingOfUploading(false);
                           e.target.value = '';
