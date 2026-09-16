@@ -252,7 +252,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 to="/create-album"
                 className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
               >
-                + Créer
+                + Créer un album
               </Link>
 
               <div
@@ -534,7 +534,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     to="/create-album"
                     className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition shadow-sm"
                   >
-                    + Créer
+                    + Créer un album
                   </Link>
 
                   {/* Actions utilitaires compactes */}

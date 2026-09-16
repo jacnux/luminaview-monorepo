@@ -11,7 +11,7 @@ const CarnetDeRoutesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lightboxPhoto, setLightboxPhoto] = useState<any | null>(null);
   const [shareItem, setShareItem] = useState<{ type: 'project' | 'photo'; title: string; url: string; embedUrl: string } | null>(null);
-  const [projectTab, setProjectTab] = useState<'all' | 'active' | 'archived'>('all');
+  const [projectTab, setProjectTab] = useState<'active' | 'archived' | 'all'>('active');
 
   useEffect(() => {
     setLoading(true);
@@ -59,7 +59,7 @@ const CarnetDeRoutesPage: React.FC = () => {
     ? activeProjects
     : projectTab === 'archived'
     ? archivedProjects
-    : projects;
+    : [...activeProjects, ...archivedProjects];
 
   const displayedPhotos = projectTab === 'archived' ? [] : standalonePhotos;
   const totalItems = displayedProjects.length + displayedPhotos.length;
@@ -269,24 +269,9 @@ const CarnetDeRoutesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Barre d'onglets Projets : Tous / En cours / Archivés */}
+      {/* Barre d'onglets Projets : En cours / Archivés / Tous */}
       <div className="flex justify-center">
         <div className="inline-flex flex-wrap justify-center items-center gap-1.5 p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md shadow-xl">
-          <button
-            onClick={() => setProjectTab('all')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-              projectTab === 'all'
-                ? 'bg-amber-500 text-black shadow-md'
-                : 'text-gray-300 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <span>🗂️ Tous les projets</span>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              projectTab === 'all' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
-            }`}>
-              {projects.length}
-            </span>
-          </button>
           <button
             onClick={() => setProjectTab('active')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
@@ -315,6 +300,21 @@ const CarnetDeRoutesPage: React.FC = () => {
               projectTab === 'archived' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
             }`}>
               {archivedProjects.length}
+            </span>
+          </button>
+          <button
+            onClick={() => setProjectTab('all')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              projectTab === 'all'
+                ? 'bg-amber-500 text-black shadow-md'
+                : 'text-gray-300 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <span>🗂️ Tous les projets</span>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              projectTab === 'all' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
+            }`}>
+              {projects.length}
             </span>
           </button>
         </div>

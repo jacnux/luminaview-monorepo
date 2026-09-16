@@ -767,7 +767,7 @@ const CarnetRoutesManager: React.FC = () => {
   );
 
   return (
-    <div className={`space-y-8 px-4 py-8 sm:px-8 sm:py-12 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+    <div className={`space-y-8 px-3 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 ${isDark ? 'text-white' : 'text-gray-900'}`}>
       {/* Header */}
       <div className={`flex flex-col md:flex-row justify-between items-start md:items-end pb-5 border-b gap-4 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
         <div>
@@ -1220,10 +1220,10 @@ const CarnetRoutesManager: React.FC = () => {
           {activeTab === 'ideas' && (
             <div className="space-y-6">
               {/* En-tête et barre de recherche / action */}
-              <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 rounded-2xl p-5 border ${
+              <div className={`flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 rounded-2xl p-5 border ${
                 isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-sm'
               }`}>
-                <div>
+                <div className="min-w-0 flex-1">
                   <h2 className={`text-xl font-extrabold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     💡 Boîte à Idées Photographiques
                   </h2>
@@ -1234,7 +1234,7 @@ const CarnetRoutesManager: React.FC = () => {
                 {!showAddIdea && (
                   <button
                     onClick={() => { resetForm(); setShowAddIdea(true); }}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-yellow-950/20 flex items-center gap-1.5"
+                    className="w-full sm:w-auto shrink-0 whitespace-nowrap justify-center sm:justify-start bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-yellow-950/20 flex items-center gap-1.5"
                   >
                     + Nouvelle Idée
                   </button>
@@ -1612,10 +1612,10 @@ const CarnetRoutesManager: React.FC = () => {
           {activeTab === 'projects' && (
             <div className="space-y-6">
               {/* En-tête et création */}
-              <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 rounded-2xl p-5 border ${
+              <div className={`flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 rounded-2xl p-5 border ${
                 isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-sm'
               }`}>
-                <div>
+                <div className="min-w-0 flex-1">
                   <h2 className={`text-xl font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     📂 Projets de Prise de Vue
                   </h2>
@@ -1626,7 +1626,7 @@ const CarnetRoutesManager: React.FC = () => {
                 {!showAddProject && (
                   <button
                     onClick={() => { resetForm(); setShowAddProject(true); }}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-yellow-950/20"
+                    className="w-full sm:w-auto shrink-0 whitespace-nowrap justify-center sm:justify-start bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-yellow-950/20 flex items-center gap-1.5"
                   >
                     + Nouveau Projet
                   </button>
