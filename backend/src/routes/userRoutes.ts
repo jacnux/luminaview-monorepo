@@ -58,6 +58,11 @@ router.get('/admin/:id/albums', authenticateToken, async (req: Request, res: Res
   }
 });
 
+// 2.5 GET HEARTBEAT (Maintien du statut en ligne)
+router.get('/heartbeat', authenticateToken, (req: Request, res: Response) => {
+  res.json({ ok: true });
+});
+
 // 3. GET MON PROFIL (Connecté)
 router.get('/me', authenticateToken, async (req: Request, res: Response) => {
   try {

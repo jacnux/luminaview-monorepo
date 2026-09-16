@@ -60,9 +60,14 @@ const UserSchema = new mongoose.Schema({
     default: false
   },
   verificationToken: String,
-  verificationTokenExpires: Date
+  verificationTokenExpires: Date,
   // -------------------------------------------------
 
+  // --- SUIVI D'ACTIVITÉ EN LIGNE (v1.8.0) ---
+  lastActiveAt: {
+    type: Date,
+    default: null
+  }
 }, { timestamps: true });
 
 export default mongoose.model('User', UserSchema);

@@ -158,6 +158,9 @@ router.post('/login', async (req: Request, res: Response) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: 'Identifiants incorrects' });
 
+    // Marquer l'utilisateur actif dès la connexion
+    await User.updateOne({ _id: user._id }, { $set: { lastActiveAt: new Date() } });
+
     const token = jwt.sign({ userId: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET!, { expiresIn: '7d' });
     res.json({ 
       token, 

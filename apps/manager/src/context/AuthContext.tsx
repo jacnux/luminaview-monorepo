@@ -11,6 +11,7 @@ interface User {
   blogTheme?: string;
   hasBlog?: boolean;
   hasCarnet?: boolean;
+  lastActiveAt?: string | Date;
 }
 
 interface AuthContextType {
@@ -25,32 +26,54 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-
-
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-const [user, setUser] = useState<User | null>(null);
-const [token, setToken] = useState<string | null>(null);
-const [loading, setLoading] = useState(true); // Commence à TRUE
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true); // Commence à TRUE
 
-useEffect(() => {
-  const storedToken = localStorage.getItem('token');
-  const storedUser = localStorage.getItem('user');
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
 
-  if (storedToken && storedUser) {
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      setToken(storedToken);
-      setUser(parsedUser);
-    } catch (error) {
-      console.error("Erreur parsing user", error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+    if (storedToken && storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setToken(storedToken);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Erreur parsing user", error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
     }
-  }
-  setLoading(false); // Passe à FALSE une fois fini
-}, []);
+    setLoading(false); // Passe à FALSE une fois fini
+  }, []);
 
-// ... reste du code ...
+  // Heartbeat pour maintenir le statut en ligne tant que l'utilisateur a l'application ouverte
+  useEffect(() => {
+    if (!token) return;
+
+    // Ping initial
+    api.get('/users/heartbeat').catch(() => {});
+
+    // Ping toutes les 2.5 minutes
+    const interval = setInterval(() => {
+      api.get('/users/heartbeat').catch(() => {});
+    }, 2.5 * 60 * 1000);
+
+    // Ping lorsque l'utilisateur revient sur l'onglet
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        api.get('/users/heartbeat').catch(() => {});
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [token]);
 
   const login = (newToken: string, userData: User) => {
     localStorage.setItem('token', newToken);

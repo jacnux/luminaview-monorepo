@@ -1,5 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import User from '../models/User';
+
+// Cache en mémoire pour limiter les écritures en base (throttling 2 minutes par utilisateur)
+const lastActivityCache = new Map<string, number>();
+const ACTIVITY_THROTTLE_MS = 2 * 60 * 1000;
+
+// Nettoyage régulier du cache pour libérer la mémoire (toutes les 30 min)
+setInterval(() => {
+  const now = Date.now();
+  for (const [userId, lastTime] of lastActivityCache.entries()) {
+    if (now - lastTime > 60 * 60 * 1000) {
+      lastActivityCache.delete(userId);
+    }
+  }
+}, 30 * 60 * 1000).unref();
 
 // Étendre l'interface Request pour inclure user
 declare global {
@@ -27,6 +42,19 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     }
 
     req.user = user;
+
+    // Mise à jour de la dernière activité (lastActiveAt) avec throttling
+    if (user && user.userId) {
+      const now = Date.now();
+      const lastUpdate = lastActivityCache.get(user.userId) || 0;
+      if (now - lastUpdate > ACTIVITY_THROTTLE_MS) {
+        lastActivityCache.set(user.userId, now);
+        User.updateOne({ _id: user.userId }, { $set: { lastActiveAt: new Date(now) } }).catch((updateErr) => {
+          console.error('Erreur mise à jour lastActiveAt:', updateErr);
+        });
+      }
+    }
+
     next();
   });
 };

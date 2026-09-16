@@ -62,6 +62,7 @@ export interface UserProfile {
   theme?: string;
   visualTheme?: 'default' | 'chambrenoire' | 'grimoire';
   socialLinks?: SocialLinks;
+  lastActiveAt?: string | Date;
 }
 
 export interface UserPageSection {

@@ -26,10 +26,41 @@ const AdminUsers = () => {
   const { theme } = useTheme();
 
   useEffect(() => {
-    if (user?.isAdmin) fetchUsers();
+    if (user?.isAdmin) {
+      fetchUsers();
+      // Rafraîchissement automatique toutes les 30 secondes
+      const interval = setInterval(fetchUsers, 30000);
+      return () => clearInterval(interval);
+    }
   }, [user]);
 
   const verifiedUsersCount = users.filter(u => u.isEmailVerified !== false).length;
+
+  const isUserOnline = (lastActiveAt?: string | Date) => {
+    if (!lastActiveAt) return false;
+    const diffMs = Date.now() - new Date(lastActiveAt).getTime();
+    return diffMs < 5 * 60 * 1000; // Actif il y a moins de 5 minutes
+  };
+
+  const formatLastActive = (lastActiveAt?: string | Date) => {
+    if (!lastActiveAt) return 'Jamais connecté';
+    const diffMs = Date.now() - new Date(lastActiveAt).getTime();
+    const diffMinutes = Math.floor(diffMs / 60000);
+    if (diffMinutes < 1) return "À l'instant";
+    if (diffMinutes < 60) return `Il y a ${diffMinutes} min`;
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `Il y a ${diffHours} h`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) return 'Hier';
+    if (diffDays < 7) return `Il y a ${diffDays} j`;
+    return new Date(lastActiveAt).toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  const onlineUsersCount = users.filter(u => isUserOnline(u.lastActiveAt)).length;
 
   const fetchUsers = async () => {
     try {
@@ -194,7 +225,16 @@ const AdminUsers = () => {
         <div className="flex flex-wrap justify-between items-center mb-8 gap-4">
           <div>
             <h1 className="text-2xl font-bold text-yellow-500">Gestion des Utilisateurs</h1>
-            <p className={`text-xs mt-1 ${mutedTextClass}`}>{users.length} utilisateur(s) inscrit(s) dont {verifiedUsersCount} vérifié(s)</p>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <span className={`text-xs ${mutedTextClass}`}>
+                {users.length} utilisateur(s) inscrit(s) dont {verifiedUsersCount} vérifié(s)
+              </span>
+              <span className="text-gray-500">•</span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 border border-emerald-500/30">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                {onlineUsersCount} connecté{onlineUsersCount > 1 ? 's' : ''}
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -213,29 +253,60 @@ const AdminUsers = () => {
         </div>
 
         <div className="space-y-4">
-          {users.map(u => (
-            <div
-              key={u._id}
-              className={`rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 ${cardClass}`}
-            >
-              <div>
-                <p className="font-bold">
-                  {u.name}{' '}
-                  <span className={`text-xs ml-2 ${mutedTextClass}`}>{u.email}</span>
-                </p>
-                <p className={`text-xs mt-1 ${mutedTextClass}`}>
-                  Espace : {((u.quotaUsed || 0) / 1024 / 1024).toFixed(2)} Mo / {((u.quotaLimit || 0) / 1024 / 1024).toFixed(0)} Mo
-                </p>
+          {users.map(u => {
+            const online = isUserOnline(u.lastActiveAt);
+            return (
+              <div
+                key={u._id}
+                className={`rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 ${cardClass}`}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-bold text-base">{u.name}</span>
+                    <span className={`text-xs ${mutedTextClass}`}>{u.email}</span>
+
+                    {/* Statut En ligne / Hors ligne */}
+                    {online ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 border border-emerald-500/30 shadow-sm shadow-emerald-500/10">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        En ligne
+                      </span>
+                    ) : (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] ${theme === 'dark' ? 'bg-white/5 text-gray-400 border border-white/10' : 'bg-gray-100 text-gray-500 border border-gray-200'}`}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                        Hors ligne ({formatLastActive(u.lastActiveAt)})
+                      </span>
+                    )}
+
+                    {u.isAdmin && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-amber-500/20 text-amber-500 border border-amber-500/30">
+                        Admin
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs">
+                    <span className={mutedTextClass}>
+                      Espace : {((u.quotaUsed || 0) / 1024 / 1024).toFixed(2)} Mo / {((u.quotaLimit || 0) / 1024 / 1024).toFixed(0)} Mo
+                    </span>
+                    {u.lastActiveAt && (
+                      <span className={`text-[11px] ${mutedTextClass}`}>
+                        Dernière activité : {new Date(u.lastActiveAt).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex gap-2 flex-wrap shrink-0">
+                  <button onClick={() => openEmailModal(u)} className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded text-xs font-bold transition">Modifier Email</button>
+                  <button onClick={() => openQuotaModal(u)} className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-xs font-bold transition">Modifier Quota</button>
+                  <button onClick={() => handleResetPassword(u)} className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs font-bold transition">Reset MDP</button>
+                  <button onClick={() => handleViewAlbums(u._id)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition">Voir albums</button>
+                  <button onClick={() => handleDeleteUser(u._id)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold transition">Supprimer</button>
+                </div>
               </div>
-              <div className="flex gap-2 flex-wrap">
-                <button onClick={() => openEmailModal(u)} className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded text-xs font-bold transition">Modifier Email</button>
-                <button onClick={() => openQuotaModal(u)} className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-xs font-bold transition">Modifier Quota</button>
-                <button onClick={() => handleResetPassword(u)} className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs font-bold transition">Reset MDP</button>
-                <button onClick={() => handleViewAlbums(u._id)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition">Voir albums</button>
-                <button onClick={() => handleDeleteUser(u._id)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold transition">Supprimer</button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {(loadingAlbums || selectedUserAlbums) && (
