@@ -19,6 +19,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - /app/dist
       - ./data/uploads:/app/uploads
     depends_on:
       - mongo
