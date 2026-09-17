@@ -90,61 +90,67 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum 
 
       {/* OVERLAY TITRES DE PROJETS EN UNE SEULE LIGNE HORIZONTALE AVEC FLÈCHES À GAUCHE ET À DROITE (STYLE FELIPE DANA) */}
       <div className="grimoire-hero-content">
-        <div className="grimoire-slider-row-wrapper">
-          {totalSlides > 1 && (
-            <button
-              className="grimoire-arrow-btn side-arrow"
-              onClick={handlePrev}
-              disabled={currentSlideIndex === 0}
-              aria-label="Projets précédents"
-            >
-              <ChevronLeft size={24} />
-            </button>
-          )}
+        {albums.length === 0 ? (
+          <div style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.75)', fontFamily: 'var(--font-heading, "Montserrat", sans-serif)', letterSpacing: '0.18em', textTransform: 'uppercase', fontSize: '0.95rem', padding: '2rem', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+            Aucune galerie publique disponible pour le moment
+          </div>
+        ) : (
+          <div className="grimoire-slider-row-wrapper">
+            {totalSlides > 1 && (
+              <button
+                className="grimoire-arrow-btn side-arrow"
+                onClick={handlePrev}
+                disabled={currentSlideIndex === 0}
+                aria-label="Projets précédents"
+              >
+                <ChevronLeft size={24} />
+              </button>
+            )}
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentSlideIndex}
-              className="grimoire-project-horizontal-row"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.35 }}
-            >
-              {currentAlbums.map((album) => {
-                const isHovered = hoveredAlbumId === album._id;
-                return (
-                  <a
-                    key={album._id}
-                    href={`#${album._id}`}
-                    className={`grimoire-project-link ${isHovered ? 'active' : ''}`}
-                    onMouseEnter={() => setHoveredAlbumId(album._id)}
-                    onMouseLeave={() => setHoveredAlbumId(null)}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onSelectAlbum(album._id);
-                    }}
-                  >
-                    {album.title}
-                  </a>
-                );
-              })}
-            </motion.div>
-          </AnimatePresence>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlideIndex}
+                className="grimoire-project-horizontal-row"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.35 }}
+              >
+                {currentAlbums.map((album) => {
+                  const isHovered = hoveredAlbumId === album._id;
+                  return (
+                    <a
+                      key={album._id}
+                      href={`#${album._id}`}
+                      className={`grimoire-project-link ${isHovered ? 'active' : ''}`}
+                      onMouseEnter={() => setHoveredAlbumId(album._id)}
+                      onMouseLeave={() => setHoveredAlbumId(null)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSelectAlbum(album._id);
+                      }}
+                    >
+                      {album.title}
+                    </a>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
 
-          {totalSlides > 1 && (
-            <button
-              className="grimoire-arrow-btn side-arrow"
-              onClick={handleNext}
-              disabled={currentSlideIndex === totalSlides - 1}
-              aria-label="Projets suivants"
-            >
-              <ChevronRight size={24} />
-            </button>
-          )}
-        </div>
+            {totalSlides > 1 && (
+              <button
+                className="grimoire-arrow-btn side-arrow"
+                onClick={handleNext}
+                disabled={currentSlideIndex === totalSlides - 1}
+                aria-label="Projets suivants"
+              >
+                <ChevronRight size={24} />
+              </button>
+            )}
+          </div>
+        )}
 
-        {totalSlides > 1 && (
+        {totalSlides > 1 && albums.length > 0 && (
           <div className="grimoire-slider-indicators" style={{ marginTop: '2.5rem' }}>
             {Array.from({ length: totalSlides }).map((_, idx) => (
               <button
@@ -160,36 +166,38 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ albums, profile, onSelectAlbum 
       </div>
 
       {/* VUE MOBILE EN VIGNETTES / CARTE VERTICALE */}
-      <div className="grimoire-mobile-grid">
-        {albums.map((album, idx) => {
-          const coverUrl = getThumbUrl(album.coverImage) || resolveImageUrl(album.coverImage) || getActiveImageUrl();
-          return (
-            <a
-              key={album._id}
-              href={`#album-${album._id}`}
-              className="grimoire-mobile-card"
-              onClick={(e) => {
-                e.preventDefault();
-                onSelectAlbum(album._id);
-              }}
-            >
-              <div className="grimoire-mobile-thumb-wrapper">
-                <img
-                  src={coverUrl}
-                  alt={album.title}
-                  className="grimoire-mobile-thumb"
-                  loading={idx < 2 ? "eager" : "lazy"}
-                  fetchPriority={idx < 2 ? "high" : "auto"}
-                  decoding="async"
-                  width={600}
-                  height={400}
-                />
-              </div>
-              <div className="grimoire-mobile-card-title">{album.title}</div>
-            </a>
-          );
-        })}
-      </div>
+      {albums.length > 0 && (
+        <div className="grimoire-mobile-grid">
+          {albums.map((album, idx) => {
+            const coverUrl = getThumbUrl(album.coverImage) || resolveImageUrl(album.coverImage) || getActiveImageUrl();
+            return (
+              <a
+                key={album._id}
+                href={`#album-${album._id}`}
+                className="grimoire-mobile-card"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSelectAlbum(album._id);
+                }}
+              >
+                <div className="grimoire-mobile-thumb-wrapper">
+                  <img
+                    src={coverUrl}
+                    alt={album.title}
+                    className="grimoire-mobile-thumb"
+                    loading={idx < 2 ? "eager" : "lazy"}
+                    fetchPriority={idx < 2 ? "high" : "auto"}
+                    decoding="async"
+                    width={600}
+                    height={400}
+                  />
+                </div>
+                <div className="grimoire-mobile-card-title">{album.title}</div>
+              </a>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

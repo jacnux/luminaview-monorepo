@@ -25,17 +25,16 @@ router.get('/public/all', async (req: Request, res: Response) => {
     const statusParam = req.query.status as string;
     const mediumParam = req.query.medium as string;
 
-    let query: any = { isPublished: true };
+    let query: any = {};
 
     if (statusParam) {
       if (statusParam === 'ALL') {
-        query.status = { $in: ['IN_PROGRESS', 'COMPLETED', 'ARCHIVED'] };
+        query.status = { $in: ['IDEA', 'PREPARATION', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED'] };
       } else {
         query.status = statusParam;
       }
     } else {
-      // Par défaut pour la chambre noire / public, inclure les projets actifs, terminés et archivés
-      query.status = { $in: ['IN_PROGRESS', 'COMPLETED', 'ARCHIVED'] };
+      query.status = { $in: ['IDEA', 'PREPARATION', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED'] };
     }
 
     if (mediumParam && mediumParam !== 'ALL') {
