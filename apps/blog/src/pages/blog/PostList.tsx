@@ -25,6 +25,29 @@ const extractFirstImage = (content?: string, coverImage?: string): string | null
   return null;
 };
 
+const getCleanExcerpt = (post: any, maxLength: number): string => {
+  const text = post?.excerpt?.trim() || post?.content || '';
+  if (!text) return '';
+
+  const cleaned = text
+    // Supprimer les images Markdown ![alt](url)
+    .replace(/!\[.*?\]\(.*?\)/g, '')
+    // Supprimer les balises HTML (ex: <img>, <br>, <div>, etc.)
+    .replace(/<[^>]+>/g, ' ')
+    // Remplacer les liens Markdown [texte](url) par leur texte
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+    // Supprimer les blocs de code Markdown
+    .replace(/`{1,3}[\s\S]*?`{1,3}/g, '')
+    // Supprimer la mise en forme Markdown (titres, gras, italique, citations)
+    .replace(/[#*_~>`=+\-]/g, ' ')
+    // Remplacer les espaces multiples et sauts de ligne par un espace unique
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (cleaned.length <= maxLength) return cleaned;
+  return cleaned.substring(0, maxLength).trim() + '...';
+};
+
 const PostList: React.FC = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,7 +111,7 @@ const PostList: React.FC = () => {
               {latest.title}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base line-clamp-3 mb-6 font-light">
-              {latest.content.replace(/[#*`!\[\]()]/g, '').substring(0, 220)}...
+              {getCleanExcerpt(latest, 220)}
             </p>
             <div className="flex items-center text-xs text-gray-400 dark:text-gray-500 font-medium">
               <span>{new Date(latest.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
@@ -138,7 +161,7 @@ const PostList: React.FC = () => {
                       {post.title}
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm line-clamp-3 mb-4 font-light">
-                      {post.content.replace(/[#*`!\[\]()]/g, '').substring(0, 120)}...
+                      {getCleanExcerpt(post, 140)}
                     </p>
                   </div>
                 </div>
