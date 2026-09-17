@@ -246,7 +246,7 @@ body {
 
 .home-text {
   text-align: left;
-  font-style: italic;
+  font-style: normal;
   font-size: 1.1rem;
   color: var(--color-text-gray);
   max-width: 800px;
@@ -258,6 +258,14 @@ body {
   padding: 30px 40px;
   box-shadow: -12px 16px 28px rgba(0, 0, 0, 0.05), -4px 6px 10px rgba(0, 0, 0, 0.02);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-text p {
+  margin-bottom: 1.2rem;
+}
+
+.home-text p:last-child {
+  margin-bottom: 0;
 }
 
 .home-text:hover {
