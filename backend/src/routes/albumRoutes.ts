@@ -149,7 +149,8 @@ router.get('/portfolio/:username', async (req: Request, res: Response) => {
 
     const filterQuery: any = {
       userId: user._id,
-      isPublic: true
+      isPublic: true,
+      isVirtual: true
     };
 
     let albums = await Album.find(filterQuery).sort({ createdAt: -1 }).lean();
