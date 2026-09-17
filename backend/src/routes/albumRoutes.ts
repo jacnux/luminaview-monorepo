@@ -149,13 +149,39 @@ router.get('/portfolio/:username', async (req: Request, res: Response) => {
 
     const filterQuery: any = {
       userId: user._id,
-      isPublic: true,
-      isVirtual: true
+      isPublic: true
     };
 
-    const albums = await Album.find(filterQuery).sort({ createdAt: -1 });
+    let albums = await Album.find(filterQuery).sort({ createdAt: -1 }).lean();
 
-    res.json({ user, albums });
+    // Résoudre automatiquement l'image de couverture si non définie
+    const updatedAlbums = await Promise.all(albums.map(async (album: any) => {
+      if (!album.coverImage) {
+        if (album.isVirtual && album.virtualFilter === 'tag' && album.filterValue) {
+          const rawTags = album.filterValue.split(',').map((t: string) => t.trim()).filter((t: string) => t);
+          const positiveTags = rawTags.filter((t: string) => !t.startsWith('-'));
+          const negativeTags = rawTags.filter((t: string) => t.startsWith('-')).map((t: string) => t.substring(1));
+
+          if (positiveTags.length > 0) {
+            const photoQuery: any = { tags: { $all: positiveTags }, userId: user._id };
+            if (negativeTags.length > 0) photoQuery.tags.$nin = negativeTags;
+
+            const photo = await Photo.findOne(photoQuery).sort({ createdAt: -1 }).select('filename');
+            if (photo) {
+              album.coverImage = photo.filename;
+            }
+          }
+        } else {
+          const photo = await Photo.findOne({ albumId: album._id }).sort({ createdAt: -1 }).select('filename');
+          if (photo) {
+            album.coverImage = photo.filename;
+          }
+        }
+      }
+      return album;
+    }));
+
+    res.json({ user, albums: updatedAlbums });
   } catch (error) {
     res.status(500).json({ error: 'Erreur serveur' });
   }
