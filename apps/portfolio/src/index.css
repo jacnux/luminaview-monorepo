@@ -24,10 +24,10 @@
 body.theme-portfolio {
   --color-bg: #0a0a0a;
   --color-bg-alt: #121212;
-  --color-text-dark: #f3f4f6;
-  --color-text-gray: #9ca3af;
-  --color-text-light: #d1d5db;
-  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text-dark: #ffffff;
+  --color-text-gray: #e5e7eb;
+  --color-text-light: #f3f4f6;
+  --color-border: rgba(255, 255, 255, 0.12);
   --color-accent-menu: #d9c58a; /* Lighter gold for high contrast on dark background */
 }
 
@@ -248,7 +248,7 @@ body {
   text-align: left;
   font-style: normal;
   font-size: 1.1rem;
-  color: var(--color-text-gray);
+  color: var(--color-text-dark);
   max-width: 800px;
   margin: 0 0 35px 0;
   line-height: 1.8;
@@ -262,6 +262,12 @@ body {
 
 .home-text p {
   margin-bottom: 1.2rem;
+  color: var(--color-text-dark);
+}
+
+.home-text em,
+.home-text i {
+  color: #ffffff;
 }
 
 .home-text p:last-child {
@@ -1282,9 +1288,9 @@ body.theme-grimoire .page-container {
 .grimoire-root {
   --bg-dark: #070709;
   --bg-card: #121216;
-  --text-main: #f5f5f7;
-  --text-muted: #a1a1aa;
-  --text-dim: #9e9ea7;
+  --text-main: #ffffff;
+  --text-muted: #e5e7eb;
+  --text-dim: #d1d5db;
   --accent: #ffffff;
   --accent-glow: rgba(255, 255, 255, 0.15);
   --overlay-bg: rgba(7, 7, 9, 0.88);
