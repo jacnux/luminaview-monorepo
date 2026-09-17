@@ -95,7 +95,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
         <h1>{album.title}</h1>
         {album.subtitle && (
           <h2 style={{ fontSize: '1.15rem', fontWeight: 300, color: 'var(--text-muted)', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            {album.subtitle}
+            <MarkdownRenderer>{album.subtitle}</MarkdownRenderer>
           </h2>
         )}
         {album.description && (
