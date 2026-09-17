@@ -276,8 +276,8 @@ const UserPageView = () => {
   const firstTextSection = sections.find((section: any) => section?.type === 'text');
 
   const editorialIntroSource =
-    page?.editorialSummary ||
     summaryTextSection?.content ||
+    page?.editorialSummary ||
     firstTextSection?.content ||
     '';
 

@@ -18,7 +18,7 @@ const PageView: React.FC<PageViewProps> = ({
   const pageSections = pageData.sections || [];
   const summaryTextSection = pageSections.find(s => s.type === 'text' && s.summary);
   const firstTextSection = pageSections.find(s => s.type === 'text');
-  const introContent = pageData.editorialSummary || summaryTextSection?.content || firstTextSection?.content || '';
+  const introContent = summaryTextSection?.content || pageData.editorialSummary || firstTextSection?.content || '';
 
   return (
     <motion.div
