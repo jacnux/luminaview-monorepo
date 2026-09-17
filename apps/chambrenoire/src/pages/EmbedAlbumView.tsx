@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../utils/api';
 import Lightbox from '../components/Lightbox';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 const EmbedAlbumView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -83,9 +84,9 @@ const EmbedAlbumView: React.FC = () => {
               {album.title}
             </h1>
             {album.description && (
-              <p className="text-xs md:text-sm text-gray-400 mt-1 font-light leading-relaxed max-w-2xl line-clamp-2">
-                {album.description}
-              </p>
+              <div className="text-xs md:text-sm text-gray-400 mt-1 font-light leading-relaxed max-w-2xl line-clamp-2">
+                <MarkdownRenderer>{album.description}</MarkdownRenderer>
+              </div>
             )}
           </div>
           <div className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-1">
@@ -121,9 +122,9 @@ const EmbedAlbumView: React.FC = () => {
                     {photo.title || 'Sans titre'}
                   </h3>
                   {photo.description && (
-                    <p className="text-[10px] text-gray-300 truncate font-light mt-0.5">
-                      {photo.description}
-                    </p>
+                    <div className="text-[10px] text-gray-300 truncate font-light mt-0.5">
+                      <MarkdownRenderer>{photo.description}</MarkdownRenderer>
+                    </div>
                   )}
                 </div>
               </div>

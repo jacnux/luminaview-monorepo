@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Photo } from '../types';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface LightboxProps {
   photos: Photo[];
@@ -200,7 +201,9 @@ const Lightbox: React.FC<LightboxProps> = ({
       <div className="lightbox-footer-container">
         {showDescription && currentPhoto.description && (
           <div className="lightbox-desc-container">
-            <p className="lightbox-desc">{currentPhoto.description}</p>
+            <div className="lightbox-desc">
+              <MarkdownRenderer>{currentPhoto.description}</MarkdownRenderer>
+            </div>
           </div>
         )}
 

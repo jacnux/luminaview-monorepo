@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Album, Photo } from '../../types';
+import MarkdownRenderer from '../MarkdownRenderer';
 import { pageVariants, containerVariants, itemVariants } from './variants';
 
 interface AlbumViewProps {
@@ -29,9 +30,9 @@ const AlbumView: React.FC<AlbumViewProps> = ({
     >
       <h2 className="section-title">{currentAlbum ? currentAlbum.title : 'Galerie'}</h2>
       {currentAlbum?.description && (
-        <p style={{ color: '#666', marginBottom: '25px', fontStyle: 'italic' }}>
-          {currentAlbum.description}
-        </p>
+        <div style={{ color: '#666', marginBottom: '25px' }}>
+          <MarkdownRenderer>{currentAlbum.description}</MarkdownRenderer>
+        </div>
       )}
 
       {loadingPhotos ? (
@@ -64,7 +65,7 @@ const AlbumView: React.FC<AlbumViewProps> = ({
               />
               <div className="masonry-overlay">
                 <h4>{photo.title || 'Sans titre'}</h4>
-                {photo.description && <p>{photo.description}</p>}
+                {photo.description && <MarkdownRenderer>{photo.description}</MarkdownRenderer>}
               </div>
             </motion.div>
           ))}

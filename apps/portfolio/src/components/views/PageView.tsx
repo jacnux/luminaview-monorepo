@@ -79,7 +79,7 @@ const PageView: React.FC<PageViewProps> = ({
                 </div>
                 <div className="gallery-info">
                   <h3>{child.title}</h3>
-                  {child.editorialSummary && <p>{child.editorialSummary}</p>}
+                  {child.editorialSummary && <MarkdownRenderer>{child.editorialSummary}</MarkdownRenderer>}
                 </div>
               </motion.a>
             ))}
@@ -124,7 +124,11 @@ const PageView: React.FC<PageViewProps> = ({
                           </h3>
                         );
                       })()}
-                      {album.description && <p style={{ fontStyle: 'italic', color: '#666', marginBottom: '20px' }}>{album.description}</p>}
+                      {album.description && (
+                        <div style={{ color: '#666', marginBottom: '20px' }}>
+                          <MarkdownRenderer>{album.description}</MarkdownRenderer>
+                        </div>
+                      )}
                       
                       {albumPhotos.length === 0 ? (
                         <p style={{ color: '#999', fontSize: '0.9rem' }}>Cette galerie ne contient pas de photos.</p>
@@ -151,7 +155,7 @@ const PageView: React.FC<PageViewProps> = ({
                               />
                               <div className="masonry-overlay">
                                 <h4>{photo.title || 'Sans titre'}</h4>
-                                {photo.description && <p>{photo.description}</p>}
+                                {photo.description && <MarkdownRenderer>{photo.description}</MarkdownRenderer>}
                               </div>
                             </motion.div>
                           ))}

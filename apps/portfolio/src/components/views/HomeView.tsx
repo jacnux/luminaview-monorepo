@@ -93,7 +93,7 @@ const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
                 </div>
                 <div className="gallery-info">
                   <h3>{album.title}</h3>
-                  {album.description && <p>{album.description}</p>}
+                  {album.description && <MarkdownRenderer>{album.description}</MarkdownRenderer>}
                 </div>
               </motion.a>
             ))}

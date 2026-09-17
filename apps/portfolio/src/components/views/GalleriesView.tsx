@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Album } from '../../types';
+import MarkdownRenderer from '../MarkdownRenderer';
 import { pageVariants, containerVariants, itemVariants } from './variants';
 
 interface GalleriesViewProps {
@@ -50,7 +51,7 @@ const GalleriesView: React.FC<GalleriesViewProps> = ({ albums, navigateTo }) => 
               </div>
               <div className="gallery-info">
                 <h3>{album.title}</h3>
-                {album.description && <p>{album.description}</p>}
+                {album.description && <MarkdownRenderer>{album.description}</MarkdownRenderer>}
               </div>
             </motion.a>
           ))}
