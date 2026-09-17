@@ -118,6 +118,7 @@ const App: React.FC = () => {
             };
             autoFetch();
           }
+        }
       } catch (err: any) {
         console.error("Erreur lors de la récupération du portfolio:", err);
         if (err.response?.status === 404) {
