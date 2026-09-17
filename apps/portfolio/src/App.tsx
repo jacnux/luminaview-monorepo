@@ -25,7 +25,7 @@ import GrimoireView from './components/grimoire/GrimoireView';
 const getUsernameFromEnvironment = (): string => {
   const params = new URLSearchParams(window.location.search);
   const queryUser = params.get('u') || params.get('user');
-  if (queryUser) return queryUser.trim();
+  if (queryUser) return queryUser.trim().replace(/\.+$/, '');
 
   const hostname = window.location.hostname;
   const parts = hostname.split('.');
@@ -118,16 +118,14 @@ const App: React.FC = () => {
             };
             autoFetch();
           }
-        }
       } catch (err: any) {
         console.error("Erreur lors de la récupération du portfolio:", err);
-        setProfile({
-          name: "Jac",
-          email: "jeanalbert.canal@gmail.com",
-          bio: "Bonjour à tous les amoureux de photographie et aux curieux qui passent par ici ! Bienvenue sur mon site, avec les photos que j'aime partager !",
-          portfolioIntro: "Bonjour à tous les amoureux de photographie et aux curieux qui passent par ici !"
-        });
-        setError("Impossible de charger les galeries depuis le serveur LuminaView. Affichage du mode hors-ligne.");
+        if (err.response?.status === 404) {
+          setError(`L'utilisateur "${USERNAME}" n'existe pas ou son portfolio n'est pas encore initialisé.`);
+        } else {
+          setError("Impossible de charger les galeries depuis le serveur LuminaView.");
+        }
+        setProfile(null);
       } finally {
         setLoadingProfile(false);
       }
@@ -300,6 +298,47 @@ const App: React.FC = () => {
       >
         <div className="spinner"></div>
         <p style={{ marginTop: '1rem', letterSpacing: '0.12em', fontSize: '0.9rem' }}>Chargement du portfolio...</p>
+      </div>
+    );
+  }
+
+  if (!profile && error) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '2rem',
+          textAlign: 'center',
+          backgroundColor: '#0a0a0c',
+          color: '#f3f4f6',
+          fontFamily: 'sans-serif'
+        }}
+      >
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📷</div>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 400, marginBottom: '0.8rem', letterSpacing: '0.05em' }}>
+          Portfolio introuvable
+        </h1>
+        <p style={{ color: '#9ca3af', maxWidth: '480px', marginBottom: '2rem', lineHeight: 1.6, fontSize: '0.95rem' }}>
+          {error}
+        </p>
+        <a
+          href="/"
+          style={{
+            padding: '10px 24px',
+            borderRadius: '24px',
+            background: 'rgba(255,255,255,0.1)',
+            color: '#fff',
+            textDecoration: 'none',
+            border: '1px solid rgba(255,255,255,0.2)',
+            fontSize: '0.9rem'
+          }}
+        >
+          Retour à l'accueil
+        </a>
       </div>
     );
   }
