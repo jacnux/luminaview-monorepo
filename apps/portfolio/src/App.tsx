@@ -19,6 +19,7 @@ import AlbumView from './components/views/AlbumView';
 import AboutView from './components/views/AboutView';
 import ContactView from './components/views/ContactView';
 import PageView from './components/views/PageView';
+import GrimoireView from './components/grimoire/GrimoireView';
 
 // Détection dynamique de l'utilisateur pour le multi-hébergement (multi-tenant)
 const getUsernameFromEnvironment = (): string => {
@@ -134,6 +135,8 @@ const App: React.FC = () => {
     fetchData();
   }, []);
 
+  const isGrimoire = profile?.blogTheme === 'grimoire' || new URLSearchParams(window.location.search).get('theme') === 'grimoire';
+
   // Initialiser le thème en fonction du profil utilisateur
   useEffect(() => {
     if (profile?.blogTheme === 'portfolio') {
@@ -146,13 +149,18 @@ const App: React.FC = () => {
 
   // Appliquer le thème sur le body
   useEffect(() => {
-    if (theme === 'dark') {
+    if (isGrimoire) {
+      document.body.classList.add('theme-grimoire');
+      document.body.classList.remove('theme-portfolio');
+    } else if (theme === 'dark') {
+      document.body.classList.remove('theme-grimoire');
       document.body.classList.add('theme-portfolio');
     } else {
+      document.body.classList.remove('theme-grimoire');
       document.body.classList.remove('theme-portfolio');
     }
     localStorage.setItem('portfolio-theme', theme);
-  }, [theme]);
+  }, [theme, isGrimoire]);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
@@ -275,6 +283,31 @@ const App: React.FC = () => {
     }
   };
 
+  if (loadingProfile) {
+    return (
+      <div
+        className="loader-container"
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: isGrimoire ? '#070709' : 'transparent',
+          color: isGrimoire ? '#f5f5f7' : 'inherit',
+          fontFamily: isGrimoire ? 'var(--font-heading, "Montserrat", sans-serif)' : 'var(--font-title, sans-serif)'
+        }}
+      >
+        <div className="spinner"></div>
+        <p style={{ marginTop: '1rem', letterSpacing: '0.12em', fontSize: '0.9rem' }}>Chargement du portfolio...</p>
+      </div>
+    );
+  }
+
+  if (isGrimoire) {
+    return <GrimoireView profile={profile} albums={albums} />;
+  }
+
   return (
     <div className={`page-container ${isEmbedMode ? 'embed-mode' : ''}`}>
       {/* Sidebar Navigation */}
@@ -323,18 +356,11 @@ const App: React.FC = () => {
           </button>
         )}
 
-        {loadingProfile ? (
-          <div className="loader-container">
-            <div className="spinner"></div>
-            <p>Chargement du portfolio...</p>
+        {error && (
+          <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fef3c7', color: '#b45309', padding: '10px', borderRadius: '4px', marginBottom: '20px', fontSize: '0.85rem', textAlign: 'center', fontFamily: 'var(--font-title)' }}>
+            ⚠️ {error}
           </div>
-        ) : (
-          <>
-            {error && (
-              <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fef3c7', color: '#b45309', padding: '10px', borderRadius: '4px', marginBottom: '20px', fontSize: '0.85rem', textAlign: 'center', fontFamily: 'var(--font-title)' }}>
-                ⚠️ {error}
-              </div>
-            )}
+        )}
 
             {currentPage === 'home' && (
               <HomeView profile={profile} albums={albums} navigateTo={navigateTo} />
@@ -379,8 +405,6 @@ const App: React.FC = () => {
             {currentPage === 'contact' && (
               <ContactView />
             )}
-          </>
-        )}
 
         {!isEmbedMode && <Footer profile={profile} />}
       </main>

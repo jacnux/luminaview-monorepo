@@ -147,33 +147,18 @@ const AlbumCardGrid = ({
             </button>
 
             {album.isVirtual && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => onToggleFeatured(album._id, album.isFeatured)}
-                  title={album.isFeatured ? 'Affiché dans Nouveautés (Portfolio)' : 'Masqué de Nouveautés'}
-                  className={`text-[11px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border transition flex items-center gap-1 ${
-                    album.isFeatured
-                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm'
-                      : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
-                  }`}
-                >
-                  <span>{album.isFeatured ? '⭐' : '☆'}</span> Nouveautés
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => onToggleGrimoire(album._id, album.isGrimoire)}
-                  title={album.isGrimoire ? 'Affiché sur le Portfolio Grimoire' : 'Masqué de Grimoire'}
-                  className={`text-[11px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border transition flex items-center gap-1 ${
-                    album.isGrimoire
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
-                  }`}
-                >
-                  <span>{album.isGrimoire ? '📜' : '📄'}</span> Grimoire
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={() => onToggleFeatured(album._id, album.isFeatured)}
+                title={album.isFeatured ? 'Affiché sur le Portfolio' : 'Masqué du Portfolio'}
+                className={`text-[11px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border transition flex items-center gap-1 ${
+                  album.isFeatured
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm'
+                    : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
+                }`}
+              >
+                <span>{album.isFeatured ? '⭐' : '☆'}</span> Portfolio
+              </button>
             )}
           </div>
         </div>
@@ -249,33 +234,18 @@ const AlbumCardList = ({
         </button>
 
         {album.isVirtual && (
-          <>
-            <button
-              type="button"
-              onClick={() => onToggleFeatured(album._id, album.isFeatured)}
-              title={album.isFeatured ? 'Affiché dans Nouveautés' : 'Masqué de Nouveautés'}
-              className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border transition flex items-center gap-1 ${
-                album.isFeatured
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                  : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
-              }`}
-            >
-              <span>{album.isFeatured ? '⭐' : '☆'}</span> Nouveautés
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onToggleGrimoire(album._id, album.isGrimoire)}
-              title={album.isGrimoire ? 'Affiché sur Grimoire' : 'Masqué de Grimoire'}
-              className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border transition flex items-center gap-1 ${
-                album.isGrimoire
-                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                  : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
-              }`}
-            >
-              <span>{album.isGrimoire ? '📜' : '📄'}</span> Grimoire
-            </button>
-          </>
+          <button
+            type="button"
+            onClick={() => onToggleFeatured(album._id, album.isFeatured)}
+            title={album.isFeatured ? 'Affiché sur le Portfolio' : 'Masqué du Portfolio'}
+            className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border transition flex items-center gap-1 ${
+              album.isFeatured
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
+            }`}
+          >
+            <span>{album.isFeatured ? '⭐' : '☆'}</span> Portfolio
+          </button>
         )}
       </div>
     </div>

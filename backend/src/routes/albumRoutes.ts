@@ -147,24 +147,12 @@ router.get('/portfolio/:username', async (req: Request, res: Response) => {
 
     if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
 
-    const referer = req.headers.referer || '';
-    const isGrimoireReq =
-      req.query.theme === 'grimoire' ||
-      req.query.app === 'grimoire' ||
-      referer.includes('grimoire') ||
-      referer.includes(':7091');
-
     const filterQuery: any = {
       userId: user._id,
       isPublic: true,
-      isVirtual: true
+      isVirtual: true,
+      $or: [{ isFeatured: true }, { isGrimoire: true }]
     };
-
-    if (isGrimoireReq) {
-      filterQuery.isGrimoire = true;
-    } else {
-      filterQuery.isFeatured = true;
-    }
 
     const albums = await Album.find(filterQuery).sort({ createdAt: -1 });
 

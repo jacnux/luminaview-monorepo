@@ -18,8 +18,5 @@ export const getAppUrl = (app: 'blog' | 'portfolio' | 'grimoire' | 'carnet', use
 
 export const getVitrineUrl = (user: { blogTheme?: string; name?: string; username?: string }) => {
   const name = user.name || user.username || 'jac';
-  if (user.blogTheme === 'grimoire') {
-    return getAppUrl('grimoire', name);
-  }
   return getAppUrl('portfolio', name);
 };
