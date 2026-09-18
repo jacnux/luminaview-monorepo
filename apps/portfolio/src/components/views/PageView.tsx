@@ -170,10 +170,10 @@ const PageView: React.FC<PageViewProps> = ({
 
           if (section.type === 'split_text_gallery' && section.albumIds) {
             return (
-              <div key={section._id} className="nested-album-sections split-text-gallery-block" style={{ marginBottom: '50px' }}>
-                <div className="split-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', alignItems: 'start' }}>
+              <div key={section._id} className="nested-album-sections split-text-gallery-block">
+                <div className="split-container">
                   {section.content && (
-                    <div className="split-text-side home-text" style={{ padding: '0', maxWidth: '100%' }}>
+                    <div className="split-text-side">
                       <MarkdownRenderer>{section.content}</MarkdownRenderer>
                     </div>
                   )}

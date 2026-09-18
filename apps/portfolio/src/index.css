@@ -279,6 +279,65 @@ body {
   box-shadow: -18px 24px 38px rgba(0, 0, 0, 0.07), -6px 8px 12px rgba(0, 0, 0, 0.03);
 }
 
+/* --- BLOC MIXTE 30/70 (TEXTE & GALERIE) --- */
+.split-text-gallery-block {
+  margin-bottom: 50px;
+  width: 100%;
+}
+
+.split-container {
+  display: grid;
+  grid-template-columns: minmax(0, 30%) minmax(0, 70%);
+  gap: 32px;
+  align-items: start;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .split-container {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+}
+
+.split-text-side {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.split-text-side img {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain;
+  display: block;
+  border-radius: 6px;
+  margin: 15px 0;
+}
+
+.split-text-side p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.split-text-side p:last-child {
+  margin-bottom: 0;
+}
+
+.split-gallery-side {
+  width: 100%;
+  min-width: 0;
+}
+
+
 /* --- SECTION / GRILLE GALERIE --- */
 .section-title {
   font-family: var(--font-title);
