@@ -520,11 +520,52 @@ body {
 
 .about-content {
   flex: 1;
+  color: var(--color-text-dark);
 }
 
-.about-content p {
+.about-content p,
+.about-bio p {
   margin-bottom: 15px;
-  color: #444;
+  color: var(--color-text-dark);
+  line-height: 1.8;
+}
+
+.about-bio {
+  color: var(--color-text-dark);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.about-bio strong,
+.about-content strong {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.about-bio h1,
+.about-bio h2,
+.about-bio h3,
+.about-bio h4 {
+  color: var(--color-accent);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.about-bio ul,
+.about-bio ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--color-text-dark);
+}
+
+.about-bio li {
+  margin-bottom: 0.4rem;
+}
+
+.about-bio a {
+  color: var(--color-accent);
+  text-decoration: underline;
 }
 
 /* Formulaire Contact */

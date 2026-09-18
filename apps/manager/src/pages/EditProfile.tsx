@@ -133,6 +133,16 @@ const EditProfile: React.FC = () => {
     ? 'w-full bg-black/40 border border-white/10 p-3.5 rounded-xl text-white placeholder-gray-600 focus:ring-1 focus:ring-yellow-500/50 focus:border-yellow-500/50 outline-none transition duration-200'
     : 'w-full bg-gray-50/50 border border-gray-200 p-3.5 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-yellow-500/50 focus:border-yellow-500/50 outline-none transition duration-200';
   const labelClass = `block text-sm font-bold tracking-wide uppercase mb-2 ${mutedTextClass}`;
+  const previewBoxClass = theme === 'dark'
+    ? 'rounded-xl border border-white/10 bg-black/30 p-4 overflow-auto'
+    : 'rounded-xl border border-gray-200 bg-gray-50 p-4 overflow-auto';
+  const previewProseClass = theme === 'dark'
+    ? 'prose prose-invert max-w-none text-gray-200 text-sm'
+    : 'prose max-w-none text-gray-800 text-sm';
+  const tabToggleContainerClass = `flex items-center p-0.5 rounded-lg border text-[11px] ${
+    theme === 'dark' ? 'bg-black/20 border-white/5' : 'bg-gray-100 border-gray-200'
+  }`;
+  const tabInactiveBtnClass = theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900';
 
   return (
     <div className={`w-full px-4 py-8 sm:px-8 sm:py-12 ${shellTextClass}`}>
@@ -451,14 +461,14 @@ const EditProfile: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className={labelClass} style={{ marginBottom: 0 }}>Biographie (À propos)</label>
-                    <div className="flex items-center bg-black/20 p-0.5 rounded-lg border border-white/5 text-[11px]">
+                    <div className={tabToggleContainerClass}>
                       <button
                         type="button"
                         onClick={() => setBioTab('edit')}
                         className={`px-2.5 py-0.5 rounded font-medium transition ${
                           bioTab === 'edit'
                             ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                            : 'text-gray-400 hover:text-white'
+                            : tabInactiveBtnClass
                         }`}
                       >
                         Édition
@@ -469,7 +479,7 @@ const EditProfile: React.FC = () => {
                         className={`px-2.5 py-0.5 rounded font-medium transition ${
                           bioTab === 'preview'
                             ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                            : 'text-gray-400 hover:text-white'
+                            : tabInactiveBtnClass
                         }`}
                       >
                         Aperçu
@@ -485,9 +495,9 @@ const EditProfile: React.FC = () => {
                       placeholder="Racontez votre parcours, votre passion... Markdown & HTML supportés."
                     />
                   ) : (
-                    <div className="rounded-xl border border-white/10 bg-black/30 p-4 min-h-[160px] overflow-auto">
+                    <div className={`${previewBoxClass} min-h-[160px]`}>
                       {bio ? (
-                        <div className="prose prose-invert max-w-none text-gray-200 text-sm">
+                        <div className={previewProseClass}>
                           <MarkdownRenderer>{bio}</MarkdownRenderer>
                         </div>
                       ) : (
@@ -501,14 +511,14 @@ const EditProfile: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className={labelClass} style={{ marginBottom: 0 }}>Introduction du Portfolio</label>
-                    <div className="flex items-center bg-black/20 p-0.5 rounded-lg border border-white/5 text-[11px]">
+                    <div className={tabToggleContainerClass}>
                       <button
                         type="button"
                         onClick={() => setPortfolioIntroTab('edit')}
                         className={`px-2.5 py-0.5 rounded font-medium transition ${
                           portfolioIntroTab === 'edit'
                             ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                            : 'text-gray-400 hover:text-white'
+                            : tabInactiveBtnClass
                         }`}
                       >
                         Édition
@@ -519,7 +529,7 @@ const EditProfile: React.FC = () => {
                         className={`px-2.5 py-0.5 rounded font-medium transition ${
                           portfolioIntroTab === 'preview'
                             ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                            : 'text-gray-400 hover:text-white'
+                            : tabInactiveBtnClass
                         }`}
                       >
                         Aperçu
@@ -535,9 +545,9 @@ const EditProfile: React.FC = () => {
                       placeholder="Un court message de bienvenue en haut de la page principale... Markdown & HTML supportés."
                     />
                   ) : (
-                    <div className="rounded-xl border border-white/10 bg-black/30 p-4 min-h-[100px] overflow-auto">
+                    <div className={`${previewBoxClass} min-h-[100px]`}>
                       {portfolioIntro ? (
-                        <div className="prose prose-invert max-w-none text-gray-200 text-sm">
+                        <div className={previewProseClass}>
                           <MarkdownRenderer>{portfolioIntro}</MarkdownRenderer>
                         </div>
                       ) : (
@@ -551,14 +561,14 @@ const EditProfile: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className={labelClass} style={{ marginBottom: 0 }}>Introduction du Carnet de Routes</label>
-                    <div className="flex items-center bg-black/20 p-0.5 rounded-lg border border-white/5 text-[11px]">
+                    <div className={tabToggleContainerClass}>
                       <button
                         type="button"
                         onClick={() => setCarnetIntroTab('edit')}
                         className={`px-2.5 py-0.5 rounded font-medium transition ${
                           carnetIntroTab === 'edit'
                             ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                            : 'text-gray-400 hover:text-white'
+                            : tabInactiveBtnClass
                         }`}
                       >
                         Édition
@@ -569,7 +579,7 @@ const EditProfile: React.FC = () => {
                         className={`px-2.5 py-0.5 rounded font-medium transition ${
                           carnetIntroTab === 'preview'
                             ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                            : 'text-gray-400 hover:text-white'
+                            : tabInactiveBtnClass
                         }`}
                       >
                         Aperçu
@@ -585,9 +595,9 @@ const EditProfile: React.FC = () => {
                       placeholder="Saisissez un message d'introduction pour les visiteurs de votre carnet de routes... Markdown & HTML supportés."
                     />
                   ) : (
-                    <div className="rounded-xl border border-white/10 bg-black/30 p-4 min-h-[100px] overflow-auto">
+                    <div className={`${previewBoxClass} min-h-[100px]`}>
                       {carnetIntro ? (
-                        <div className="prose prose-invert max-w-none text-gray-200 text-sm">
+                        <div className={previewProseClass}>
                           <MarkdownRenderer>{carnetIntro}</MarkdownRenderer>
                         </div>
                       ) : (
@@ -604,14 +614,14 @@ const EditProfile: React.FC = () => {
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     <span className="text-yellow-500">✦</span> Projets & Services
                   </h3>
-                  <div className="flex items-center bg-black/20 p-1 rounded-lg border border-white/10 text-xs">
+                  <div className={tabToggleContainerClass}>
                     <button
                       type="button"
                       onClick={() => setServicesTab('edit')}
                       className={`px-3 py-1 rounded-md font-medium transition ${
                         servicesTab === 'edit'
                           ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                          : 'text-gray-400 hover:text-white'
+                          : tabInactiveBtnClass
                       }`}
                     >
                       ✏️ Édition
@@ -622,7 +632,7 @@ const EditProfile: React.FC = () => {
                       className={`px-3 py-1 rounded-md font-medium transition ${
                         servicesTab === 'preview'
                           ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                          : 'text-gray-400 hover:text-white'
+                          : tabInactiveBtnClass
                       }`}
                     >
                       👁️ Aperçu rendu
@@ -643,7 +653,9 @@ const EditProfile: React.FC = () => {
                   {servicesTab === 'edit' ? (
                     <div className="space-y-3">
                       {/* Barre d'outils rapide */}
-                      <div className="flex flex-wrap gap-1.5 p-2 rounded-lg bg-black/20 border border-white/5 text-xs">
+                      <div className={`flex flex-wrap gap-1.5 p-2 rounded-lg border text-xs ${
+                        theme === 'dark' ? 'bg-black/20 border-white/5' : 'bg-gray-100 border-gray-200'
+                      }`}>
                         <button
                           type="button"
                           onClick={() => insertSnippet(setServicesDescription, '**', '**')}
@@ -730,9 +742,9 @@ const EditProfile: React.FC = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="rounded-xl border border-white/10 bg-black/40 p-6 min-h-[280px] overflow-auto">
+                    <div className={`${previewBoxClass} min-h-[280px]`}>
                       {servicesDescription ? (
-                        <div className="prose prose-invert max-w-none text-gray-200">
+                        <div className={previewProseClass}>
                           <MarkdownRenderer>{servicesDescription}</MarkdownRenderer>
                         </div>
                       ) : (
