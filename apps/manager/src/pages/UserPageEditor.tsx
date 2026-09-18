@@ -2,8 +2,8 @@
 // luminaview
 //         UserPageEditor
 //
-//     Juin 2026 v2.6.4
-// résumé éditorial persistant + patch minimal
+//     Septembre 2026 v2.0.0
+// Fusion résumé éditorial + bloc texte actif
 // ===========================================
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -66,7 +66,7 @@ const normalizeSlug = (value: string) =>
   value
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-')
@@ -93,7 +93,6 @@ const UserPageEditor = () => {
   const [albumSortAZ, setAlbumSortAZ] = useState<'az' | 'za'>('az');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [editorialSummary, setEditorialSummary] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -112,7 +111,6 @@ const UserPageEditor = () => {
         setParentPageId(pageData.parentPageId?._id || pageData.parentPageId || '');
         setMenuOrder(pageData.menuOrder || 0);
         setShowInMenu(pageData.showInMenu || false);
-        setEditorialSummary(pageData.editorialSummary || '');
 
         const formattedSections: PageSection[] = Array.isArray(pageData.sections)
           ? pageData.sections.map((s: any, index: number) => ({
@@ -124,6 +122,29 @@ const UserPageEditor = () => {
               summary: Boolean(s.summary),
             }))
           : [];
+
+        const hasSummary = formattedSections.some(s => s.type === 'text' && s.summary);
+        if (!hasSummary) {
+          if (pageData.editorialSummary) {
+            const firstTextIdx = formattedSections.findIndex(s => s.type === 'text');
+            if (firstTextIdx >= 0) {
+              formattedSections[firstTextIdx].summary = true;
+            } else {
+              formattedSections.unshift({
+                id: `text-initial-${Date.now()}`,
+                type: 'text',
+                content: pageData.editorialSummary,
+                albumIds: [],
+                summary: true,
+              });
+            }
+          } else {
+            const firstTextIdx = formattedSections.findIndex(s => s.type === 'text');
+            if (firstTextIdx >= 0) {
+              formattedSections[firstTextIdx].summary = true;
+            }
+          }
+        }
 
         setSections(formattedSections);
       } catch (err) {
@@ -214,11 +235,32 @@ const UserPageEditor = () => {
   );
 
   const addSection = (type: SectionType) => {
-    setSections(prev => [...prev, emptySection(type)]);
+    setSections(prev => {
+      const isFirstText = type === 'text' && !prev.some(s => s.type === 'text' && s.summary);
+      return [
+        ...prev,
+        {
+          ...emptySection(type),
+          summary: isFirstText,
+        },
+      ];
+    });
   };
 
   const updateSection = (index: number, patch: Partial<PageSection>) => {
     setSections(prev => prev.map((section, i) => (i === index ? { ...section, ...patch } : section)));
+  };
+
+  const toggleSummarySection = (targetIndex: number) => {
+    setSections(prev =>
+      prev.map((section, idx) => {
+        if (section.type !== 'text') return section;
+        if (idx === targetIndex) {
+          return { ...section, summary: !section.summary };
+        }
+        return { ...section, summary: false };
+      })
+    );
   };
 
   const updateSectionContent = (index: number, field: keyof PageSection, value: any) => {
@@ -247,39 +289,9 @@ const UserPageEditor = () => {
     });
   };
 
-  const applyEditorialSummary = () => {
-    const text = editorialSummary.trim();
-    if (!text) return;
-
-    setSections(prev => {
-      const summaryIndex = prev.findIndex(section => section.type === 'text' && section.summary);
-      if (summaryIndex >= 0) {
-        return prev.map((section, index) =>
-          index === summaryIndex ? { ...section, content: text, summary: true } : section
-        );
-      }
-
-      return [{ ...emptySection('text'), content: text, summary: true }, ...prev];
-    });
-  };
-
-  const insertEditorialSummary = () => {
-    if (!editorialSummary.trim()) {
-      setMessage('Le résumé éditorial est vide.');
-      return;
-    }
-
-    if (sections.some(section => section.type === 'text' && section.summary)) {
-      setMessage('Le résumé éditorial existe déjà dans cette page.');
-      return;
-    }
-
-    setSections(prev => [{ ...emptySection('text'), content: editorialSummary.trim(), summary: true }, ...prev]);
-  };
-
   const handleSave = async () => {
     if (!title || !slug) {
-    setMessage("Le titre et l'URL sont obligatoires.");
+      setMessage("Le titre et l'URL sont obligatoires.");
       return;
     }
 
@@ -290,6 +302,12 @@ const UserPageEditor = () => {
       ratio: section.ratio,
       summary: Boolean(section.summary),
     }));
+
+    const summarySection =
+      cleanedSections.find(section => section.type === 'text' && section.summary) ||
+      cleanedSections.find(section => section.type === 'text');
+
+    const computedEditorialSummary = summarySection?.content?.trim() || '';
 
     if (hasEditorialMode) {
       const firstSection = cleanedSections[0];
@@ -315,7 +333,7 @@ const UserPageEditor = () => {
         parentPageId: parentPageId || null,
         menuOrder,
         showInMenu,
-        editorialSummary: editorialSummary.trim(),
+        editorialSummary: computedEditorialSummary,
       });
 
       setMessage('Page sauvegardée !');
@@ -356,7 +374,7 @@ const UserPageEditor = () => {
             {id ? 'Modifier la page' : 'Créer une page'}
           </h1>
           <p className="text-gray-400 mt-3 max-w-3xl">
-            Structure la page comme une séquence éditoriale : introduction, ensembles visuels, puis blocs mixtes texte + galerie.
+            Structure la page avec des blocs de texte enrichis (résumé actif, paragraphes, images), des galeries visuelles ou des blocs mixtes 30/70.
           </p>
         </div>
 
@@ -451,42 +469,6 @@ const UserPageEditor = () => {
                 {showInMenu ? 'Visible dans le menu' : 'Masqué du menu'}
               </button>
             </div>
-          </div>
-
-          <div className="mt-6 border-t border-white/10 pt-6">
-            <div className="flex items-center justify-between gap-4 mb-3">
-              <h2 className="text-lg font-semibold text-white">Résumé éditorial</h2>
-              {hasEditorialMode && (
-                <button
-                  type="button"
-                  onClick={applyEditorialSummary}
-                  className="text-sm px-3 py-2 rounded-lg bg-yellow-500 text-black font-semibold hover:bg-yellow-400 transition"
-                >
-                  Appliquer au premier bloc
-                </button>
-              )}
-            </div>
-
-            <p className="text-sm text-gray-400 mb-3">
-              Pour une série ou une exposition, ce texte doit situer le travail et servir de premier paragraphe introductif.
-            </p>
-
-            <textarea
-              value={editorialSummary}
-              onChange={e => setEditorialSummary(e.target.value)}
-              className="w-full min-h-[7rem] p-3 bg-gray-800 border border-white/10 rounded-xl"
-              placeholder="Quelques lignes pour situer le travail dans son contexte éditorial, plastique ou documentaire..."
-            />
-
-            {hasEditorialMode && !sections.some(section => section.type === 'text' && section.summary) && (
-              <button
-                type="button"
-                onClick={insertEditorialSummary}
-                className="mt-3 text-sm px-3 py-2 rounded-lg border border-white/10 text-gray-200 hover:bg-white/5 transition"
-              >
-                Insérer comme premier bloc texte
-              </button>
-            )}
           </div>
 
           <div className="mt-6 border-t border-white/10 pt-6">
@@ -587,20 +569,20 @@ const UserPageEditor = () => {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={() => addSection('text')} className="px-4 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold transition">
-                Texte
+                + Texte
               </button>
               <button onClick={() => addSection('gallery')} className="px-4 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-semibold transition">
-                Galerie
+                + Galerie
               </button>
               <button onClick={() => addSection('split_text_gallery')} className="px-4 py-3 bg-teal-600 hover:bg-teal-500 rounded-xl font-semibold transition">
-                Mixte 30/70
+                + Mixte 30/70
               </button>
             </div>
           </div>
 
           {sections.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-8 text-center text-gray-500">
-              Aucun bloc pour l'instant. Commence par un texte d'introduction, puis ajoute une galerie ou un bloc mixte.
+              Aucun bloc pour l'instant. Commence par un texte d'introduction (résumé actif), puis ajoute une galerie ou un bloc mixte.
             </div>
           ) : (
             <div className="space-y-4">
@@ -614,8 +596,8 @@ const UserPageEditor = () => {
                         </span>
                         <span className="text-xs text-gray-500">Bloc {index + 1}</span>
                         {section.summary && (
-                          <span className="text-[11px] px-2 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30 text-yellow-200">
-                            Intro éditoriale
+                          <span className="text-[11px] px-2.5 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30 text-yellow-200 font-medium">
+                            ★ Intro éditoriale (Résumé actif)
                           </span>
                         )}
                       </div>
@@ -627,7 +609,7 @@ const UserPageEditor = () => {
                         type="button"
                         onClick={() => moveSection(index, 'up')}
                         disabled={index === 0}
-                        className="px-3 py-2 rounded-lg bg-gray-800 text-sm text-gray-300 disabled:opacity-30"
+                        className="px-3 py-2 rounded-lg bg-gray-800 text-sm text-gray-300 disabled:opacity-30 hover:bg-gray-700"
                       >
                         Monter
                       </button>
@@ -635,19 +617,26 @@ const UserPageEditor = () => {
                         type="button"
                         onClick={() => moveSection(index, 'down')}
                         disabled={index === sections.length - 1}
-                        className="px-3 py-2 rounded-lg bg-gray-800 text-sm text-gray-300 disabled:opacity-30"
+                        className="px-3 py-2 rounded-lg bg-gray-800 text-sm text-gray-300 disabled:opacity-30 hover:bg-gray-700"
                       >
                         Descendre
                       </button>
-                      {section.type === 'text' && hasEditorialMode && (
+                      {section.type === 'text' && (
                         <button
                           type="button"
-                          onClick={() => updateSection(index, { summary: !section.summary })}
-                          className={`px-3 py-2 rounded-lg text-sm ${
-                            section.summary ? 'bg-yellow-500 text-black font-semibold' : 'bg-gray-800 text-gray-300'
+                          onClick={() => toggleSummarySection(index)}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+                            section.summary
+                              ? 'bg-yellow-500 text-black font-semibold shadow-sm'
+                              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                           }`}
+                          title={
+                            section.summary
+                              ? 'Ce bloc est défini comme le résumé éditorial officiel'
+                              : 'Définir ce bloc comme le résumé / texte d’introduction officiel'
+                          }
                         >
-                          {section.summary ? 'Résumé actif' : 'Définir comme résumé'}
+                          {section.summary ? '★ Résumé actif' : 'Définir comme résumé'}
                         </button>
                       )}
                       <button
@@ -662,12 +651,21 @@ const UserPageEditor = () => {
 
                   {section.type === 'text' && (
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Texte</label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm text-gray-400">
+                          Texte {section.summary ? '(Introduction & Résumé éditorial)' : ''}
+                        </label>
+                        {section.summary && (
+                          <span className="text-xs text-yellow-400/80">
+                            Markdown riche, paragraphes et images <code className="text-yellow-300">![alt](url)</code> pris en charge
+                          </span>
+                        )}
+                      </div>
                       <textarea
-                        className="w-full min-h-[10rem] bg-gray-800 border border-white/10 p-3 rounded-xl"
+                        className="w-full min-h-[11rem] bg-gray-800 border border-white/10 p-3 rounded-xl focus:border-yellow-500/50 focus:outline-none transition"
                         value={section.content}
                         onChange={e => updateSectionContent(index, 'content', e.target.value)}
-                        placeholder="Texte libre en markdown ou texte simple..."
+                        placeholder="Texte libre en markdown (paragraphes, images, cartels, note curatoriale)..."
                       />
                     </div>
                   )}
@@ -707,7 +705,7 @@ const UserPageEditor = () => {
                         <div className="w-full md:w-[30%]">
                           <label className="block text-sm text-gray-400 mb-2">Texte</label>
                           <textarea
-                            className="w-full min-h-[12rem] bg-gray-800 border border-white/10 p-3 rounded-xl text-sm"
+                            className="w-full min-h-[12rem] bg-gray-800 border border-white/10 p-3 rounded-xl text-sm focus:border-teal-500/50 focus:outline-none transition"
                             value={section.content}
                             onChange={e => updateSectionContent(index, 'content', e.target.value)}
                             placeholder="Texte d'accompagnement, cartel, contexte, note de salle..."
@@ -742,7 +740,7 @@ const UserPageEditor = () => {
         <button
           onClick={handleSave}
           disabled={loading}
-          className="w-full py-3.5 bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl font-bold text-lg disabled:opacity-60 transition"
+          className="w-full py-3.5 bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl font-bold text-lg disabled:opacity-60 transition shadow-lg hover:shadow-green-500/10"
         >
           {loading ? 'Sauvegarde...' : 'Enregistrer les modifications'}
         </button>

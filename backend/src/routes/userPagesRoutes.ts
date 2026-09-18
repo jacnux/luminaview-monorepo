@@ -1,7 +1,7 @@
 // ============================================================
 // LUMINAVIEW API — userPagesRoutes
-// v2.6.4 — Juin 2026
-// résumé éditorial persistant + sections.summary
+// v2.0.0 — Septembre 2026
+// Fusion résumé éditorial + bloc texte actif
 // ============================================================
 
 import { Router, Request, Response } from 'express';
@@ -221,6 +221,12 @@ router.post('/my/save', authenticateToken, async (req: Request, res: Response) =
     const cleanShowInMenu = Boolean(showInMenu);
     const cleanShowOnBlog = Boolean(showOnBlog);
     const cleanEditorialSummary = normalizeEditorialSummary(editorialSummary);
+    const summaryTextSection = cleanSections.find((s: any) => s.type === 'text' && s.summary);
+    const firstTextSection = cleanSections.find((s: any) => s.type === 'text');
+    const resolvedEditorialSummary =
+      cleanEditorialSummary ||
+      (summaryTextSection?.content ? String(summaryTextSection.content).trim() : '') ||
+      (firstTextSection?.content ? String(firstTextSection.content).trim() : '');
     const cleanSeoDescription = typeof seoDescription === 'string' ? seoDescription.trim() : '';
 
     if (cleanParentPageId) {
@@ -250,7 +256,7 @@ router.post('/my/save', authenticateToken, async (req: Request, res: Response) =
       parentPageId: cleanParentPageId,
       menuOrder: cleanMenuOrder,
       showInMenu: cleanShowInMenu,
-      editorialSummary: cleanEditorialSummary,
+      editorialSummary: resolvedEditorialSummary,
       seoDescription: cleanSeoDescription,
     };
 

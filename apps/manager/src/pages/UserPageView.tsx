@@ -385,6 +385,18 @@ const UserPageView = () => {
       </header>
 
       <div className="max-w-6xl mx-auto py-10 px-4 md:px-6">
+        {editorialIntroSource && (
+          <section className="mb-12 max-w-4xl mx-auto">
+            <div className="bg-white/[0.03] p-6 md:p-8 rounded-2xl border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
+              <MarkdownRenderer
+                className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-gray-100 prose-li:text-gray-100 prose-strong:text-white prose-a:text-yellow-400 hover:prose-a:text-yellow-300"
+              >
+                {editorialIntroSource}
+              </MarkdownRenderer>
+            </div>
+          </section>
+        )}
+
         {childPages.length > 0 && (
           <div className="mb-12 max-w-4xl">
             <button
