@@ -98,25 +98,16 @@ const App: React.FC = () => {
         // Auto-navigation si URL param ?page=xxx
         const pageSlug = new URLSearchParams(window.location.search).get('page');
         if (pageSlug) {
-          // On essaie d'abord de la trouver dans le menu (pagesRes.data)
-          const targetPage = pagesRes.data && pagesRes.data.find((p: any) => p.slug === pageSlug);
-          if (targetPage) {
-            setCurrentPageData(targetPage);
+          try {
+            setLoadingPageDetail(true);
+            const res = await axios.get(`/api/user-pages/${USERNAME}/${pageSlug}`);
+            setCurrentPageData(res.data);
             setCurrentPage('page');
-          } else {
-            // Si pas dans le menu (ex: page de blog), on la fetch dynamiquement
-            // On déclare une fonction async autoFetch pour l'appeler immédiatement
-            const autoFetch = async () => {
-              try {
-                const res = await axios.get(`/api/user-pages/${USERNAME}/${pageSlug}`);
-                setCurrentPageData(res.data);
-                setCurrentPage('page');
-              } catch (e) {
-                console.error("Page introuvable:", e);
-                setCurrentPage('home');
-              }
-            };
-            autoFetch();
+          } catch (e) {
+            console.error("Page introuvable:", e);
+            setCurrentPage('home');
+          } finally {
+            setLoadingPageDetail(false);
           }
         }
       } catch (err: any) {

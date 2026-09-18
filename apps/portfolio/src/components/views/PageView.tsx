@@ -106,7 +106,7 @@ const PageView: React.FC<PageViewProps> = ({
             );
           }
           
-          if ((section.type === 'gallery' || section.type === 'split_text_gallery') && section.albumIds) {
+          if (section.type === 'gallery' && section.albumIds) {
             return (
               <div key={section._id} className="nested-album-sections" style={{ marginBottom: '40px' }}>
                 {section.albumIds.map((album) => {
@@ -164,6 +164,60 @@ const PageView: React.FC<PageViewProps> = ({
                     </div>
                   );
                 })}
+              </div>
+            );
+          }
+
+          if (section.type === 'split_text_gallery' && section.albumIds) {
+            return (
+              <div key={section._id} className="nested-album-sections split-text-gallery-block" style={{ marginBottom: '50px' }}>
+                <div className="split-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', alignItems: 'start' }}>
+                  {section.content && (
+                    <div className="split-text-side home-text" style={{ padding: '0', maxWidth: '100%' }}>
+                      <MarkdownRenderer>{section.content}</MarkdownRenderer>
+                    </div>
+                  )}
+                  <div className="split-gallery-side">
+                    {section.albumIds.map((album) => {
+                      const albumPhotos = album.photos || [];
+                      return (
+                        <div key={album._id} className="nested-album-gallery">
+                          {albumPhotos.length === 0 ? (
+                            <p style={{ color: '#999', fontSize: '0.9rem' }}>Cette galerie ne contient pas de photos.</p>
+                          ) : (
+                            <motion.div 
+                              className="masonry-grid"
+                              variants={containerVariants}
+                              initial="hidden"
+                              animate="show"
+                            >
+                              {albumPhotos.map((photo, idx) => (
+                                <motion.div 
+                                  key={photo._id} 
+                                  className="masonry-item" 
+                                  onClick={() => onPhotoClick(albumPhotos, idx)}
+                                  variants={itemVariants}
+                                >
+                                  <img 
+                                    src={`/uploads/thumb-${photo.filename}`} 
+                                    alt={photo.title} 
+                                    className="masonry-img" 
+                                    loading="lazy"
+                                    decoding="async"
+                                  />
+                                  <div className="masonry-overlay">
+                                    <h4>{photo.title || 'Sans titre'}</h4>
+                                    {photo.description && <MarkdownRenderer>{photo.description}</MarkdownRenderer>}
+                                  </div>
+                                </motion.div>
+                              ))}
+                            </motion.div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             );
           }
