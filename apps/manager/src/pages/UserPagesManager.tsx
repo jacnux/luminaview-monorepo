@@ -9,6 +9,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useTheme } from '../context/ThemeContext';
+import { getPageUrl } from '../utils/urls';
 
 type PageSortMode = 'az' | 'za' | null;
 
@@ -59,7 +60,7 @@ const UserPagesManager = () => {
   };
 
   const copyLink = (slug: string) => {
-    const url = `${window.location.origin}/portfolio/${username}/${slug}`;
+    const url = getPageUrl(username, slug);
     navigator.clipboard.writeText(url).then(() => {
       alert('Lien copié !\n\n' + url);
     });
@@ -236,7 +237,9 @@ const UserPagesManager = () => {
                     Partager
                   </button>
                   <a
-                    href={`/portfolio/${username}/${page.slug}`}
+                    href={getPageUrl(username, page.slug)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`px-3 py-1 rounded text-sm transition ${shareButtonClass}`}
                   >
                     Voir

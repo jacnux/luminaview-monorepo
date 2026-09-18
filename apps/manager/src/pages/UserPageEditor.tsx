@@ -9,6 +9,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import api from '../utils/api';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getPageUrl } from '../utils/urls';
 
 type MenuGroup = 'none' | 'series' | 'exhibitions' | 'blog' | 'about';
 type SectionType = 'text' | 'gallery' | 'split_text_gallery';
@@ -365,17 +366,34 @@ const UserPageEditor = () => {
     </div>
   );
 
+  const userStorage = localStorage.getItem('user');
+  const userObject = userStorage ? JSON.parse(userStorage) : null;
+  const username = userObject?.name || 'jac';
+
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6 md:p-8">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-8">
-          <div className="text-[11px] uppercase tracking-[0.28em] text-gray-500 mb-2">Pages éditoriales</div>
-          <h1 className="text-3xl md:text-4xl font-bold text-yellow-400 tracking-tight">
-            {id ? 'Modifier la page' : 'Créer une page'}
-          </h1>
-          <p className="text-gray-400 mt-3 max-w-3xl">
-            Structure la page avec des blocs de texte enrichis (résumé actif, paragraphes, images), des galeries visuelles ou des blocs mixtes 30/70.
-          </p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.28em] text-gray-500 mb-2">Pages éditoriales</div>
+            <h1 className="text-3xl md:text-4xl font-bold text-yellow-400 tracking-tight">
+              {id ? 'Modifier la page' : 'Créer une page'}
+            </h1>
+            <p className="text-gray-400 mt-3 max-w-3xl">
+              Structure la page avec des blocs de texte enrichis (résumé actif, paragraphes, images), des galeries visuelles ou des blocs mixtes 30/70.
+            </p>
+          </div>
+          {slug && (
+            <a
+              href={getPageUrl(username, slug)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-yellow-400 border border-white/10 font-semibold text-sm transition self-start sm:self-auto shadow-sm"
+              title="Voir la page sur le Portfolio public"
+            >
+              <span>👁️</span> Voir la page
+            </a>
+          )}
         </div>
 
         {message && (

@@ -20,3 +20,16 @@ export const getVitrineUrl = (user: { blogTheme?: string; name?: string; usernam
   const name = user.name || user.username || 'jac';
   return getAppUrl('portfolio', name);
 };
+
+export const getPageUrl = (username: string, slug: string) => {
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const name = username ? username.toLowerCase() : 'jac';
+  const cleanSlug = slug ? slug.trim() : '';
+
+  if (isLocal) {
+    return cleanSlug ? `http://localhost:7090/?user=${name}&page=${cleanSlug}` : `http://localhost:7090/?user=${name}`;
+  }
+
+  return cleanSlug ? `https://${name}.helioscope.fr/?page=${cleanSlug}` : `https://${name}.helioscope.fr`;
+};
+
