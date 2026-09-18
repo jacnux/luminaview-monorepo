@@ -52,12 +52,12 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onSave 
     }
   }, [album]);
 
-  // 2. Charger les photos si album non virtuel (pour choix couverture)
+  // 2. Charger les photos (pour choix couverture)
   useEffect(() => {
-    if (album && !album.isVirtual) {
+    if (album) {
       setLoadingPhotos(true);
       api.get(`/albums/photos/${album._id}`)
-        .then(res => setPhotos(res.data))
+        .then(res => setPhotos(Array.isArray(res.data) ? res.data : []))
         .catch(err => console.error(err))
         .finally(() => setLoadingPhotos(false));
     }
@@ -128,30 +128,58 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onSave 
             />
           </div>
 
-          {/* Photo de couverture (Uniquement pour albums classiques) */}
-          {!isVirtual && (
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Photo de couverture
-              </label>
-              {loadingPhotos ? (
-                <p className="text-gray-400 text-sm">Chargement des photos...</p>
-              ) : (
-                <div className="grid grid-cols-5 gap-2 max-h-32 overflow-y-auto p-1 bg-black/20 rounded-lg">
-                  {photos.map((p: any) => (
-                    <div
-                      key={p._id}
-                      onClick={() => setCoverImage(p.filename)}
-                      className={`cursor-pointer rounded overflow-hidden border-2 transition ${coverImage === p.filename ? 'border-yellow-400 scale-105 shadow-lg' : 'border-transparent opacity-70 hover:opacity-100'}`}
-                    >
-                      <img src={`/uploads/${p.filename}`} alt="Thumb" className="w-full h-12 object-cover" />
-                    </div>
-                  ))}
-                </div>
-              )}
-              {coverImage && <p className="text-xs text-gray-500 mt-1">Sélectionnée : {coverImage}</p>}
-            </div>
-          )}
+          {/* Photo de couverture */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Photo de couverture
+            </label>
+            {loadingPhotos ? (
+              <p className="text-gray-400 text-sm italic">Chargement des photos...</p>
+            ) : photos.length === 0 ? (
+              <p className="text-gray-400 text-xs italic bg-black/20 p-3 rounded-lg border border-white/5">
+                Aucune photo disponible pour définir la couverture.
+              </p>
+            ) : (
+              <div className="grid grid-cols-5 sm:grid-cols-6 gap-2 max-h-36 overflow-y-auto p-1.5 bg-black/20 rounded-lg border border-white/10">
+                {photos.map((p: any) => (
+                  <div
+                    key={p._id}
+                    onClick={() => setCoverImage(p.filename)}
+                    className={`cursor-pointer rounded-lg overflow-hidden border-2 transition duration-200 relative aspect-square ${
+                      coverImage === p.filename
+                        ? 'border-yellow-400 scale-105 shadow-lg shadow-yellow-500/20 ring-2 ring-yellow-400/50'
+                        : 'border-transparent opacity-60 hover:opacity-100 hover:border-white/40'
+                    }`}
+                    title={p.title || p.filename}
+                  >
+                    <img
+                      src={`/uploads/thumb-${p.filename}`}
+                      onError={(e: any) => { e.currentTarget.src = `/uploads/${p.filename}`; }}
+                      alt={p.title || 'Aperçu'}
+                      className="w-full h-full object-cover"
+                    />
+                    {coverImage === p.filename && (
+                      <div className="absolute top-1 right-1 bg-yellow-400 text-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                        ✓
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            {coverImage && (
+              <div className="flex items-center justify-between text-xs text-gray-400 mt-1.5">
+                <span className="truncate">Sélectionnée : <span className="text-yellow-400 font-mono">{coverImage}</span></span>
+                <button
+                  type="button"
+                  onClick={() => setCoverImage('')}
+                  className="text-gray-500 hover:text-red-400 text-[11px] underline ml-2 flex-shrink-0"
+                >
+                  Réinitialiser (Auto)
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Type d'Album */}
           <div className="bg-black/20 p-4 rounded-lg border border-white/10">
