@@ -41,10 +41,10 @@ const ProjectDetailPage: React.FC = () => {
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const dashboardProjectsUrl = isLocal
     ? 'http://localhost:7080/dashboard/carnet-routes?tab=projects'
-    : 'https://manager.luminaview.fr/dashboard/carnet-routes?tab=projects';
+    : 'https://luminaview.fr/dashboard/carnet-routes?tab=projects';
   const dashboardIdeasUrl = isLocal
     ? 'http://localhost:7080/dashboard/carnet-routes?tab=ideas'
-    : 'https://manager.luminaview.fr/dashboard/carnet-routes?tab=ideas';
+    : 'https://luminaview.fr/dashboard/carnet-routes?tab=ideas';
 
   const renderBackLink = (className: string) => {
     if (fromManager) {
