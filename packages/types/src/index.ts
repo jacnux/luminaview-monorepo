@@ -30,6 +30,9 @@ export interface Album {
   description?: string;
   coverImage?: string;
   isPublic?: boolean;
+  isFeatured?: boolean;
+  isVirtual?: boolean;
+  isGrimoire?: boolean;
   photos?: Photo[];
   createdAt?: string;
 }

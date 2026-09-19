@@ -19,7 +19,7 @@ const GalleriesView: React.FC<GalleriesViewProps> = ({ albums, navigateTo }) => 
     >
       <h2 className="section-title">Mes Galeries</h2>
       {albums.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#999', margin: '40px 0' }}>Aucune galerie publique configurée comme vedette.</p>
+        <p style={{ textAlign: 'center', color: '#999', margin: '40px 0' }}>Aucune galerie publique disponible pour le moment.</p>
       ) : (
         <motion.div 
           className="grid-gallery"

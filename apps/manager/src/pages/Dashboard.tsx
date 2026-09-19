@@ -145,6 +145,21 @@ const AlbumCardGrid = ({
             >
               {album.isPublic !== false ? '👁️ Public' : '🔒 Privé'}
             </button>
+
+            {album.isVirtual && (
+              <button
+                type="button"
+                onClick={() => onToggleFeatured(album._id, album.isFeatured)}
+                title={album.isFeatured ? 'Affiché dans Nouveautés (Portfolio)' : 'Masqué de Nouveautés'}
+                className={`text-[11px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border transition flex items-center gap-1 ${
+                  album.isFeatured
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm'
+                    : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
+                }`}
+              >
+                <span>{album.isFeatured ? '⭐' : '☆'}</span> Nouveautés
+              </button>
+            )}
           </div>
         </div>
 
@@ -217,6 +232,21 @@ const AlbumCardList = ({
         >
           {album.isPublic !== false ? '👁️ Public' : '🔒 Privé'}
         </button>
+
+        {album.isVirtual && (
+          <button
+            type="button"
+            onClick={() => onToggleFeatured(album._id, album.isFeatured)}
+            title={album.isFeatured ? 'Affiché dans Nouveautés' : 'Masqué de Nouveautés'}
+            className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border transition flex items-center gap-1 ${
+              album.isFeatured
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-gray-500/10 text-gray-500 border-gray-700 hover:text-gray-300'
+            }`}
+          >
+            <span>{album.isFeatured ? '⭐' : '☆'}</span> Nouveautés
+          </button>
+        )}
       </div>
     </div>
 

@@ -18,6 +18,8 @@ const formatName = (name?: string): string => {
 };
 
 const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
+  const featuredAlbums = albums.filter((album) => album.isFeatured);
+
   const getHomeImage = () => {
     if (profile?.bannerImage) return `/uploads/${profile.bannerImage}`;
     if (albums.length > 0 && albums[0].coverImage) return `/uploads/${albums[0].coverImage}`;
@@ -60,7 +62,7 @@ const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
       </div>
 
       {/* SECTION NOUVEAUTÉS - LES GALERIES DU PHOTOGRAPHE */}
-      {albums.length > 0 && (
+      {featuredAlbums.length > 0 && (
         <div className="home-news-section" style={{ marginTop: '50px' }}>
           <h2 className="section-title" style={{ marginBottom: '30px' }}>Nouveautés</h2>
           <motion.div 
@@ -69,7 +71,7 @@ const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
             initial="hidden"
             animate="show"
           >
-            {albums.map((album) => (
+            {featuredAlbums.map((album) => (
               <motion.a 
                 key={album._id} 
                 href="#" 
