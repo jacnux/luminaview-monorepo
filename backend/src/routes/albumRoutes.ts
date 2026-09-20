@@ -16,9 +16,25 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
+export const getSortCriteria = (sortOrder?: string) => {
+  switch (sortOrder) {
+    case 'date_asc':
+      return { createdAt: 1 };
+    case 'title_asc':
+      return { title: 1, createdAt: -1 };
+    case 'title_desc':
+      return { title: -1, createdAt: -1 };
+    case 'manual':
+      return { index: 1, createdAt: -1 };
+    case 'date_desc':
+    default:
+      return { createdAt: -1 };
+  }
+};
+
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { title, description, isPublic, virtualFilter } = req.body;
+    const { title, description, isPublic, virtualFilter, sortOrder } = req.body;
     const isVirtual = req.body.isVirtual === true;
     let { filterValue } = req.body;
 
@@ -38,6 +54,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       description,
       isPublic,
       isVirtual,
+      sortOrder: sortOrder || 'date_desc',
       virtualFilter: isVirtual ? (virtualFilter || 'tag') : null,
       filterValue: isVirtual ? filterValue : null
     });
@@ -110,26 +127,34 @@ router.get('/photos/:id', async (req: Request, res: Response) => {
       }
     }
 
+    const sortCriteria = getSortCriteria(album.sortOrder);
     let photos;
 
-    if (album.virtualFilter === 'tag' && album.filterValue) {
-      const rawTags = album.filterValue.split(',').map(t => t.trim()).filter(t => t);
-      const positiveTags = rawTags.filter(t => !t.startsWith('-'));
-      const negativeTags = rawTags.filter(t => t.startsWith('-')).map(t => t.substring(1));
-
+    if (album.isVirtual || album.virtualFilter) {
       const query: any = { userId: album.userId };
-      const tagsCondition: any = {};
 
-      if (positiveTags.length > 0) tagsCondition.$all = positiveTags;
-      if (negativeTags.length > 0) tagsCondition.$nin = negativeTags;
-      if (Object.keys(tagsCondition).length > 0) query.tags = tagsCondition;
+      if (album.virtualFilter === 'tag' && album.filterValue) {
+        const rawTags = album.filterValue.split(',').map(t => t.trim()).filter(t => t);
+        const positiveTags = rawTags.filter(t => !t.startsWith('-'));
+        const negativeTags = rawTags.filter(t => t.startsWith('-')).map(t => t.substring(1));
 
-      const validAlbums = await Album.find({ userId: album.userId }).select('_id').lean();
-      query.albumId = { $in: validAlbums.map(a => a._id) };
+        const tagsCondition: any = {};
+        if (positiveTags.length > 0) tagsCondition.$all = positiveTags;
+        if (negativeTags.length > 0) tagsCondition.$nin = negativeTags;
+        if (Object.keys(tagsCondition).length > 0) query.tags = tagsCondition;
 
-      photos = await Photo.find(query).sort({ createdAt: -1 });
+        const validAlbums = await Album.find({ userId: album.userId }).select('_id').lean();
+        query.albumId = { $in: validAlbums.map(a => a._id) };
+      } else if (album.virtualFilter === 'date') {
+        if (album.startDate) query.createdAt = { ...query.createdAt, $gte: new Date(album.startDate) };
+        if (album.endDate) query.createdAt = { ...query.createdAt, $lte: new Date(album.endDate) };
+      } else if (album.tags && album.tags.length > 0) {
+        query.tags = { $in: album.tags };
+      }
+
+      photos = await Photo.find(query).sort(sortCriteria as any);
     } else {
-      photos = await Photo.find({ albumId: req.params.id }).sort({ createdAt: -1 });
+      photos = await Photo.find({ albumId: req.params.id }).sort(sortCriteria as any);
     }
 
     res.json(photos);
@@ -274,9 +299,10 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { title, description, isPublic, coverImage, virtualFilter, filterValue, isVirtual } = req.body;
+    const { title, description, isPublic, coverImage, virtualFilter, filterValue, isVirtual, sortOrder } = req.body;
     const updateData: any = { title, description, isPublic, coverImage, isVirtual };
 
+    if (sortOrder !== undefined) updateData.sortOrder = sortOrder;
     if (virtualFilter !== undefined) updateData.virtualFilter = virtualFilter;
     if (filterValue !== undefined) updateData.filterValue = filterValue;
 

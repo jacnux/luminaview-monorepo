@@ -11,6 +11,7 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onSave 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isVirtual, setIsVirtual] = useState(false);
+  const [sortOrder, setSortOrder] = useState<'date_desc' | 'date_asc' | 'title_asc' | 'title_desc' | 'manual'>('date_desc');
   const [coverImage, setCoverImage] = useState(''); // État pour la couverture
 
   // Gestion des tags
@@ -39,6 +40,7 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onSave 
       setTitle(album.title || '');
       setDescription(album.description || '');
       setIsVirtual(album.isVirtual || false);
+      setSortOrder(album.sortOrder || 'date_desc');
       setCoverImage(album.coverImage || '');
 
       // Parsing des tags existants
@@ -89,6 +91,7 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onSave 
       title,
       description,
       isVirtual,
+      sortOrder,
       virtualFilter: isVirtual ? 'tag' : null,
       filterValue: isVirtual ? filterValue : '',
       coverImage // On envoie la couverture sélectionnée
@@ -235,6 +238,27 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onSave 
               </div>
             </div>
           )}
+
+          {/* Ordre de tri des photos */}
+          <div className="bg-black/20 p-4 rounded-lg border border-white/10">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Séquence & Ordre d'affichage
+            </label>
+            <p className="text-xs text-gray-400 mb-3">
+              Définissez comment les images seront ordonnées dans cette galerie / cet album.
+            </p>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as any)}
+              className="w-full bg-white/20 border border-white/30 text-white rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            >
+              <option value="date_desc" className="bg-gray-900 text-white">Plus récentes d'abord (Date décroissante)</option>
+              <option value="date_asc" className="bg-gray-900 text-white">Plus anciennes d'abord (Chronologique)</option>
+              <option value="title_asc" className="bg-gray-900 text-white">Alphabétique (Titre A → Z)</option>
+              <option value="title_desc" className="bg-gray-900 text-white">Alphabétique (Titre Z → A)</option>
+              <option value="manual" className="bg-gray-900 text-white">Ordre personnalisé (Index / Manuel)</option>
+            </select>
+          </div>
 
           {/* Boutons */}
           <div className="flex gap-4 pt-2">

@@ -8,6 +8,7 @@ const CreateAlbum = () => {
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(true);
   const [isVirtual, setIsVirtual] = useState(false);
+  const [sortOrder, setSortOrder] = useState<'date_desc' | 'date_asc' | 'title_asc' | 'title_desc' | 'manual'>('date_desc');
 
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [includedTags, setIncludedTags] = useState<string[]>([]);
@@ -55,6 +56,7 @@ const CreateAlbum = () => {
         isPublic,
         // CORRECTION BUG : On force le booléen strict, pas de valeur ambiguë
         isVirtual: isVirtual === true,
+        sortOrder,
         virtualFilter: null,
         filterValue: null
       };
@@ -179,6 +181,27 @@ const CreateAlbum = () => {
                 )}
               </div>
             )}
+          </div>
+
+          {/* Ordre de tri des photos */}
+          <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+            <label className="block text-sm font-medium text-purple-300 mb-1">
+              Séquence & Ordre d'affichage
+            </label>
+            <p className="text-xs text-gray-400 mb-3">
+              Définissez comment les images seront ordonnées dans cette galerie / cet album.
+            </p>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as any)}
+              className="w-full bg-white/10 border border-white/20 text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none cursor-pointer"
+            >
+              <option value="date_desc" className="bg-gray-900 text-white">Plus récentes d'abord (Date décroissante)</option>
+              <option value="date_asc" className="bg-gray-900 text-white">Plus anciennes d'abord (Chronologique)</option>
+              <option value="title_asc" className="bg-gray-900 text-white">Alphabétique (Titre A → Z)</option>
+              <option value="title_desc" className="bg-gray-900 text-white">Alphabétique (Titre Z → A)</option>
+              <option value="manual" className="bg-gray-900 text-white">Ordre personnalisé (Index / Manuel)</option>
+            </select>
           </div>
 
           <button

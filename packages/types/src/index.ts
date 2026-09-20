@@ -33,6 +33,12 @@ export interface Album {
   isFeatured?: boolean;
   isVirtual?: boolean;
   isGrimoire?: boolean;
+  sortOrder?: 'date_desc' | 'date_asc' | 'title_asc' | 'title_desc' | 'manual';
+  virtualFilter?: 'tag' | 'date' | null;
+  filterValue?: string | null;
+  startDate?: string | Date | null;
+  endDate?: string | Date | null;
+  tags?: string[];
   photos?: Photo[];
   createdAt?: string;
 }

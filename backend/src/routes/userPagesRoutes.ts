@@ -66,6 +66,17 @@ const getAlbumPhotos = async (album: any, ownerUserId: string) => {
 
   if (!album) return [];
 
+  let sortCriteria: any = { createdAt: -1 };
+  if (album.sortOrder === 'date_asc') {
+    sortCriteria = { createdAt: 1 };
+  } else if (album.sortOrder === 'title_asc') {
+    sortCriteria = { title: 1, createdAt: -1 };
+  } else if (album.sortOrder === 'title_desc') {
+    sortCriteria = { title: -1, createdAt: -1 };
+  } else if (album.sortOrder === 'manual') {
+    sortCriteria = { index: 1, createdAt: -1 };
+  }
+
   if (album.isVirtual) {
     if (album.virtualFilter === 'tag' && album.filterValue) {
       const rawTags = album.filterValue
@@ -90,7 +101,7 @@ const getAlbumPhotos = async (album: any, ownerUserId: string) => {
 
       return Photo.find(query)
         .select(fieldsToSelect)
-        .sort({ createdAt: -1 });
+        .sort(sortCriteria);
     }
 
     if (album.virtualFilter === 'date' && album.startDate && album.endDate) {
@@ -99,7 +110,7 @@ const getAlbumPhotos = async (album: any, ownerUserId: string) => {
         createdAt: { $gte: album.startDate, $lte: album.endDate },
       })
         .select(fieldsToSelect)
-        .sort({ createdAt: -1 });
+        .sort(sortCriteria);
     }
 
     return [];
@@ -107,7 +118,7 @@ const getAlbumPhotos = async (album: any, ownerUserId: string) => {
 
   return Photo.find({ albumId: album._id, userId: ownerUserId })
     .select(fieldsToSelect)
-    .sort({ createdAt: -1 });
+    .sort(sortCriteria);
 };
 
 const hydratePageAlbumsWithPhotos = async (page: any, ownerUserId: string) => {
@@ -306,7 +317,7 @@ router.get('/public/subdomain/:slug', async (req: Request, res: Response) => {
       .populate({
         path: 'sections.albumIds',
         model: 'Album',
-        select: 'title coverImage isVirtual virtualFilter filterValue startDate endDate',
+        select: 'title coverImage isVirtual virtualFilter filterValue startDate endDate sortOrder',
       })
       .populate('parentPageId', 'title slug menuGroup');
 
@@ -351,7 +362,7 @@ router.get('/:username/:slug', async (req: Request, res: Response) => {
       .populate({
         path: 'sections.albumIds',
         model: 'Album',
-        select: 'title coverImage isVirtual virtualFilter filterValue startDate endDate',
+        select: 'title coverImage isVirtual virtualFilter filterValue startDate endDate sortOrder',
       })
       .populate('parentPageId', 'title slug menuGroup');
 

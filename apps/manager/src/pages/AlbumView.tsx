@@ -242,7 +242,21 @@ const AlbumView = () => {
 
   useEffect(() => {
     if (!id) return;
-    api.get(`/albums/${id}`).then(res => setAlbum(res.data)).catch(console.error);
+    api.get(`/albums/${id}`).then(res => {
+      setAlbum(res.data);
+      if (res.data?.sortOrder) {
+        const mapOrder: Record<string, 'datedesc' | 'dateasc' | 'index' | 'alpha-asc' | 'alpha-desc'> = {
+          date_desc: 'datedesc',
+          date_asc: 'dateasc',
+          title_asc: 'alpha-asc',
+          title_desc: 'alpha-desc',
+          manual: 'index'
+        };
+        if (mapOrder[res.data.sortOrder]) {
+          setSortMode(mapOrder[res.data.sortOrder]);
+        }
+      }
+    }).catch(console.error);
     api.get(`/albums/photos/${id}`).then(res => setPhotos(res.data)).catch(console.error);
     api.get('/photos/tags').then(res => setSuggestedTags(res.data)).catch(() => {});
   }, [id]);

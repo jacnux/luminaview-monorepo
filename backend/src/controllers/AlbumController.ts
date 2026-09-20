@@ -25,7 +25,7 @@ const upload = multer({ storage: storage });
 // --- CREATE ALBUM ---
 export const createAlbum = async (req: Request, res: Response) => {
   try {
-    const { title, description, isVirtual, virtualFilter, filterValue, startDate, endDate } = req.body;
+    const { title, description, isVirtual, virtualFilter, filterValue, startDate, endDate, sortOrder } = req.body;
     const userId = (req as any).user.userId;
 
     let coverImage = req.file ? req.file.filename : undefined;
@@ -69,6 +69,7 @@ export const createAlbum = async (req: Request, res: Response) => {
       description,
       coverImage,
       isVirtual: isVirtual === 'true' || isVirtual === true,
+      sortOrder: sortOrder || 'date_desc',
       virtualFilter: isVirtual ? virtualFilter : null,
       filterValue: isVirtual ? filterValue : null,
       startDate: isVirtual && virtualFilter === 'date' ? startDate : null,
@@ -120,6 +121,17 @@ export const getAlbumPhotos = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Album introuvable' });
     }
 
+    let sortCriteria: any = { createdAt: -1 };
+    if (album.sortOrder === 'date_asc') {
+      sortCriteria = { createdAt: 1 };
+    } else if (album.sortOrder === 'title_asc') {
+      sortCriteria = { title: 1, createdAt: -1 };
+    } else if (album.sortOrder === 'title_desc') {
+      sortCriteria = { title: -1, createdAt: -1 };
+    } else if (album.sortOrder === 'manual') {
+      sortCriteria = { index: 1, createdAt: -1 };
+    }
+
     let photos: any[] = [];
 
     if (album.isVirtual) {
@@ -127,35 +139,27 @@ export const getAlbumPhotos = async (req: Request, res: Response) => {
       const query: any = { userId: album.userId };
 
       // 1. Logique par Tags (Prioritaire - Nouvelle méthode)
-      // Si l'album a un tableau de tags, on cherche les photos qui ont AU MOINS UN de ces tags
       if (album.tags && album.tags.length > 0) {
         query.tags = { $in: album.tags };
-        photos = await Photo.find(query).sort({ createdAt: -1 });
+        photos = await Photo.find(query).sort(sortCriteria);
       }
       // 2. Sinon, ancienne logique par champ unique (Rétrocompatibilité)
       else if (album.virtualFilter === 'tag' && album.filterValue) {
-        const regex = new RegExp(album.filterValue, 'i'); // Note: ^ et $ enlevés pour être plus souple
+        const regex = new RegExp(album.filterValue, 'i');
         query.tags = regex;
-        photos = await Photo.find(query).sort({ createdAt: -1 });
+        photos = await Photo.find(query).sort(sortCriteria);
       }
       // 3. Logique par Date
       else if (album.virtualFilter === 'date') {
         if (album.startDate) query.createdAt = { ...query.createdAt, $gte: new Date(album.startDate) };
         if (album.endDate) query.createdAt = { ...query.createdAt, $lte: new Date(album.endDate) };
-        photos = await Photo.find(query).sort({ createdAt: -1 });
+        photos = await Photo.find(query).sort(sortCriteria);
+      } else {
+        photos = await Photo.find(query).sort(sortCriteria);
       }
 
     } else {
-      // --- ALBUM CLASSIQUE - LOGIQUE DE TRI V7 ---
-      let sortCriteria: any = { createdAt: -1 }; // Défaut : Date Desc
-
-      if (album.sortOrder === 'date_asc') {
-        sortCriteria = { createdAt: 1 };
-      } else if (album.sortOrder === 'manual') {
-        sortCriteria = { index: 1 };
-      }
-      // Sinon on garde le défaut (date desc)
-
+      // --- ALBUM CLASSIQUE ---
       photos = await Photo.find({ albumId: albumId }).sort(sortCriteria);
     }
 
