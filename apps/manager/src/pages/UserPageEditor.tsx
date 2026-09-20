@@ -209,9 +209,51 @@ const UserPageEditor = () => {
   }, [coverAlbumId]);
 
   useEffect(() => {
-    if (menuGroup === 'blog' && !showOnBlog) setShowOnBlog(true);
-    if (menuGroup === 'none' || menuGroup === 'blog' || menuGroup === 'about') setParentPageId('');
-  }, [menuGroup, showOnBlog]);
+    if (menuGroup === 'none' || menuGroup === 'blog' || menuGroup === 'about') {
+      setParentPageId('');
+    }
+  }, [menuGroup]);
+
+  const handleMenuGroupChange = (newGroup: MenuGroup) => {
+    setMenuGroup(newGroup);
+    if (newGroup === 'blog') {
+      setShowOnBlog(true);
+    } else if (newGroup === 'series' || newGroup === 'exhibitions' || newGroup === 'about') {
+      setIsPublished(true);
+    } else if (newGroup === 'none') {
+      setShowInMenu(false);
+    }
+    if (newGroup === 'none' || newGroup === 'blog' || newGroup === 'about') {
+      setParentPageId('');
+    }
+  };
+
+  const handleTogglePublished = () => {
+    setIsPublished(prev => {
+      const next = !prev;
+      if (!next) {
+        if (menuGroup === 'series' || menuGroup === 'exhibitions' || menuGroup === 'about') {
+          setMenuGroup('none');
+          setParentPageId('');
+        }
+        setShowInMenu(false);
+      }
+      return next;
+    });
+  };
+
+  const handleToggleShowOnBlog = () => {
+    setShowOnBlog(prev => {
+      const next = !prev;
+      if (!next) {
+        if (menuGroup === 'blog') {
+          setMenuGroup('none');
+        }
+        setShowInMenu(false);
+      }
+      return next;
+    });
+  };
 
   const sortedAlbums = useMemo(() => {
     const copy = [...availableAlbums];
@@ -433,7 +475,7 @@ const UserPageEditor = () => {
                 <label className="block text-gray-400 mb-1.5 text-sm">Section du menu</label>
                 <select
                   value={menuGroup}
-                  onChange={e => setMenuGroup(e.target.value as MenuGroup)}
+                  onChange={e => handleMenuGroupChange(e.target.value as MenuGroup)}
                   className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
                 >
                   <option value="none">Aucune</option>
@@ -551,7 +593,7 @@ const UserPageEditor = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="button"
-                onClick={() => setIsPublished(v => !v)}
+                onClick={handleTogglePublished}
                 className={`flex-1 p-3 rounded-xl border transition font-semibold ${
                   isPublished
                     ? 'bg-green-700/20 border-green-500 text-green-100'
@@ -563,7 +605,7 @@ const UserPageEditor = () => {
 
               <button
                 type="button"
-                onClick={() => setShowOnBlog(v => !v)}
+                onClick={handleToggleShowOnBlog}
                 className={`flex-1 p-3 rounded-xl border transition font-semibold ${
                   showOnBlog
                     ? 'bg-blue-700/20 border-blue-500 text-blue-100'
