@@ -107,6 +107,23 @@ router.get('/my/albums', authenticateToken, async (req: Request, res: Response) 
   }
 });
 
+export const sortPhotosList = (photos: any[], sortOrder?: string) => {
+  const sorted = [...photos];
+  if (sortOrder === 'date_asc') {
+    sorted.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+  } else if (sortOrder === 'title_asc') {
+    sorted.sort((a, b) => (a.title || a.filename || '').localeCompare(b.title || b.filename || '', 'fr', { sensitivity: 'base', numeric: true }));
+  } else if (sortOrder === 'title_desc') {
+    sorted.sort((a, b) => (b.title || b.filename || '').localeCompare(a.title || a.filename || '', 'fr', { sensitivity: 'base', numeric: true }));
+  } else if (sortOrder === 'manual') {
+    sorted.sort((a, b) => (a.index ?? 0) - (b.index ?? 0) || new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+  } else {
+    // date_desc (défaut)
+    sorted.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+  }
+  return sorted;
+};
+
 router.get('/photos/:id', async (req: Request, res: Response) => {
   try {
     const album = await Album.findById(req.params.id);
@@ -127,8 +144,7 @@ router.get('/photos/:id', async (req: Request, res: Response) => {
       }
     }
 
-    const sortCriteria = getSortCriteria(album.sortOrder);
-    let photos;
+    let photos: any[] = [];
 
     if (album.isVirtual || album.virtualFilter) {
       const query: any = { userId: album.userId };
@@ -152,12 +168,12 @@ router.get('/photos/:id', async (req: Request, res: Response) => {
         query.tags = { $in: album.tags };
       }
 
-      photos = await Photo.find(query).sort(sortCriteria as any);
+      photos = await Photo.find(query).lean();
     } else {
-      photos = await Photo.find({ albumId: req.params.id }).sort(sortCriteria as any);
+      photos = await Photo.find({ albumId: req.params.id }).lean();
     }
 
-    res.json(photos);
+    res.json(sortPhotosList(photos, album.sortOrder));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur récupération photos' });
