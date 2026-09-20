@@ -272,11 +272,30 @@ const AlbumView = () => {
     else if (sortMode === 'index')
       sorted.sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
     else if (sortMode === 'alpha-asc')
-      sorted.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'fr', { sensitivity: 'base' }));
+      sorted.sort((a, b) => (a.title || a.filename || '').localeCompare(b.title || b.filename || '', 'fr', { sensitivity: 'base', numeric: true }));
     else if (sortMode === 'alpha-desc')
-      sorted.sort((a, b) => (b.title || '').localeCompare(a.title || '', 'fr', { sensitivity: 'base' }));
+      sorted.sort((a, b) => (b.title || b.filename || '').localeCompare(a.title || a.filename || '', 'fr', { sensitivity: 'base', numeric: true }));
     return sorted;
   }, [photos, sortMode]);
+
+  const handleSortModeChange = async (newMode: 'datedesc' | 'dateasc' | 'index' | 'alpha-asc' | 'alpha-desc') => {
+    setSortMode(newMode);
+    if (!isViewer && id) {
+      const modeToDb: Record<string, string> = {
+        datedesc: 'date_desc',
+        dateasc: 'date_asc',
+        'alpha-asc': 'title_asc',
+        'alpha-desc': 'title_desc',
+        index: 'manual'
+      };
+      try {
+        await api.put(`/albums/${id}`, { sortOrder: modeToDb[newMode] });
+        setAlbum((prev: any) => prev ? { ...prev, sortOrder: modeToDb[newMode] } : prev);
+      } catch (err) {
+        console.error('Erreur mise à jour sortOrder:', err);
+      }
+    }
+  };
 
   const hasPhotos = sortedPhotos.length > 0;
   const canAddPhotos = !isViewer && !album?.isVirtual;
@@ -579,7 +598,7 @@ const AlbumView = () => {
                   </button>
                   {/* ✅ Bouton toggle A→Z / Z→A — visible viewer ET admin */}
                   <button
-                    onClick={() => setSortMode(sortMode === 'alpha-asc' ? 'alpha-desc' : 'alpha-asc')}
+                    onClick={() => handleSortModeChange(sortMode === 'alpha-asc' ? 'alpha-desc' : 'alpha-asc')}
                     className={`px-2 py-1 rounded-full transition text-xs font-bold border ${
                       sortMode === 'alpha-asc' || sortMode === 'alpha-desc'
                         ? 'bg-green-500 text-white border-green-400'
@@ -595,17 +614,17 @@ const AlbumView = () => {
                 {!isViewer && (
                   <div className="bg-white/10 rounded-full p-1 flex gap-1 border border-white/10">
                     <button
-                      onClick={() => setSortMode('datedesc')}
+                      onClick={() => handleSortModeChange('datedesc')}
                       className={`p-2 rounded-full transition text-xs font-bold ${sortMode === 'datedesc' ? 'bg-yellow-500 text-black' : 'text-gray-400 hover:text-white'}`}
                       title="Plus récents"
                     >↓</button>
                     <button
-                      onClick={() => setSortMode('dateasc')}
+                      onClick={() => handleSortModeChange('dateasc')}
                       className={`p-2 rounded-full transition text-xs font-bold ${sortMode === 'dateasc' ? 'bg-yellow-500 text-black' : 'text-gray-400 hover:text-white'}`}
                       title="Plus anciens"
                     >↑</button>
                     <button
-                      onClick={() => setSortMode('index')}
+                      onClick={() => handleSortModeChange('index')}
                       className={`p-2 rounded-full transition text-xs font-bold ${sortMode === 'index' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:text-white'}`}
                       title="Ordre manuel"
                     >#</button>

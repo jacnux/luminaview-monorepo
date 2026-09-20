@@ -61,24 +61,39 @@ const getPublicChildPages = async (pageId: string, userId: string) => {
 
 
 
+const sortPhotosList = (photos: any[], sortOrder?: string) => {
+  const sorted = [...photos];
+  if (sortOrder === 'date_asc') {
+    sorted.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+  } else if (sortOrder === 'title_asc') {
+    sorted.sort((a, b) => (a.title || a.filename || '').localeCompare(b.title || b.filename || '', 'fr', { sensitivity: 'base', numeric: true }));
+  } else if (sortOrder === 'title_desc') {
+    sorted.sort((a, b) => (b.title || b.filename || '').localeCompare(a.title || a.filename || '', 'fr', { sensitivity: 'base', numeric: true }));
+  } else if (sortOrder === 'manual') {
+    sorted.sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+  } else {
+    // date_desc (défaut)
+    sorted.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+  }
+  return sorted;
+};
+
 const getAlbumPhotos = async (album: any, ownerUserId: string) => {
   const fieldsToSelect = 'filename title description createdAt index tags';
 
   if (!album) return [];
 
-  let sortCriteria: any = { createdAt: -1 };
-  if (album.sortOrder === 'date_asc') {
-    sortCriteria = { createdAt: 1 };
-  } else if (album.sortOrder === 'title_asc') {
-    sortCriteria = { title: 1, createdAt: -1 };
-  } else if (album.sortOrder === 'title_desc') {
-    sortCriteria = { title: -1, createdAt: -1 };
-  } else if (album.sortOrder === 'manual') {
-    sortCriteria = { index: 1, createdAt: -1 };
-  }
+  let photos: any[] = [];
 
   if (album.isVirtual) {
-    if (album.virtualFilter === 'tag' && album.filterValue) {
+    const query: any = { userId: ownerUserId };
+
+    if (album.tags && Array.isArray(album.tags) && album.tags.length > 0) {
+      query.tags = { $in: album.tags };
+      const validAlbums = await Album.find({ userId: ownerUserId }).select('_id').lean();
+      query.albumId = { $in: validAlbums.map((a: any) => a._id) };
+      photos = await Photo.find(query).select(fieldsToSelect).lean();
+    } else if (album.virtualFilter === 'tag' && album.filterValue) {
       const rawTags = album.filterValue
         .split(',')
         .map((t: string) => t.trim())
@@ -99,26 +114,26 @@ const getAlbumPhotos = async (album: any, ownerUserId: string) => {
       const validAlbums = await Album.find({ userId: ownerUserId }).select('_id').lean();
       query.albumId = { $in: validAlbums.map((a: any) => a._id) };
 
-      return Photo.find(query)
-        .select(fieldsToSelect)
-        .sort(sortCriteria);
-    }
-
-    if (album.virtualFilter === 'date' && album.startDate && album.endDate) {
-      return Photo.find({
+      photos = await Photo.find(query).select(fieldsToSelect).lean();
+    } else if (album.virtualFilter === 'date' && album.startDate && album.endDate) {
+      photos = await Photo.find({
         userId: ownerUserId,
         createdAt: { $gte: album.startDate, $lte: album.endDate },
       })
         .select(fieldsToSelect)
-        .sort(sortCriteria);
+        .lean();
+    } else {
+      const validAlbums = await Album.find({ userId: ownerUserId }).select('_id').lean();
+      query.albumId = { $in: validAlbums.map((a: any) => a._id) };
+      photos = await Photo.find(query).select(fieldsToSelect).lean();
     }
-
-    return [];
+  } else {
+    photos = await Photo.find({ albumId: album._id, userId: ownerUserId })
+      .select(fieldsToSelect)
+      .lean();
   }
 
-  return Photo.find({ albumId: album._id, userId: ownerUserId })
-    .select(fieldsToSelect)
-    .sort(sortCriteria);
+  return sortPhotosList(photos, album.sortOrder);
 };
 
 const hydratePageAlbumsWithPhotos = async (page: any, ownerUserId: string) => {
@@ -317,7 +332,7 @@ router.get('/public/subdomain/:slug', async (req: Request, res: Response) => {
       .populate({
         path: 'sections.albumIds',
         model: 'Album',
-        select: 'title coverImage isVirtual virtualFilter filterValue startDate endDate sortOrder',
+        select: 'title coverImage isVirtual virtualFilter filterValue startDate endDate sortOrder tags',
       })
       .populate('parentPageId', 'title slug menuGroup');
 
@@ -362,7 +377,7 @@ router.get('/:username/:slug', async (req: Request, res: Response) => {
       .populate({
         path: 'sections.albumIds',
         model: 'Album',
-        select: 'title coverImage isVirtual virtualFilter filterValue startDate endDate sortOrder',
+        select: 'title coverImage isVirtual virtualFilter filterValue startDate endDate sortOrder tags',
       })
       .populate('parentPageId', 'title slug menuGroup');
 
