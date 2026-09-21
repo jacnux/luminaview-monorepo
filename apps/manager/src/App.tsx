@@ -10,6 +10,7 @@ import { getSubdomain } from './utils/domain';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { CommentsProvider } from './context/CommentsContext';
+import { ToastProvider } from './context/ToastContext';
 import Layout from './components/Layout';
 
 // ── Pages publiques ─────────────────────────────────────────
@@ -134,7 +135,9 @@ const App: React.FC = () => {
       <ThemeProvider>
         <AuthProvider>
           <CommentsProvider>
-            {subdomain ? <SubdomainRoutes /> : <MainRoutes />}
+            <ToastProvider>
+              {subdomain ? <SubdomainRoutes /> : <MainRoutes />}
+            </ToastProvider>
           </CommentsProvider>
         </AuthProvider>
       </ThemeProvider>

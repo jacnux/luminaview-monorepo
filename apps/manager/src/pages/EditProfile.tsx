@@ -4,9 +4,12 @@ import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import { useToast } from '../context/ToastContext';
 
 const EditProfile: React.FC = () => {
   const { updateUser } = useAuth();
+  const { showToast } = useToast();
+  const [saving, setSaving] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [bio, setBio] = useState('');
   const [portfolioIntro, setPortfolioIntro] = useState('');
@@ -64,12 +67,13 @@ const EditProfile: React.FC = () => {
       setCurrentBanner(profileRes.data.bannerImage || '');
     } catch (error) {
       console.error(error);
-      alert('Erreur chargement profil');
+      showToast('Erreur lors du chargement du profil', 'error');
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
     try {
       const formData = new FormData();
       formData.append('bio', bio);
@@ -91,7 +95,7 @@ const EditProfile: React.FC = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      alert('Profil mis à jour !');
+      showToast('Profil mis à jour avec succès !', 'success');
       if (res.data) {
         updateUser(res.data);
       }
@@ -99,26 +103,28 @@ const EditProfile: React.FC = () => {
       setAvatarFile(null);
       fetchData();
     } catch (error) {
-      alert('Erreur lors de la sauvegarde');
+      showToast('Erreur lors de la sauvegarde du profil', 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      return alert('Les nouveaux mots de passe ne correspondent pas');
+      return showToast('Les nouveaux mots de passe ne correspondent pas', 'warning');
     }
     if (!currentPassword || !newPassword) {
-      return alert('Veuillez remplir tous les champs');
+      return showToast('Veuillez remplir tous les champs du mot de passe', 'warning');
     }
     try {
       await api.put('/users/me/password', { currentPassword, newPassword });
-      alert('Mot de passe mis à jour avec succès !');
+      showToast('Mot de passe mis à jour avec succès !', 'success');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Erreur lors de la mise à jour du mot de passe');
+      showToast(error.response?.data?.error || 'Erreur lors de la mise à jour du mot de passe', 'error');
     }
   };
 
@@ -145,27 +151,58 @@ const EditProfile: React.FC = () => {
   const tabInactiveBtnClass = theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900';
 
   return (
-    <div className={`w-full px-4 py-8 sm:px-8 sm:py-12 ${shellTextClass}`}>
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex justify-between items-end pb-4 border-b border-white/5">
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Mon Profil</h1>
-            <p className="text-xs text-gray-500 mt-1">Personnalisez votre identité visuelle, vos textes de présentation et votre style.</p>
+    <div className={`w-full px-4 py-4 sm:px-8 sm:py-6 ${shellTextClass}`}>
+      <form onSubmit={handleSubmit} className="max-w-6xl mx-auto space-y-6">
+        {/* Sticky Header */}
+        <div className="sticky top-2 sm:top-4 z-40 bg-gray-900/90 dark:bg-gray-950/90 backdrop-blur-xl border border-white/10 dark:border-gray-800 rounded-2xl p-3 sm:p-4 flex items-center justify-between shadow-2xl gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              to="/dashboard"
+              className={`p-2 text-xs font-semibold rounded-xl border transition flex items-center gap-1.5 flex-shrink-0 ${
+                theme === 'dark'
+                  ? 'border-white/10 text-gray-300 hover:text-white hover:bg-white/5'
+                  : 'border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+              title="Retour au Dashboard"
+            >
+              <span>←</span>
+              <span className="hidden sm:inline">Dashboard</span>
+            </Link>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent truncate">
+                Mon Profil
+              </h1>
+              <p className="text-[11px] text-gray-400 truncate hidden md:block">
+                Identité visuelle, présentation et configuration
+              </p>
+            </div>
           </div>
-          <Link
-            to="/dashboard"
-            className={`px-4 py-2 text-xs font-semibold rounded-lg border transition ${
-              theme === 'dark'
-                ? 'border-white/10 text-gray-400 hover:text-white hover:bg-white/5'
-                : 'border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            ← Dashboard
-          </Link>
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              type="submit"
+              disabled={saving}
+              className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 disabled:opacity-50 text-black font-bold px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl text-xs sm:text-sm shadow-lg hover:scale-[1.02] active:scale-[0.98] transition flex items-center gap-2"
+            >
+              {saving ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-black" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Enregistrement...</span>
+                </>
+              ) : (
+                <>
+                  <span>💾</span>
+                  <span>Enregistrer</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="space-y-8">
           <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 items-start">
             {/* COLONNE GAUCHE (40%) : VISUELS & THEMES */}
             <div className="lg:col-span-4 space-y-8">
@@ -765,21 +802,21 @@ const EditProfile: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Submit Button */}
-          <div className="pt-4">
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-bold py-4 rounded-xl text-lg shadow-lg hover:scale-[1.01] hover:shadow-yellow-500/10 active:scale-[0.99] transition duration-200"
-            >
-              Enregistrer les modifications du Profil
-            </button>
-            <p className={`text-center text-xs mt-3 ${subtleTextClass}`}>
-              Vos modifications sont publiées instantanément sur vos pages publiques.
-            </p>
-          </div>
-        </form>
-      </div>
+        {/* Submit Button */}
+        <div className="pt-4">
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-bold py-4 rounded-xl text-lg shadow-lg hover:scale-[1.01] hover:shadow-yellow-500/10 active:scale-[0.99] transition duration-200"
+          >
+            Enregistrer les modifications du Profil
+          </button>
+          <p className={`text-center text-xs mt-3 ${subtleTextClass}`}>
+            Vos modifications sont publiées instantanément sur vos pages publiques.
+          </p>
+        </div>
+      </form>
     </div>
   );
 };

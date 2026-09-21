@@ -9,6 +9,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import api from '../utils/api';
 import EditAlbumModal from '../components/EditAlbumModal';
 import { getAppUrl } from '../utils/urls';
@@ -41,20 +42,30 @@ const formatBytes = (bytes: number = 0) => {
   return `${rounded} ${units[unitIndex]}`;
 };
 
-const copyToClipboard = (text: string, label: string) => {
+const copyToClipboard = (text: string, label: string, notify?: (msg: string, type?: any) => void) => {
+  const onSuccess = () => {
+    if (notify) notify(`${label} copié dans le presse-papier !`, 'success');
+    else alert(`${label} copié !`);
+  };
+  const onError = () => {
+    if (notify) notify('Erreur lors de la copie', 'error');
+    else alert('Erreur de copie');
+  };
+
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => alert(`${label} copié !`))
-      .catch(() => alert('Erreur de copie'));
+    navigator.clipboard.writeText(text).then(onSuccess).catch(onError);
   } else {
-    const el = document.createElement('textarea');
-    el.value = text;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    alert(`${label} copié !`);
+    try {
+      const el = document.createElement('textarea');
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      onSuccess();
+    } catch {
+      onError();
+    }
   }
 };
 
@@ -164,26 +175,32 @@ const AlbumCardGrid = ({
         </div>
 
         {/* Ligne 2 : Actions (Modifier, Partager, Supprimer) */}
-        <div className="flex items-center justify-end gap-3 text-xs pt-1 border-t border-white/5">
+        <div className="flex items-center justify-end gap-2 text-xs pt-2 border-t border-white/5 flex-wrap">
           <button
             onClick={() => onEdit(album)}
-            className="text-indigo-300 hover:text-indigo-100 font-medium transition"
+            className="px-2.5 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-indigo-100 font-medium transition flex items-center gap-1 active:scale-95"
+            title="Modifier l'album"
           >
-            Modifier
+            <span>✏️</span>
+            <span>Modifier</span>
           </button>
           {album.isPublic !== false && (
             <button
               onClick={() => onShare(album)}
-              className="text-purple-300 hover:text-purple-100 font-bold uppercase tracking-wide transition"
+              className="px-2.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 hover:text-purple-100 font-bold tracking-wide transition flex items-center gap-1 active:scale-95"
+              title="Partager l'album"
             >
-              🔗 Partager
+              <span>🔗</span>
+              <span>Partager</span>
             </button>
           )}
           <button
             onClick={() => onDelete(album)}
-            className="text-red-300 hover:text-red-100 font-medium transition"
+            className="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-100 font-medium transition flex items-center gap-1 active:scale-95"
+            title="Supprimer l'album"
           >
-            Supprimer
+            <span>🗑️</span>
+            <span>Supprimer</span>
           </button>
         </div>
       </div>
@@ -201,8 +218,8 @@ const AlbumCardList = ({
   onToggleFeatured,
   onToggleGrimoire,
 }: any) => (
-  <div className="bg-white/5 dark:bg-gray-800/40 backdrop-blur border border-white/10 dark:border-gray-700 rounded-xl p-4 flex items-center gap-4 hover:bg-white/10 transition group">
-    <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-black/20">
+  <div className="bg-white/5 dark:bg-gray-800/40 backdrop-blur border border-white/10 dark:border-gray-700 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-white/10 transition group">
+    <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-black/20">
       {album.coverImage ? (
         <img
           src={`/uploads/${album.coverImage}`}
@@ -216,7 +233,7 @@ const AlbumCardList = ({
       )}
     </div>
 
-    <div className="flex-1 min-w-0">
+    <div className="flex-1 min-w-0 w-full sm:w-auto">
       <h3 className="font-bold text-white truncate">{album.title}</h3>
       <p className="text-xs text-gray-400 truncate mb-1">
         {album.description || 'Aucune description'}
@@ -250,32 +267,39 @@ const AlbumCardList = ({
       </div>
     </div>
 
-    <div className="flex items-center gap-3 opacity-50 group-hover:opacity-100 transition">
+    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5">
       <Link
         to={`/album/${album._id}`}
-        className="text-blue-300 hover:text-blue-100 text-sm font-medium"
+        className="px-2.5 py-1 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 hover:text-blue-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
       >
-        Voir
+        <span>👁️</span>
+        <span className="hidden sm:inline">Voir</span>
       </Link>
       <button
         onClick={() => onEdit(album)}
-        className="text-indigo-300 hover:text-indigo-100 text-sm"
+        className="px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-indigo-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
       >
-        Modif.
+        <span>✏️</span>
+        <span className="hidden sm:inline">Modifier</span>
+        <span className="sm:hidden">Modif.</span>
       </button>
       {album.isPublic !== false && (
         <button
           onClick={() => onShare(album)}
-          className="text-purple-300 hover:text-purple-100 text-sm font-medium"
+          className="px-2.5 py-1 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 hover:text-purple-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
         >
-          Part.
+          <span>🔗</span>
+          <span className="hidden sm:inline">Partager</span>
+          <span className="sm:hidden">Part.</span>
         </button>
       )}
       <button
         onClick={() => onDelete(album)}
-        className="text-red-300 hover:text-red-100 text-sm"
+        className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
       >
-        Suppr.
+        <span>🗑️</span>
+        <span className="hidden sm:inline">Supprimer</span>
+        <span className="sm:hidden">Suppr.</span>
       </button>
     </div>
   </div>
@@ -284,9 +308,11 @@ const AlbumCardList = ({
 const ShareModal = ({
   album,
   onClose,
+  onCopy,
 }: {
   album: any;
   onClose: () => void;
+  onCopy?: (msg: string, type?: any) => void;
 }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
     <div className="bg-white/10 dark:bg-gray-800 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl max-w-sm w-full p-6 relative max-h-[90vh] overflow-y-auto">
@@ -331,7 +357,7 @@ const ShareModal = ({
             />
             <button
               onClick={() => {
-                copyToClipboard(getSocialShareLink(album._id), 'Lien Réseaux');
+                copyToClipboard(getSocialShareLink(album._id), 'Lien Réseaux', onCopy);
                 onClose();
               }}
               className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-xs font-bold transition"
@@ -354,7 +380,7 @@ const ShareModal = ({
             />
             <button
               onClick={() => {
-                copyToClipboard(getPublicLink(album._id), 'Lien Direct');
+                copyToClipboard(getPublicLink(album._id), 'Lien Direct', onCopy);
                 onClose();
               }}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded text-xs font-bold transition"
@@ -377,7 +403,7 @@ const ShareModal = ({
             />
             <button
               onClick={() => {
-                copyToClipboard(getWpShortcode(album._id), 'Shortcode WP');
+                copyToClipboard(getWpShortcode(album._id), 'Shortcode WP', onCopy);
                 onClose();
               }}
               className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs font-bold transition"
@@ -400,7 +426,7 @@ const ShareModal = ({
             />
             <button
               onClick={() => {
-                copyToClipboard(album._id, 'Token LuminaIA');
+                copyToClipboard(album._id, 'Token LuminaIA', onCopy);
                 onClose();
               }}
               className="bg-yellow-600 hover:bg-yellow-500 text-white px-3 py-2 rounded text-xs font-bold transition"
@@ -426,6 +452,7 @@ const Dashboard = () => {
 
   const { user, loading } = useAuth();
   const { theme } = useTheme();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const isGalleries = location.pathname === '/galleries';
@@ -458,6 +485,7 @@ const Dashboard = () => {
       setAlbums(res.data);
     } catch {
       console.error('Erreur chargement albums');
+      showToast('Erreur lors du chargement des albums', 'error');
     }
   };
 
@@ -466,10 +494,11 @@ const Dashboard = () => {
       await api.put(`/albums/${id}`, data);
       await fetchAlbums();
       setEditingAlbum(null);
+      showToast('Album mis à jour avec succès.', 'success');
       setFeedbackMessage('Album mis à jour avec succès.');
       setErrorMessage(null);
     } catch {
-      alert("Erreur lors de la modification de l'album.");
+      showToast("Erreur lors de la modification de l'album.", 'error');
     }
   };
 
@@ -486,13 +515,14 @@ const Dashboard = () => {
       setAlbums(prev => prev.filter(a => a._id !== album._id));
 
       if (album?.isVirtual) {
+        showToast(data.message || 'Galerie supprimée avec succès.', 'success');
         setFeedbackMessage(data.message || 'Galerie supprimée.');
       } else {
         const deletedPhotos = data.deletedPhotos ?? 0;
         const freedBytes = data.freedBytes ?? 0;
-        setFeedbackMessage(
-          `${data.message || 'Album supprimé.'} ${deletedPhotos} photo(s) supprimée(s), ${formatBytes(freedBytes)} libérés.`
-        );
+        const msg = `${data.message || 'Album supprimé.'} ${deletedPhotos} photo(s) supprimée(s), ${formatBytes(freedBytes)} libérés.`;
+        showToast(msg, 'success');
+        setFeedbackMessage(msg);
       }
 
       setErrorMessage(null);
@@ -500,6 +530,7 @@ const Dashboard = () => {
       if (sharingAlbum?._id === album._id) setSharingAlbum(null);
     } catch (error: any) {
       const apiMessage = error?.response?.data?.error;
+      showToast(apiMessage || 'Erreur lors de la suppression.', 'error');
       setErrorMessage(apiMessage || 'Erreur lors de la suppression.');
       setFeedbackMessage(null);
     }
@@ -511,8 +542,9 @@ const Dashboard = () => {
       setAlbums(prev =>
         prev.map(a => (a._id === id ? { ...a, isPublic: !current } : a))
       );
+      showToast(current ? 'Album passé en Privé' : 'Album rendu Public', 'info');
     } catch {
-      alert('Erreur changement de visibilité');
+      showToast('Erreur lors du changement de visibilité', 'error');
     }
   };
 
@@ -522,8 +554,9 @@ const Dashboard = () => {
       setAlbums(prev =>
         prev.map(a => (a._id === id ? { ...a, isFeatured: !current } : a))
       );
+      showToast(current ? 'Masqué des Nouveautés' : 'Mis en avant dans les Nouveautés', 'info');
     } catch {
-      alert('Erreur mise en avant');
+      showToast('Erreur lors de la mise en avant', 'error');
     }
   };
 
@@ -539,8 +572,9 @@ const Dashboard = () => {
           return a;
         })
       );
+      showToast('Statut Grimoire mis à jour', 'info');
     } catch {
-      alert('Erreur modification état Grimoire');
+      showToast('Erreur lors de la modification de statut', 'error');
     }
   };
 
@@ -602,41 +636,53 @@ const Dashboard = () => {
           )}
 
           <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
-            {/* Barre de recherche */}
-            <div className="relative flex-1 max-w-md">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </span>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={isGalleries ? "Rechercher une galerie..." : "Rechercher un album..."}
-                className="w-full bg-white/10 backdrop-blur text-white text-sm rounded-full pl-11 pr-10 py-2 border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition placeholder-gray-400"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-white"
-                  type="button"
-                >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            {/* Barre de recherche et Bouton Créer */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl">
+              <div className="relative flex-1">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
-                </button>
-              )}
+                </span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={isGalleries ? "Rechercher une galerie..." : "Rechercher un album..."}
+                  className="w-full bg-white/10 backdrop-blur text-white text-sm rounded-full pl-11 pr-10 py-2 border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition placeholder-gray-400"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-white"
+                    type="button"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              {/* Bouton Création Rapide Contextuel */}
+              <Link
+                to="/create-album"
+                className="bg-green-600 hover:bg-green-500 text-white px-3.5 py-2 rounded-full font-bold text-xs sm:text-sm transition flex items-center gap-1.5 shadow-md hover:scale-[1.02] active:scale-[0.98] flex-shrink-0"
+                title={isGalleries ? "Créer une nouvelle galerie" : "Créer un nouvel album"}
+              >
+                <span className="text-base leading-none">+</span>
+                <span className="hidden xs:inline sm:inline">{isGalleries ? 'Nouvelle galerie' : 'Nouvel album'}</span>
+              </Link>
             </div>
 
             {/* Tri et Affichage */}
@@ -735,7 +781,11 @@ const Dashboard = () => {
       </div>
 
       {sharingAlbum && (
-        <ShareModal album={sharingAlbum} onClose={() => setSharingAlbum(null)} />
+        <ShareModal
+          album={sharingAlbum}
+          onClose={() => setSharingAlbum(null)}
+          onCopy={(msg, type) => showToast(msg, type || 'success')}
+        />
       )}
     </div>
   );

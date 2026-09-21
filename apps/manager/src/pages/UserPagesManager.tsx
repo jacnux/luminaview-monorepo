@@ -9,6 +9,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import { getPageUrl } from '../utils/urls';
 
 type PageSortMode = 'az' | 'za' | null;
@@ -29,6 +30,7 @@ const UserPagesManager = () => {
   const [pageSortAZ, setPageSortAZ] = useState<PageSortMode>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const { theme } = useTheme();
+  const { showToast } = useToast();
 
   const userStorage = localStorage.getItem('user');
   const userObject = userStorage ? JSON.parse(userStorage) : null;
@@ -44,6 +46,7 @@ const UserPagesManager = () => {
       setPages(res.data);
     } catch (err) {
       console.error(err);
+      showToast('Erreur lors du chargement des pages', 'error');
     } finally {
       setLoading(false);
     }
@@ -54,15 +57,16 @@ const UserPagesManager = () => {
     try {
       await api.delete(`/user-pages/my/${id}`);
       setPages(prev => prev.filter(p => p._id !== id));
+      showToast(`Page "${title}" supprimée.`, 'success');
     } catch (err) {
-      alert('Erreur suppression');
+      showToast('Erreur lors de la suppression de la page', 'error');
     }
   };
 
   const copyLink = (slug: string) => {
     const url = getPageUrl(username, slug);
     navigator.clipboard.writeText(url).then(() => {
-      alert('Lien copié !\n\n' + url);
+      showToast('Lien de la page copié dans le presse-papier !', 'success');
     });
   };
 
