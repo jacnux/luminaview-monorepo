@@ -22,19 +22,14 @@ const AppContent: React.FC = () => {
   const [hasCarnet, setHasCarnet] = useState(false);
   const { theme } = useTheme();
 
-  // Forcer le mode sombre si le thème Artfolio est actif pour éviter les conflits de couleur
   useEffect(() => {
     const root = window.document.documentElement;
-    if (themeClass === 'theme-portfolio') {
+    if (theme === 'dark') {
       root.classList.add('dark');
     } else {
-      if (theme === 'dark') {
-        root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
-      }
+      root.classList.remove('dark');
     }
-  }, [themeClass, theme]);
+  }, [theme]);
 
   useEffect(() => {
     if (!blogSlug) return;

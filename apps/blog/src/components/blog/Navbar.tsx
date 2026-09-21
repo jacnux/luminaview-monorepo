@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getBlogSlug } from '../../utils/getBlogSlug';
 import DarkModeToggle from './DarkModeToggle';
+import { useTheme } from '../../context/ThemeContext';
 
 interface NavbarProps {
   themeClass?: string;
@@ -15,6 +16,7 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
   const blogName = getBlogSlug(location.search);
   const s = location.search; // query strings
   const isPortfolio = themeClass === 'theme-portfolio';
+  const { theme, toggleTheme } = useTheme();
 
   const formattedName = blogName ? blogName.charAt(0).toUpperCase() + blogName.slice(1) : 'Jac';
 
@@ -105,6 +107,18 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
                   Contact
                 </Link>
               </li>
+
+              {/* Bascule Thème Clair / Sombre dans la sidebar Artfolio */}
+              <li className="blog-portfolio-theme-item">
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="blog-portfolio-theme-btn"
+                  title="Basculer entre le mode clair et le mode sombre"
+                >
+                  {theme === 'light' ? '🌙 Mode Sombre' : '☀️ Mode Clair'}
+                </button>
+              </li>
             </ul>
           </nav>
 
@@ -119,29 +133,32 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
         </aside>
 
         {/* Mobile Header pour Thème Artfolio (< 1024px) */}
-        <div className="lg:hidden sticky top-0 z-50 bg-[#0a0a0a]/95 border-b border-white/10 backdrop-blur-md px-4 py-3 flex justify-between items-center">
-          <Link to={`/${s}`} className="blog-portfolio-logo text-2xl font-bold text-amber-400">
+        <div className="lg:hidden sticky top-0 z-50 bg-[var(--bg-main)]/95 border-b border-[var(--border-color)] backdrop-blur-md px-4 py-3 flex justify-between items-center transition-colors duration-200">
+          <Link to={`/${s}`} className="blog-portfolio-logo text-2xl font-bold text-amber-500">
             {formattedName}
           </Link>
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl text-gray-200 hover:bg-white/10 transition"
-            aria-label="Menu"
-          >
-            {mobileMenuOpen ? '✕' : '☰'}
-          </button>
+          <div className="flex items-center gap-2">
+            <DarkModeToggle />
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl text-[var(--text-main)] hover:bg-black/5 dark:hover:bg-white/10 transition"
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? '✕' : '☰'}
+            </button>
+          </div>
         </div>
 
         {/* Drawer Mobile Thème Artfolio */}
         {mobileMenuOpen && (
-          <div className="lg:hidden fixed inset-x-0 top-[57px] bottom-0 z-40 bg-[#0a0a0a]/98 backdrop-blur-2xl p-6 overflow-y-auto animate-fadeIn">
+          <div className="lg:hidden fixed inset-x-0 top-[57px] bottom-0 z-40 bg-[var(--bg-main)]/98 backdrop-blur-2xl p-6 overflow-y-auto animate-fadeIn border-t border-[var(--border-color)]">
             <ul className="space-y-4">
               <li>
                 <Link
                   to={`/${s}`}
                   className={`block py-2 text-base uppercase font-semibold tracking-wider ${
-                    location.pathname === '/' ? 'text-amber-400' : 'text-gray-300'
+                    location.pathname === '/' ? 'text-amber-500' : 'text-[var(--text-main)]'
                   }`}
                 >
                   📝 Articles
@@ -151,7 +168,7 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
                 <Link
                   to={`/nouveautes${s}`}
                   className={`block py-2 text-base uppercase font-semibold tracking-wider ${
-                    location.pathname === '/nouveautes' ? 'text-amber-400' : 'text-gray-300'
+                    location.pathname === '/nouveautes' ? 'text-amber-500' : 'text-[var(--text-main)]'
                   }`}
                 >
                   ⭐ Nouveautés
@@ -161,7 +178,7 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
                 <Link
                   to={`/gallery${s}`}
                   className={`block py-2 text-base uppercase font-semibold tracking-wider ${
-                    location.pathname === '/gallery' ? 'text-amber-400' : 'text-gray-300'
+                    location.pathname === '/gallery' ? 'text-amber-500' : 'text-[var(--text-main)]'
                   }`}
                 >
                   🗂️ Galeries
@@ -171,7 +188,7 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
                 <li>
                   <a
                     href={getCarnetUrl()}
-                    className="block py-2 text-base uppercase font-semibold tracking-wider text-gray-300"
+                    className="block py-2 text-base uppercase font-semibold tracking-wider text-[var(--text-main)]"
                   >
                     🎞️ Carnet de route
                   </a>
@@ -180,7 +197,7 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
               <li>
                 <a
                   href={getPortfolioUrl()}
-                  className="block py-2 text-base uppercase font-semibold tracking-wider text-gray-300"
+                  className="block py-2 text-base uppercase font-semibold tracking-wider text-[var(--text-main)]"
                 >
                   🌍 Portfolio
                 </a>
@@ -189,11 +206,20 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
                 <Link
                   to={`/contact${s}`}
                   className={`block py-2 text-base uppercase font-semibold tracking-wider ${
-                    location.pathname === '/contact' ? 'text-amber-400' : 'text-gray-300'
+                    location.pathname === '/contact' ? 'text-amber-500' : 'text-[var(--text-main)]'
                   }`}
                 >
                   ✉️ Contact
                 </Link>
+              </li>
+              <li className="pt-4 border-t border-[var(--border-color)]">
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="flex items-center gap-2 py-2 text-sm uppercase font-semibold tracking-wider text-[var(--text-main)] opacity-90 hover:opacity-100"
+                >
+                  {theme === 'light' ? '🌙 Mode Sombre' : '☀️ Mode Clair'}
+                </button>
               </li>
             </ul>
           </div>
