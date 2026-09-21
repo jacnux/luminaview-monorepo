@@ -10,6 +10,7 @@ interface AlbumViewProps {
   photos: Photo[];
   loadingPhotos: boolean;
   onPhotoClick: (index: number) => void;
+  navigateTo?: (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page', albumId?: string | null) => void;
 }
 
 const AlbumView: React.FC<AlbumViewProps> = ({
@@ -18,6 +19,7 @@ const AlbumView: React.FC<AlbumViewProps> = ({
   photos,
   loadingPhotos,
   onPhotoClick,
+  navigateTo,
 }) => {
   const currentAlbum = albums.find(a => a._id === selectedAlbumId);
 
@@ -28,9 +30,44 @@ const AlbumView: React.FC<AlbumViewProps> = ({
       animate="animate"
       key="album"
     >
-      <h2 className="section-title">{currentAlbum ? currentAlbum.title : 'Galerie'}</h2>
+      {/* Fil d'Ariane (Breadcrumb) */}
+      {navigateTo && (
+        <nav className="portfolio-breadcrumb" aria-label="Fil d'Ariane">
+          <button 
+            type="button" 
+            onClick={() => navigateTo('home')} 
+            className="breadcrumb-link"
+          >
+            Accueil
+          </button>
+          <span className="breadcrumb-sep">/</span>
+          <button 
+            type="button" 
+            onClick={() => navigateTo('galleries')} 
+            className="breadcrumb-link"
+          >
+            Galeries
+          </button>
+          <span className="breadcrumb-sep">/</span>
+          <span className="breadcrumb-current">
+            {currentAlbum ? currentAlbum.title : 'Galerie'}
+          </span>
+        </nav>
+      )}
+
+      <div className="album-header-flex">
+        <h2 className="section-title" style={{ marginBottom: 0 }}>
+          {currentAlbum ? currentAlbum.title : 'Galerie'}
+        </h2>
+        {photos.length > 0 && (
+          <span className="album-count-badge">
+            {photos.length} {photos.length > 1 ? 'photos' : 'photo'}
+          </span>
+        )}
+      </div>
+
       {currentAlbum?.description && (
-        <div style={{ color: '#666', marginBottom: '25px' }}>
+        <div style={{ color: '#666', marginTop: '15px', marginBottom: '25px' }}>
           <MarkdownRenderer>{currentAlbum.description}</MarkdownRenderer>
         </div>
       )}

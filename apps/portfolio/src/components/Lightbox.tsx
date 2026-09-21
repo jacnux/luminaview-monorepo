@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Photo } from '../types';
 import MarkdownRenderer from './MarkdownRenderer';
 
@@ -37,9 +37,20 @@ const Lightbox: React.FC<LightboxProps> = ({
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [lightboxBgColor, setLightboxBgColor] = useState<'black' | 'gray' | 'white'>('black');
   const [showDescription, setShowDescription] = useState(false);
+  const [showFilmstrip, setShowFilmstrip] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Écouter le changement de mode plein écran (ex: touche Échap)
+  // Touch Swipe State
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchDeltaX = useRef<number>(0);
+  const lastTapRef = useRef<number>(0);
+
+  // Filmstrip active thumbnail ref
+  const filmstripRef = useRef<HTMLDivElement>(null);
+  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Écouter le changement de mode plein écran
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -50,18 +61,33 @@ const Lightbox: React.FC<LightboxProps> = ({
     };
   }, []);
 
-  // Fermer la visionneuse avec la touche Échap
+  // Raccourcis clavier
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore si on est dans un input/textarea
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+
       if (e.key === 'Escape') {
         onClose();
         if (document.fullscreenElement) {
           document.exitFullscreen().catch(err => console.error("Erreur exit fullscreen:", err));
         }
-      } else if (e.key === 'ArrowRight' && photos.length > 1) {
+      } else if ((e.key === 'ArrowRight' || e.key === ' ') && photos.length > 1) {
+        e.preventDefault();
         setCurrentIndex(prev => (prev === photos.length - 1 ? 0 : prev + 1));
       } else if (e.key === 'ArrowLeft' && photos.length > 1) {
+        e.preventDefault();
         setCurrentIndex(prev => (prev === 0 ? photos.length - 1 : prev - 1));
+      } else if (e.key === 'Home') {
+        setCurrentIndex(0);
+      } else if (e.key === 'End') {
+        setCurrentIndex(photos.length - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === 'i' || e.key === 'I') {
+        setShowDescription(prev => !prev);
+      } else if (e.key === 't' || e.key === 'T') {
+        setShowFilmstrip(prev => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -73,6 +99,15 @@ const Lightbox: React.FC<LightboxProps> = ({
     setZoom(1);
     setPosition({ x: 0, y: 0 });
     setShowDescription(false);
+
+    // Auto-scroll le filmstrip vers la miniature active
+    if (thumbnailRefs.current[currentIndex]) {
+      thumbnailRefs.current[currentIndex]?.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    }
   }, [currentIndex]);
 
   const toggleFullscreen = () => {
@@ -93,12 +128,14 @@ const Lightbox: React.FC<LightboxProps> = ({
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setStartPos({ x: e.clientX - position.x, y: e.clientY - position.y });
+    if (zoom > 1) {
+      setIsDragging(true);
+      setStartPos({ x: e.clientX - position.x, y: e.clientY - position.y });
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || zoom <= 1) return;
     e.preventDefault();
     setPosition({
       x: e.clientX - startPos.x,
@@ -107,6 +144,55 @@ const Lightbox: React.FC<LightboxProps> = ({
   };
 
   const handleMouseUp = () => setIsDragging(false);
+
+  // Gestion du double clic / double tap pour zoomer
+  const handleDoubleTap = () => {
+    if (zoom > 1) {
+      setZoom(1);
+      setPosition({ x: 0, y: 0 });
+    } else {
+      setZoom(2.2);
+    }
+  };
+
+  // Touch handlers pour swipe & double tap
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      touchStartX.current = touch.clientX;
+      touchStartY.current = touch.clientY;
+      touchDeltaX.current = 0;
+
+      // Détecter double tap
+      const now = Date.now();
+      if (now - lastTapRef.current < 300) {
+        handleDoubleTap();
+      }
+      lastTapRef.current = now;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (zoom > 1) return; // Laisser le scroll / pan si zoomé
+    if (touchStartX.current !== null && e.touches.length === 1) {
+      touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (zoom === 1 && touchStartX.current !== null && Math.abs(touchDeltaX.current) > 45) {
+      if (touchDeltaX.current < 0 && photos.length > 1) {
+        // Glissement vers la gauche -> Photo suivante
+        setCurrentIndex(prev => (prev === photos.length - 1 ? 0 : prev + 1));
+      } else if (touchDeltaX.current > 0 && photos.length > 1) {
+        // Glissement vers la droite -> Photo précédente
+        setCurrentIndex(prev => (prev === 0 ? photos.length - 1 : prev - 1));
+      }
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+    touchDeltaX.current = 0;
+  };
 
   const currentPhoto = photos[currentIndex];
   if (!currentPhoto) return null;
@@ -153,19 +239,28 @@ const Lightbox: React.FC<LightboxProps> = ({
         </button>
       </div>
 
-      {/* Corps avec l'image zoomée */}
+      {/* Corps avec l'image zoomée & support swipe tactile */}
       <div 
         className="lightbox-body"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onDoubleClick={handleDoubleTap}
         style={{ cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
       >
         {photos.length > 1 && (
           <button 
             className="lightbox-nav-btn prev"
-            onClick={() => setCurrentIndex(prev => (prev === 0 ? photos.length - 1 : prev - 1))}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentIndex(prev => (prev === 0 ? photos.length - 1 : prev - 1));
+            }}
+            title="Photo précédente (←)"
+            aria-label="Photo précédente"
           >
             ‹
           </button>
@@ -174,7 +269,7 @@ const Lightbox: React.FC<LightboxProps> = ({
         <motion.img 
           key={currentIndex}
           src={`/uploads/${currentPhoto.filename}`} 
-          alt="Zoomed" 
+          alt={currentPhoto.title || "Photo zoomée"} 
           className="lightbox-img" 
           variants={imageVariants}
           initial="initial"
@@ -182,7 +277,7 @@ const Lightbox: React.FC<LightboxProps> = ({
           exit="exit"
           style={{
             transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
-            transition: isDragging ? 'none' : 'transform 0.1s ease'
+            transition: isDragging ? 'none' : 'transform 0.15s ease-out'
           }}
           draggable={false}
         />
@@ -190,12 +285,46 @@ const Lightbox: React.FC<LightboxProps> = ({
         {photos.length > 1 && (
           <button 
             className="lightbox-nav-btn next"
-            onClick={() => setCurrentIndex(prev => (prev === photos.length - 1 ? 0 : prev + 1))}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentIndex(prev => (prev === photos.length - 1 ? 0 : prev + 1));
+            }}
+            title="Photo suivante (→)"
+            aria-label="Photo suivante"
           >
             ›
           </button>
         )}
       </div>
+
+      {/* Ruban de Miniatures (Filmstrip) */}
+      {photos.length > 1 && showFilmstrip && (
+        <div className="lightbox-filmstrip-wrapper" ref={filmstripRef}>
+          <div className="lightbox-filmstrip">
+            {photos.map((photo, idx) => (
+              <button
+                key={photo._id || idx}
+                ref={el => { thumbnailRefs.current[idx] = el; }}
+                onClick={() => setCurrentIndex(idx)}
+                className={`filmstrip-thumb-btn ${idx === currentIndex ? 'active' : ''}`}
+                title={photo.title || `Photo ${idx + 1}`}
+                aria-label={photo.title || `Photo ${idx + 1}`}
+              >
+                <img
+                  src={`/uploads/thumb-${photo.filename}`}
+                  onError={(e) => {
+                    // Fallback to original image if thumb is missing
+                    (e.target as HTMLImageElement).src = `/uploads/${photo.filename}`;
+                  }}
+                  alt={photo.title || `Miniature ${idx + 1}`}
+                  className="filmstrip-thumb-img"
+                  loading="lazy"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Footer descriptif & Actions */}
       <div className="lightbox-footer-container">
@@ -213,11 +342,21 @@ const Lightbox: React.FC<LightboxProps> = ({
           </div>
 
           <div className="lightbox-actions">
+            {photos.length > 1 && (
+              <button 
+                className={`lightbox-action-btn filmstrip-toggle-btn ${showFilmstrip ? 'active' : ''}`}
+                onClick={() => setShowFilmstrip(!showFilmstrip)}
+                title={showFilmstrip ? "Masquer le ruban de miniatures (T)" : "Afficher le ruban de miniatures (T)"}
+                aria-label="Ruban de miniatures"
+              >
+                🎞️
+              </button>
+            )}
             {currentPhoto.description && (
               <button 
                 className={`lightbox-action-btn desc-toggle-btn ${showDescription ? 'active' : ''}`}
                 onClick={() => setShowDescription(!showDescription)}
-                title={showDescription ? "Masquer la description" : "Afficher la description"}
+                title={showDescription ? "Masquer la description (I)" : "Afficher la description (I)"}
                 aria-label="Description"
               >
                 ℹ️
@@ -226,7 +365,7 @@ const Lightbox: React.FC<LightboxProps> = ({
             <button 
               className="lightbox-action-btn fullscreen-btn" 
               onClick={toggleFullscreen}
-              title={isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+              title={isFullscreen ? "Quitter le plein écran (F)" : "Plein écran (F)"}
               aria-label="Plein écran"
             >
               {isFullscreen ? "🗗" : "⛶"}

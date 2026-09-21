@@ -4,6 +4,7 @@ import { UserProfile, UserPage } from '../types';
 interface HeaderProps {
   profile: UserProfile | null;
   pages: UserPage[];
+  albums?: Album[];
   currentPage: string;
   currentPageData: UserPage | null;
   menuOpen: boolean;
@@ -43,6 +44,7 @@ const getCarnetUrl = (name?: string, customUrl?: string): string => {
 const Header: React.FC<HeaderProps> = ({
   profile,
   pages,
+  albums,
   currentPage,
   currentPageData,
   menuOpen,
@@ -93,6 +95,19 @@ const Header: React.FC<HeaderProps> = ({
                 Accueil
               </a>
             </li>
+
+            {/* LIEN GALERIES */}
+            {albums && albums.length > 0 && (
+              <li>
+                <a 
+                  href="#" 
+                  onClick={(e) => { e.preventDefault(); navigateTo('galleries'); }}
+                  className={currentPage === 'galleries' ? 'active' : ''}
+                >
+                  Galeries
+                </a>
+              </li>
+            )}
 
             {/* SECTION SÉRIES */}
             {pages.filter(p => p.menuGroup === 'series' && !p.parentPageId && p.showInMenu).length > 0 && (

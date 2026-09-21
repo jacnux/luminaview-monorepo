@@ -2227,3 +2227,306 @@ body.theme-grimoire .page-container {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* ==========================================================================
+   SPRINT 2 ERGONOMIE — BREADCRUMBS, FILMSTRIP, SEARCH, BACK-TO-TOP
+   ========================================================================== */
+
+/* --- FIL D'ARIANE (BREADCRUMBS) --- */
+.portfolio-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-family: var(--font-title, sans-serif);
+  color: var(--color-text-muted, #888);
+  margin-bottom: 24px;
+  padding: 8px 14px;
+  background: rgba(128, 128, 128, 0.06);
+  border: 1px solid rgba(128, 128, 128, 0.12);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+}
+
+.breadcrumb-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+  color: var(--color-accent, #c99e58);
+  cursor: pointer;
+  transition: opacity 0.2s ease, text-decoration 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.breadcrumb-sep {
+  color: rgba(128, 128, 128, 0.4);
+  user-select: none;
+}
+
+.breadcrumb-current {
+  color: var(--color-text, #111);
+  font-weight: 600;
+}
+
+/* --- ALBUM HEADER & BADGES --- */
+.album-header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.album-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(201, 158, 88, 0.12);
+  color: var(--color-accent, #c99e58);
+  border: 1px solid rgba(201, 158, 88, 0.25);
+  letter-spacing: 0.04em;
+}
+
+/* --- RECHERCHE ET EN-TÊTE GALERIES --- */
+.galleries-header-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.section-subtitle-text {
+  font-size: 0.9rem;
+  color: var(--color-text-muted, #777);
+  margin-top: 4px;
+}
+
+.gallery-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 260px;
+}
+
+.gallery-search-box .search-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 0.9rem;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.gallery-search-input {
+  width: 100%;
+  padding: 8px 34px 8px 36px;
+  font-size: 0.88rem;
+  border-radius: 24px;
+  border: 1px solid rgba(128, 128, 128, 0.2);
+  background: rgba(128, 128, 128, 0.06);
+  color: var(--color-text, #111);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.gallery-search-input:focus {
+  border-color: var(--color-accent, #c99e58);
+  background: rgba(128, 128, 128, 0.1);
+  box-shadow: 0 0 0 3px rgba(201, 158, 88, 0.15);
+}
+
+.gallery-search-box .search-clear-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--color-text-muted, #888);
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 0.85rem;
+  border-radius: 50%;
+  transition: color 0.2s ease;
+}
+
+.gallery-search-box .search-clear-btn:hover {
+  color: var(--color-text, #111);
+}
+
+.gallery-empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  background: rgba(128, 128, 128, 0.04);
+  border: 1px dashed rgba(128, 128, 128, 0.2);
+  border-radius: 12px;
+  margin: 20px 0 40px;
+}
+
+.gallery-empty-state .empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+
+.gallery-empty-state h3 {
+  font-size: 1.2rem;
+  font-family: var(--font-title, sans-serif);
+  margin-bottom: 8px;
+}
+
+.gallery-empty-state p {
+  color: var(--color-text-muted, #777);
+  font-size: 0.9rem;
+  margin-bottom: 18px;
+}
+
+.empty-reset-btn {
+  background: var(--color-accent, #c99e58);
+  color: #fff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.empty-reset-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* --- RUBAN DE MINIATURES (FILMSTRIP) DANS LA LIGHTBOX --- */
+.lightbox-filmstrip-wrapper {
+  position: absolute;
+  bottom: 64px;
+  left: 0;
+  right: 0;
+  z-index: 25;
+  display: flex;
+  justify-content: center;
+  padding: 6px 12px;
+  pointer-events: none;
+}
+
+.lightbox-filmstrip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  max-width: 90vw;
+  overflow-x: auto;
+  pointer-events: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.lightbox-filmstrip::-webkit-scrollbar {
+  height: 4px;
+}
+
+.lightbox-filmstrip::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+
+.filmstrip-thumb-btn {
+  flex: 0 0 54px;
+  height: 54px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  padding: 0;
+  background: #111;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+}
+
+.filmstrip-thumb-btn:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
+}
+
+.filmstrip-thumb-btn.active {
+  opacity: 1;
+  border-color: #c99e58;
+  box-shadow: 0 0 10px rgba(201, 158, 88, 0.6);
+  transform: scale(1.08);
+}
+
+.filmstrip-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* --- BOUTON FLOTTANT RETOUR EN HAUT --- */
+.portfolio-back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(30, 30, 30, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 45;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeIn 0.25s ease-out;
+}
+
+.portfolio-back-to-top:hover {
+  background: var(--color-accent, #c99e58);
+  color: #fff;
+  border-color: var(--color-accent, #c99e58);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(201, 158, 88, 0.4);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .portfolio-back-to-top {
+    bottom: 20px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+  }
+  .lightbox-filmstrip-wrapper {
+    bottom: 56px;
+  }
+  .filmstrip-thumb-btn {
+    flex: 0 0 44px;
+    height: 44px;
+  }
+}
+
+

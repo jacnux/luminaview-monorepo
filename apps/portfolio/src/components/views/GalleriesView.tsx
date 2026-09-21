@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Album } from '../../types';
 import MarkdownRenderer from '../MarkdownRenderer';
 import { pageVariants, containerVariants, itemVariants } from './variants';
@@ -10,6 +10,17 @@ interface GalleriesViewProps {
 }
 
 const GalleriesView: React.FC<GalleriesViewProps> = ({ albums, navigateTo }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredAlbums = useMemo(() => {
+    if (!searchQuery.trim()) return albums;
+    const q = searchQuery.toLowerCase().trim();
+    return albums.filter(album => 
+      album.title?.toLowerCase().includes(q) ||
+      album.description?.toLowerCase().includes(q)
+    );
+  }, [albums, searchQuery]);
+
   return (
     <motion.div
       variants={pageVariants}
@@ -17,9 +28,59 @@ const GalleriesView: React.FC<GalleriesViewProps> = ({ albums, navigateTo }) => 
       animate="animate"
       key="galleries"
     >
-      <h2 className="section-title">Mes Galeries</h2>
+      <div className="galleries-header-bar">
+        <div>
+          <h2 className="section-title" style={{ marginBottom: '4px' }}>Mes Galeries</h2>
+          <p className="section-subtitle-text">
+            {albums.length > 0 ? (
+              searchQuery.trim() ? (
+                `${filteredAlbums.length} sur ${albums.length} ${albums.length > 1 ? 'galeries' : 'galerie'}`
+              ) : (
+                `${albums.length} ${albums.length > 1 ? 'galeries photographiques' : 'galerie photographique'}`
+              )
+            ) : null}
+          </p>
+        </div>
+
+        {albums.length > 2 && (
+          <div className="gallery-search-box">
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              placeholder="Rechercher une galerie..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="gallery-search-input"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="search-clear-btn"
+                title="Effacer"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
       {albums.length === 0 ? (
         <p style={{ textAlign: 'center', color: '#999', margin: '40px 0' }}>Aucune galerie publique disponible pour le moment.</p>
+      ) : filteredAlbums.length === 0 ? (
+        <div className="gallery-empty-state">
+          <div className="empty-icon">🔍</div>
+          <h3>Aucune galerie trouvée</h3>
+          <p>Aucun résultat ne correspond à « <strong>{searchQuery}</strong> »</p>
+          <button
+            type="button"
+            onClick={() => setSearchQuery('')}
+            className="empty-reset-btn"
+          >
+            Réinitialiser la recherche
+          </button>
+        </div>
       ) : (
         <motion.div 
           className="grid-gallery"
@@ -27,7 +88,7 @@ const GalleriesView: React.FC<GalleriesViewProps> = ({ albums, navigateTo }) => 
           initial="hidden"
           animate="show"
         >
-          {albums.map((album) => (
+          {filteredAlbums.map((album) => (
             <motion.a 
               key={album._id} 
               href="#" 

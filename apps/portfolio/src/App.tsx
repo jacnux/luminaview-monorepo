@@ -81,6 +81,21 @@ const App: React.FC = () => {
   const [reportSuccess, setReportSuccess] = useState<string | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
 
+  // Bouton Retour en haut
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 350);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Charger le profil, les albums vedettes et les pages
   useEffect(() => {
     const fetchData = async () => {
@@ -346,6 +361,7 @@ const App: React.FC = () => {
         <Header
           profile={profile}
           pages={pages}
+          albums={albums}
           currentPage={currentPage}
           currentPageData={currentPageData}
           menuOpen={menuOpen}
@@ -408,6 +424,7 @@ const App: React.FC = () => {
                 photos={photos}
                 loadingPhotos={loadingPhotos}
                 onPhotoClick={(idx) => setLightboxIndex(idx)}
+                navigateTo={navigateTo}
               />
             )}
 
@@ -420,11 +437,13 @@ const App: React.FC = () => {
               ) : currentPageData && (
                 <PageView
                   pageData={currentPageData}
+                  allPages={pages}
                   onPhotoClick={(albumPhotos, idx) => {
                     setPhotos(albumPhotos);
                     setLightboxIndex(idx);
                   }}
                   navigateToPage={navigateToPage}
+                  navigateTo={navigateTo}
                 />
               )
             )}
@@ -481,6 +500,21 @@ const App: React.FC = () => {
           success={reportSuccess}
           error={reportError}
         />
+      )}
+
+      {/* Bouton Flottant Retour en Haut */}
+      {showScrollTop && (
+        <button
+          type="button"
+          onClick={scrollToTop}
+          className="portfolio-back-to-top"
+          title="Retour en haut de page"
+          aria-label="Retour en haut"
+        >
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
       )}
 
       {/* Bottom Floating Watermark Badge */}

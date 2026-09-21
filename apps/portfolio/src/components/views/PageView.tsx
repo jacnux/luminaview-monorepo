@@ -8,17 +8,34 @@ interface PageViewProps {
   pageData: UserPage;
   onPhotoClick: (photos: Photo[], index: number) => void;
   navigateToPage: (slug: string) => void;
+  navigateTo?: (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page', albumId?: string | null) => void;
+  allPages?: UserPage[];
 }
 
 const PageView: React.FC<PageViewProps> = ({
   pageData,
   onPhotoClick,
   navigateToPage,
+  navigateTo,
+  allPages,
 }) => {
   const pageSections = pageData.sections || [];
   const summaryTextSection = pageSections.find(s => s.type === 'text' && s.summary);
   const firstTextSection = pageSections.find(s => s.type === 'text');
   const introContent = summaryTextSection?.content || pageData.editorialSummary || firstTextSection?.content || '';
+
+  // Résolution de la page parente pour le fil d'Ariane
+  let parentPage: { title: string; slug: string } | null = null;
+  if (pageData.parentPageId) {
+    if (typeof pageData.parentPageId === 'object' && pageData.parentPageId !== null && 'title' in pageData.parentPageId) {
+      parentPage = pageData.parentPageId as { title: string; slug: string };
+    } else if (typeof pageData.parentPageId === 'string' && allPages) {
+      const found = allPages.find(p => p._id === pageData.parentPageId);
+      if (found) {
+        parentPage = { title: found.title, slug: found.slug };
+      }
+    }
+  }
 
   return (
     <motion.div
@@ -27,6 +44,33 @@ const PageView: React.FC<PageViewProps> = ({
       animate="animate"
       key={pageData.slug}
     >
+      {/* Fil d'Ariane (Breadcrumb) */}
+      {navigateTo && (
+        <nav className="portfolio-breadcrumb" aria-label="Fil d'Ariane">
+          <button 
+            type="button" 
+            onClick={() => navigateTo('home')} 
+            className="breadcrumb-link"
+          >
+            Accueil
+          </button>
+          <span className="breadcrumb-sep">/</span>
+          {parentPage && (
+            <>
+              <button 
+                type="button" 
+                onClick={() => navigateToPage(parentPage!.slug)} 
+                className="breadcrumb-link"
+              >
+                {parentPage.title}
+              </button>
+              <span className="breadcrumb-sep">/</span>
+            </>
+          )}
+          <span className="breadcrumb-current">{pageData.title}</span>
+        </nav>
+      )}
+
       <h2 className="section-title">{pageData.title}</h2>
       {introContent && (
         <div className="home-text">
