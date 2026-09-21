@@ -41,14 +41,6 @@ const AlbumView: React.FC<AlbumViewProps> = ({
             Accueil
           </button>
           <span className="breadcrumb-sep">/</span>
-          <button 
-            type="button" 
-            onClick={() => navigateTo('galleries')} 
-            className="breadcrumb-link"
-          >
-            Galeries
-          </button>
-          <span className="breadcrumb-sep">/</span>
           <span className="breadcrumb-current">
             {currentAlbum ? currentAlbum.title : 'Galerie'}
           </span>

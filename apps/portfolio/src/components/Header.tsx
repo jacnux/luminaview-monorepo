@@ -96,19 +96,6 @@ const Header: React.FC<HeaderProps> = ({
               </a>
             </li>
 
-            {/* LIEN GALERIES */}
-            {albums && albums.length > 0 && (
-              <li>
-                <a 
-                  href="#" 
-                  onClick={(e) => { e.preventDefault(); navigateTo('galleries'); }}
-                  className={currentPage === 'galleries' ? 'active' : ''}
-                >
-                  Galeries
-                </a>
-              </li>
-            )}
-
             {/* SECTION SÉRIES */}
             {pages.filter(p => p.menuGroup === 'series' && !p.parentPageId && p.showInMenu).length > 0 && (
               <li>

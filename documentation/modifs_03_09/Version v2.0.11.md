@@ -36,20 +36,20 @@ Cette version implémente le **Sprint 2 (Portfolio)** issu du plan d'améliorati
 
 - **Navigation arborescente élégante** :
   - **Pages & Séries parentes/enfants** : `Accueil / [Série Parente] / [Série Enfant]` avec liens cliquables pour remonter d'un niveau instantanément.
-  - **Albums & Galeries** : `Accueil / Galeries / [Nom de l'Album]`.
+  - **Albums & Galeries** : `Accueil / [Nom de l'Album]`.
 - **Compteur de photographies contextuel** :
   - Badge discret `X photos` à côté du titre de l'album.
 
 ---
 
-### 3. Recherche Instantanée & Compteur de Galeries (`GalleriesView.tsx`, `Header.tsx`)
+### 3. Recherche Instantanée & Compteur de Galeries (`GalleriesView.tsx`)
 
 - **Barre de recherche en temps réel** :
   - Filtrage instantané des albums photographiques par mot-clé dans le titre ou la description.
   - Bouton d'effacement rapide `✕`.
   - Compteur dynamique : ex. `2 sur 37 galeries` ou `37 galeries photographiques`.
   - **État vide interactif** : Illustration, message d'aide et bouton « Réinitialiser la recherche ».
-- **Entrée de menu « Galeries »** intégrée dans la barre de navigation latérale.
+- **Respect de l'architecture éditoriale** : Le menu latéral conserve sa structure ciblée basée sur les Séries et les Expositions sans doublon.
 
 ---
 
