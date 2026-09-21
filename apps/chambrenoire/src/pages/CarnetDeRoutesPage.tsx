@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
+// ============================================================
+// CHAMBRE NOIRE — CarnetDeRoutesPage.tsx
+// Sprint 3 Ergonomie v3.0 (Breadcrumbs, Recherche, Filtres, BackToTop)
+// ============================================================
+
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import Breadcrumb from '../components/Breadcrumb';
+import BackToTop from '../components/BackToTop';
+import Lightbox from '../components/Lightbox';
 import { getSubdomain } from '../utils/domain';
 import { getPortfolioUrl, getBlogUrl } from '../utils/urls';
 
@@ -9,9 +17,11 @@ const CarnetDeRoutesPage: React.FC = () => {
   const [standalonePhotos, setStandalonePhotos] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [lightboxPhoto, setLightboxPhoto] = useState<any | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [shareItem, setShareItem] = useState<{ type: 'project' | 'photo'; title: string; url: string; embedUrl: string } | null>(null);
   const [projectTab, setProjectTab] = useState<'active' | 'archived' | 'all'>('active');
+  const [mediumFilter, setMediumFilter] = useState<'all' | 'ANALOG' | 'DIGITAL'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -28,19 +38,77 @@ const CarnetDeRoutesPage: React.FC = () => {
         setStandalonePhotos(photos);
         setUserProfile(userData);
 
-        // Récupérer le paramètre photo si présent
+        // Récupérer le paramètre photo si présent dans l'URL
         const params = new URLSearchParams(window.location.search);
         const photoId = params.get('photo');
         if (photoId) {
-          const found = photos.find((p: any) => p._id === photoId);
-          if (found) {
-            setLightboxPhoto(found);
+          const foundIdx = photos.findIndex((p: any) => p._id === photoId);
+          if (foundIdx !== -1) {
+            setLightboxIndex(foundIdx);
           }
         }
       })
       .catch(err => console.error('Error fetching carnet de routes:', err))
       .finally(() => setLoading(false));
   }, []);
+
+  const activeProjects = useMemo(() => projects.filter(p => p.status !== 'ARCHIVED'), [projects]);
+  const archivedProjects = useMemo(() => projects.filter(p => p.status === 'ARCHIVED'), [projects]);
+
+  const baseProjects = useMemo(() => {
+    if (projectTab === 'active') return activeProjects;
+    if (projectTab === 'archived') return archivedProjects;
+    return [...activeProjects, ...archivedProjects];
+  }, [projectTab, activeProjects, archivedProjects]);
+
+  // Filtrage par médium & recherche
+  const filteredProjects = useMemo(() => {
+    let list = baseProjects;
+    if (mediumFilter === 'ANALOG') {
+      list = list.filter(p => p.medium === 'ANALOG' || p.medium === 'HYBRID');
+    } else if (mediumFilter === 'DIGITAL') {
+      list = list.filter(p => p.medium === 'DIGITAL' || p.medium === 'HYBRID');
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(p =>
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.description || '').toLowerCase().includes(q) ||
+        (Array.isArray(p.tags) && p.tags.some((t: string) => t.toLowerCase().includes(q)))
+      );
+    }
+    return list;
+  }, [baseProjects, mediumFilter, searchQuery]);
+
+  const basePhotos = useMemo(() => {
+    return projectTab === 'archived' ? [] : standalonePhotos;
+  }, [projectTab, standalonePhotos]);
+
+  const filteredPhotos = useMemo(() => {
+    let list = basePhotos;
+    if (mediumFilter === 'ANALOG') {
+      list = list.filter(p => p.isAnalog);
+    } else if (mediumFilter === 'DIGITAL') {
+      list = list.filter(p => !p.isAnalog);
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(p =>
+        (p.title || '').toLowerCase().includes(q) ||
+        (p.description || '').toLowerCase().includes(q) ||
+        (p.shootingIntent || '').toLowerCase().includes(q) ||
+        (p.location || '').toLowerCase().includes(q) ||
+        (p.gearCameraId?.brand || '').toLowerCase().includes(q) ||
+        (p.gearCameraId?.model || '').toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [basePhotos, mediumFilter, searchQuery]);
+
+  const totalResults = filteredProjects.length + filteredPhotos.length;
+  const isEmbedded = window.location.pathname.startsWith('/embed/');
 
   if (loading) {
     return (
@@ -52,197 +120,6 @@ const CarnetDeRoutesPage: React.FC = () => {
     );
   }
 
-  const activeProjects = projects.filter(p => p.status !== 'ARCHIVED');
-  const archivedProjects = projects.filter(p => p.status === 'ARCHIVED');
-
-  const displayedProjects = projectTab === 'active'
-    ? activeProjects
-    : projectTab === 'archived'
-    ? archivedProjects
-    : [...activeProjects, ...archivedProjects];
-
-  const displayedPhotos = projectTab === 'archived' ? [] : standalonePhotos;
-  const totalItems = displayedProjects.length + displayedPhotos.length;
-
-  const isEmbedded = window.location.pathname.startsWith('/embed/');
-
-  if (isEmbedded && lightboxPhoto) {
-    return (
-      <div className="w-full min-h-screen bg-gray-950 text-white flex flex-col md:flex-row overflow-hidden relative">
-        {/* Bouton Retour (Fermer) */}
-        <button 
-          onClick={() => setLightboxPhoto(null)}
-          className="absolute top-4 left-4 z-50 bg-black/60 hover:bg-black text-white hover:text-amber-500 px-3 py-1.5 rounded-full transition text-sm font-medium flex items-center gap-2 border border-white/10 backdrop-blur-md shadow-lg"
-          title="Retour au carnet"
-        >
-          &larr; Retour
-        </button>
-
-        {/* Gauche: Image */}
-        <div className="flex-1 bg-black flex items-center justify-center min-h-[250px] p-4 relative">
-          <img
-            src={`/uploads/${lightboxPhoto.filename}`}
-            alt={lightboxPhoto.title}
-            className="max-w-full max-h-[50vh] md:max-h-screen object-contain"
-          />
-        </div>
-
-        {/* Droite: Fiche technique */}
-        <div className="w-full md:w-80 p-6 overflow-y-auto space-y-6 border-t md:border-t-0 md:border-l border-white/10 text-white bg-gray-950">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">
-              {lightboxPhoto.isAnalog ? '🎞️ Argentique' : '⚡ Numérique'}
-            </span>
-            <h2 className="text-xl font-bold mt-2">{lightboxPhoto.title}</h2>
-            <p className="text-xs text-gray-400 mt-1">
-              {lightboxPhoto.location && `📍 ${lightboxPhoto.location}`}
-              {lightboxPhoto.captureDate && ` • 📅 ${new Date(lightboxPhoto.captureDate).toLocaleDateString('fr-FR')}`}
-            </p>
-          </div>
-
-          {lightboxPhoto.shootingIntent && (
-            <div className="space-y-1">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-500">Intention</h4>
-              <p className="text-sm text-gray-300 leading-relaxed italic">"{lightboxPhoto.shootingIntent}"</p>
-            </div>
-          )}
-
-          {/* Prise de vue */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-500 border-b border-white/10 pb-1">Prise de vue</h4>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              {lightboxPhoto.gearCameraId && (
-                <div className="col-span-2">
-                  <span className="text-xs text-gray-500 block">Appareil</span>
-                  <span className="font-medium text-gray-200">{lightboxPhoto.gearCameraId.brand} {lightboxPhoto.gearCameraId.model}</span>
-                </div>
-              )}
-              {lightboxPhoto.gearLensId && (
-                <div className="col-span-2">
-                  <span className="text-xs text-gray-500 block">Objectif</span>
-                  <span className="font-medium text-gray-200">{lightboxPhoto.gearLensId.brand} {lightboxPhoto.gearLensId.model}</span>
-                </div>
-              )}
-              {lightboxPhoto.exposureSettings?.aperture && (
-                <div>
-                  <span className="text-xs text-gray-500 block">Ouverture</span>
-                  <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.aperture}</span>
-                </div>
-              )}
-              {lightboxPhoto.exposureSettings?.shutterSpeed && (
-                <div>
-                  <span className="text-xs text-gray-500 block">Vitesse</span>
-                  <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.shutterSpeed}</span>
-                </div>
-              )}
-              {(lightboxPhoto.exposureSettings?.iso || lightboxPhoto.filmId?.isoUsed || lightboxPhoto.filmId?.iso) && (
-                <div>
-                  <span className="text-xs text-gray-500 block">Sensibilité</span>
-                  <span className="font-medium text-gray-200">
-                    {lightboxPhoto.exposureSettings?.iso || lightboxPhoto.filmId?.isoUsed || lightboxPhoto.filmId?.iso} ISO
-                  </span>
-                </div>
-              )}
-              {lightboxPhoto.exposureSettings?.focalLength && (
-                <div>
-                  <span className="text-xs text-gray-500 block">Focale</span>
-                  <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.focalLength}</span>
-                </div>
-              )}
-              {lightboxPhoto.exposureSettings?.light && (
-                <div>
-                  <span className="text-xs text-gray-500 block">Lumière</span>
-                  <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.light}</span>
-                  {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel || lightboxPhoto.exposureSettings.lightingType || lightboxPhoto.exposureSettings.lightingPower) && (
-                    <span className="block text-[11px] text-yellow-400 font-normal mt-0.5">
-                      {lightboxPhoto.exposureSettings.lightingType === 'flash' ? '⚡ Flash' : lightboxPhoto.exposureSettings.lightingType === 'continuous' ? '☀️ Continue' : ''}
-                      {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel) && ` ${lightboxPhoto.exposureSettings.lightingBrand} ${lightboxPhoto.exposureSettings.lightingModel}`.trim()}
-                      {lightboxPhoto.exposureSettings.lightingPower && ` @ ${lightboxPhoto.exposureSettings.lightingPower}`}
-                    </span>
-                  )}
-                </div>
-              )}
-              {lightboxPhoto.exposureSettings?.filter && lightboxPhoto.exposureSettings.filter !== 'Aucun' && (
-                <div>
-                  <span className="text-xs text-gray-500 block">Filtre</span>
-                  <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.filter}</span>
-                </div>
-              )}
-              {lightboxPhoto.exposureSettings?.ndFilter && lightboxPhoto.exposureSettings.ndFilter !== 'Aucun' && (
-                <div>
-                  <span className="text-xs text-gray-500 block">Filtre ND</span>
-                  <span className="font-medium text-gray-200">{lightboxPhoto.exposureSettings.ndFilter}</span>
-                </div>
-              )}
-              {lightboxPhoto.exposureSettings?.lensHood && (
-                <div>
-                  <span className="text-xs text-gray-500 block">Parasoleil</span>
-                  <span className="font-medium text-gray-200">Oui</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Chimie si argentique */}
-          {(lightboxPhoto.isAnalog || lightboxPhoto.filmId || lightboxPhoto.developmentSettings?.developer) && (
-            <div className="space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-500 border-b border-white/10 pb-1">Chimie & Labo</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                {lightboxPhoto.filmId && (
-                  <div className="col-span-2">
-                    <span className="text-xs text-gray-500 block">Pellicule</span>
-                    <span className="font-medium text-gray-200">
-                      {(() => {
-                        const brand = lightboxPhoto.filmId.brand || '';
-                        const type = lightboxPhoto.filmId.filmType || '';
-                        return type.toLowerCase().startsWith(brand.toLowerCase()) ? type : `${brand} ${type}`;
-                      })()} (Nominale : {lightboxPhoto.filmId.iso} ISO)
-                      <span className="text-xs text-gray-400 block mt-0.5">
-                        Type : {lightboxPhoto.filmId.type === 'BW' ? 'Noir & Blanc' : lightboxPhoto.filmId.type === 'color' ? 'Couleur Négatif' : 'Couleur Diapo'} • Format : {lightboxPhoto.filmId.format}
-                      </span>
-                    </span>
-                  </div>
-                )}
-                {(lightboxPhoto.developmentSettings?.developer || lightboxPhoto.filmId?.developmentSettings?.developer) && (
-                  <div>
-                    <span className="text-xs text-gray-500 block">Révélateur</span>
-                    <span className="font-medium text-gray-200">
-                      {lightboxPhoto.developmentSettings?.developer || lightboxPhoto.filmId?.developmentSettings?.developer}
-                    </span>
-                  </div>
-                )}
-                {(lightboxPhoto.developmentSettings?.dilution || lightboxPhoto.filmId?.developmentSettings?.dilution) && (
-                  <div>
-                    <span className="text-xs text-gray-500 block">Dilution</span>
-                    <span className="font-medium text-gray-200">
-                      {lightboxPhoto.developmentSettings?.dilution || lightboxPhoto.filmId?.developmentSettings?.dilution}
-                    </span>
-                  </div>
-                )}
-                {(lightboxPhoto.developmentSettings?.time || lightboxPhoto.filmId?.developmentSettings?.time) && (
-                  <div>
-                    <span className="text-xs text-gray-500 block">Temps dév.</span>
-                    <span className="font-medium text-gray-200">
-                      {lightboxPhoto.developmentSettings?.time || lightboxPhoto.filmId?.developmentSettings?.time}
-                    </span>
-                  </div>
-                )}
-                {(lightboxPhoto.developmentSettings?.temperature || lightboxPhoto.filmId?.developmentSettings?.temperature) && (
-                  <div>
-                    <span className="text-xs text-gray-500 block">Température</span>
-                    <span className="font-medium text-gray-200">
-                      {lightboxPhoto.developmentSettings?.temperature || lightboxPhoto.filmId?.developmentSettings?.temperature}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
   const searchParams = new URLSearchParams(window.location.search);
   const fromBlog = searchParams.get('from') === 'blog';
   const userSlug = userProfile?.name || getSubdomain() || 'jac';
@@ -250,23 +127,28 @@ const CarnetDeRoutesPage: React.FC = () => {
   const backLabel = fromBlog ? 'Retour au Blog' : `Retour au Portfolio ${userProfile?.name ? `(${userProfile.name})` : ''}`;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12 space-y-12">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-10 animate-fade-in">
+      {/* Fil d'Ariane & Navigation */}
+      {!isEmbedded && (
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <Breadcrumb items={[{ label: 'Carnet de Routes', isCurrent: true }]} className="mb-0" />
+          <a
+            href={backUrl}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm"
+          >
+            <span>&larr;</span>
+            <span>{backLabel}</span>
+          </a>
+        </div>
+      )}
+
       {/* Intro Header */}
       {!isEmbedded && (
         <div className="text-center max-w-2xl mx-auto space-y-4">
-          <div>
-            <a
-              href={backUrl}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-500/90 hover:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm"
-            >
-              <span>&larr;</span>
-              <span>{backLabel}</span>
-            </a>
-          </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-950 dark:text-white sm:text-5xl">
+          <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl drop-shadow-md">
             📓 Carnet de Routes
           </h1>
-          <div className="text-white dark:text-white prose-p:text-white dark:prose-p:text-white prose-headings:text-white dark:prose-headings:text-white prose-strong:text-white prose-a:text-amber-400 font-normal leading-relaxed prose dark:prose-invert max-w-none text-center">
+          <div className="text-white prose-p:text-white prose-headings:text-white prose-strong:text-white prose-a:text-amber-400 font-normal leading-relaxed prose dark:prose-invert max-w-none text-center">
             <MarkdownRenderer>
               {userProfile?.carnetIntro || "Découvrez la mémoire artistique et technique de mes sorties photo. Pour chaque projet, retrouvez l'intention initiale, les boîtiers, objectifs et pellicules utilisés, ainsi que les paramètres de prise de vue et de développement."}
             </MarkdownRenderer>
@@ -275,152 +157,257 @@ const CarnetDeRoutesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Barre d'onglets Projets : En cours / Archivés / Tous */}
-      <div className="flex justify-center">
-        <div className="inline-flex flex-wrap justify-center items-center gap-1.5 p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md shadow-xl">
-          <button
-            onClick={() => setProjectTab('active')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-              projectTab === 'active'
-                ? 'bg-amber-500 text-black shadow-md'
-                : 'text-gray-300 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <span>📸 Projets en cours</span>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              projectTab === 'active' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
-            }`}>
-              {activeProjects.length}
-            </span>
-          </button>
-          <button
-            onClick={() => setProjectTab('archived')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-              projectTab === 'archived'
-                ? 'bg-amber-500 text-black shadow-md'
-                : 'text-gray-300 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <span>📦 Projets archivés</span>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              projectTab === 'archived' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
-            }`}>
-              {archivedProjects.length}
-            </span>
-          </button>
-          <button
-            onClick={() => setProjectTab('all')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-              projectTab === 'all'
-                ? 'bg-amber-500 text-black shadow-md'
-                : 'text-gray-300 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <span>🗂️ Tous les projets</span>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              projectTab === 'all' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
-            }`}>
-              {projects.length}
-            </span>
-          </button>
+      {/* ── BARRE DE RECHERCHE & FILTRES ERGONOMIQUES ── */}
+      <div className="space-y-4">
+        {/* Barre de Recherche Instantanée */}
+        <div className="max-w-2xl mx-auto relative">
+          <div className="relative flex items-center">
+            <span className="absolute left-3.5 text-gray-400 text-sm pointer-events-none">🔍</span>
+            <input
+              type="text"
+              placeholder="Rechercher un projet, une photo, un boîtier, un lieu..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-400 text-sm pl-10 pr-10 py-3 rounded-2xl focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition backdrop-blur-md"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3.5 text-gray-400 hover:text-white text-xs bg-white/10 hover:bg-white/20 rounded-full w-5 h-5 flex items-center justify-center transition"
+                title="Effacer la recherche"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Barre d'onglets & Pilules de filtrage */}
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
+          {/* Onglets Projets */}
+          <div className="inline-flex flex-wrap justify-center items-center gap-1 p-1 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md shadow-xl">
+            <button
+              onClick={() => setProjectTab('active')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                projectTab === 'active'
+                  ? 'bg-amber-500 text-black shadow-md'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <span>📸 En cours</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                projectTab === 'active' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
+              }`}>
+                {activeProjects.length}
+              </span>
+            </button>
+            <button
+              onClick={() => setProjectTab('archived')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                projectTab === 'archived'
+                  ? 'bg-amber-500 text-black shadow-md'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <span>📦 Archivés</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                projectTab === 'archived' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
+              }`}>
+                {archivedProjects.length}
+              </span>
+            </button>
+            <button
+              onClick={() => setProjectTab('all')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                projectTab === 'all'
+                  ? 'bg-amber-500 text-black shadow-md'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <span>🗂️ Tous</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                projectTab === 'all' ? 'bg-black/20 text-black' : 'bg-white/10 text-gray-300'
+              }`}>
+                {projects.length}
+              </span>
+            </button>
+          </div>
+
+          {/* Filtres Médium (Argentique / Numérique) */}
+          <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md">
+            <button
+              onClick={() => setMediumFilter('all')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition ${
+                mediumFilter === 'all'
+                  ? 'bg-white/20 text-white font-bold'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Tous formats
+            </button>
+            <button
+              onClick={() => setMediumFilter('ANALOG')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1 ${
+                mediumFilter === 'ANALOG'
+                  ? 'bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold'
+                  : 'text-gray-400 hover:text-amber-300'
+              }`}
+            >
+              <span>🎞️</span>
+              <span>Argentique</span>
+            </button>
+            <button
+              onClick={() => setMediumFilter('DIGITAL')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1 ${
+                mediumFilter === 'DIGITAL'
+                  ? 'bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 font-bold'
+                  : 'text-gray-400 hover:text-cyan-300'
+              }`}
+            >
+              <span>⚡</span>
+              <span>Numérique</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Compteur de résultats dynamique */}
+        {(searchQuery || mediumFilter !== 'all') && (
+          <div className="text-center text-xs text-gray-400 flex items-center justify-center gap-2">
+            <span>
+              Affichage de <strong className="text-amber-400">{filteredProjects.length}</strong> projet{filteredProjects.length > 1 ? 's' : ''}
+              {filteredPhotos.length > 0 ? ` et ${filteredPhotos.length} photo${filteredPhotos.length > 1 ? 's' : ''}` : ''}
+            </span>
+            {(searchQuery || mediumFilter !== 'all') && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setMediumFilter('all');
+                }}
+                className="text-amber-400 hover:underline ml-1"
+              >
+                (Réinitialiser les filtres)
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
-      {totalItems === 0 ? (
-        <div className="text-center py-20 bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.06] dark:border-white/[0.06] rounded-3xl">
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            {projectTab === 'archived' 
-              ? 'Aucun projet archivé pour le moment.' 
-              : projectTab === 'active'
-              ? 'Aucun projet en cours pour le moment.'
+      {/* ── GRILLE DES PROJETS ET PHOTOS ── */}
+      {totalResults === 0 ? (
+        <div className="text-center py-20 bg-white/[0.02] border border-white/[0.06] rounded-3xl p-8 space-y-4">
+          <div className="text-4xl opacity-50">🔍</div>
+          <p className="text-gray-400 text-sm">
+            {searchQuery 
+              ? `Aucun résultat ne correspond à « ${searchQuery} »`
+              : projectTab === 'archived'
+              ? 'Aucun projet archivé pour le moment.'
               : 'Aucun carnet de route publié pour le moment.'}
           </p>
+          {(searchQuery || mediumFilter !== 'all') && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setMediumFilter('all');
+              }}
+              className="px-4 py-2 rounded-xl bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 transition"
+            >
+              Réinitialiser la recherche
+            </button>
+          )}
         </div>
       ) : (
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {/* Project cards */}
-          {displayedProjects.map((project, pIdx) => (
+        <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {/* Cartes Projets */}
+          {filteredProjects.map((project, pIdx) => (
             <div
               key={`proj-${project._id}`}
-              className="relative group bg-gray-900 border border-white/[0.08] rounded-2xl shadow-md hover:shadow-xl hover:border-amber-500/30 transition-all duration-300 overflow-hidden flex flex-col justify-between"
+              className="relative group bg-gray-900 border border-white/[0.08] rounded-2xl shadow-md hover:shadow-2xl hover:border-amber-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between"
             >
               <Link
                 to={`/project/${project.slug}`}
                 className="flex-1 flex flex-col justify-between"
               >
-              <div>
-                {/* Cover Image */}
-                <div className="aspect-[4/3] w-full bg-white/5 relative overflow-hidden">
-                  {project.coverImage ? (
-                    <img
-                      src={`/uploads/thumb-${project.coverImage}`}
-                      alt={project.name}
-                      loading={pIdx === 0 ? "eager" : "lazy"}
-                      fetchPriority={pIdx === 0 ? "high" : "auto"}
-                      decoding="async"
-                      width={800}
-                      height={600}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-5xl opacity-40 group-hover:scale-110 transition-transform duration-500">
-                      📷
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-                  {/* Badge médium & projet & archivé */}
-                  <div className="absolute top-3 left-3 flex gap-1 items-center">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                      project.medium === 'DIGITAL'
-                        ? 'bg-cyan-500 text-black'
-                        : project.medium === 'ANALOG'
-                        ? 'bg-amber-500 text-black'
-                        : 'bg-purple-500 text-white'
-                    }`}>
-                      {project.medium === 'DIGITAL' ? '⚡ Numérique' : project.medium === 'ANALOG' ? '🎞️ Argentique' : project.medium === 'HYBRID' ? '🔀 Hybride' : 'Projet'}
-                    </span>
-                    {project.status === 'ARCHIVED' && (
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-900/90 text-purple-200 border border-purple-500/40">
-                        📦 Archivé
-                      </span>
+                <div>
+                  {/* Image de Couverture */}
+                  <div className="aspect-[4/3] w-full bg-white/5 relative overflow-hidden">
+                    {project.coverImage ? (
+                      <img
+                        src={`/uploads/thumb-${project.coverImage}`}
+                        alt={project.name}
+                        loading={pIdx === 0 ? "eager" : "lazy"}
+                        fetchPriority={pIdx === 0 ? "high" : "auto"}
+                        decoding="async"
+                        width={800}
+                        height={600}
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-5xl opacity-40 group-hover:scale-110 transition-transform duration-500">
+                        📷
+                      </div>
                     )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                    
+                    {/* Badge médium & statut */}
+                    <div className="absolute top-3 left-3 flex gap-1 items-center">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md ${
+                        project.medium === 'DIGITAL'
+                          ? 'bg-cyan-500 text-black'
+                          : project.medium === 'ANALOG'
+                          ? 'bg-amber-500 text-black'
+                          : 'bg-purple-500 text-white'
+                      }`}>
+                        {project.medium === 'DIGITAL' ? '⚡ Numérique' : project.medium === 'ANALOG' ? '🎞️ Argentique' : project.medium === 'HYBRID' ? '🔀 Hybride' : 'Projet'}
+                      </span>
+                      {project.status === 'ARCHIVED' && (
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-900/90 text-purple-200 border border-purple-500/40">
+                          📦 Archivé
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Détails du Projet */}
+                  <div className="p-5 space-y-2">
+                    <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
+                      {project.name}
+                    </h3>
+                    {Array.isArray(project.tags) && project.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {project.tags.map((t: string, i: number) => (
+                          <span key={i} className="text-[9px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded">
+                            #{t}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <p className="text-xs text-gray-400">
+                      Publié le {new Date(project.createdAt).toLocaleDateString('fr-FR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </p>
+                    <p className="text-sm text-gray-300 line-clamp-3 leading-relaxed font-light">
+                      {project.description}
+                    </p>
                   </div>
                 </div>
-                {/* Card details */}
-                <div className="p-5 space-y-2">
-                  <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
-                    {project.name}
-                  </h3>
-                  {Array.isArray(project.tags) && project.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {project.tags.map((t: string, i: number) => (
-                        <span key={i} className="text-[9px] bg-white/10 text-white px-1.5 py-0.5 rounded">
-                          #{t}
-                        </span>
-                      ))}
-                    </div>
-                  )}
 
-                  <p className="text-xs text-white">
-                    Publié le {new Date(project.createdAt).toLocaleDateString('fr-FR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
-                  <p className="text-sm text-white line-clamp-3 leading-relaxed font-light">
-                    {project.description}
-                  </p>
+                <div className="p-5 pt-0">
+                  <span className="inline-flex items-center text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition-transform">
+                    Ouvrir le carnet de route &rarr;
+                  </span>
                 </div>
-              </div>
-              <div className="p-5 pt-0">
-                <span className="inline-flex items-center text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition-transform">
-                  Ouvrir le carnet de route &rarr;
-                </span>
-              </div>
               </Link>
+
               {/* Bouton Partager */}
               <button
+                type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -433,7 +420,7 @@ const CarnetDeRoutesPage: React.FC = () => {
                     embedUrl: embedUrl
                   });
                 }}
-                className="absolute top-3 right-3 z-10 bg-black/60 hover:bg-black text-white hover:text-amber-500 p-2 rounded-full transition text-xs"
+                className="absolute top-3 right-3 z-10 bg-black/60 hover:bg-black text-white hover:text-amber-400 p-2 rounded-full transition text-xs border border-white/10 backdrop-blur-md"
                 title="Partager / Intégrer"
               >
                 🔗
@@ -441,33 +428,36 @@ const CarnetDeRoutesPage: React.FC = () => {
             </div>
           ))}
 
-          {/* Standalone Photos */}
-          {displayedPhotos.map((photo, sIdx) => (
+          {/* Cartes Photos Isolées */}
+          {filteredPhotos.map((photo, sIdx) => (
             <div
               key={`photo-${photo._id}`}
-              onClick={() => setLightboxPhoto(photo)}
-              className="relative group bg-gray-900 border border-white/[0.08] rounded-2xl shadow-md hover:shadow-xl hover:border-amber-500/30 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between"
+              onClick={() => setLightboxIndex(sIdx)}
+              className="relative group bg-gray-900 border border-white/[0.08] rounded-2xl shadow-md hover:shadow-2xl hover:border-amber-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between"
             >
               <div>
-                {/* Photo container */}
+                {/* Conteneur photo */}
                 <div className="aspect-[4/3] w-full bg-white/5 relative overflow-hidden">
                   <img
                     src={`/uploads/thumb-${photo.filename}`}
                     alt={photo.title}
-                    loading={sIdx === 0 && projects.length === 0 ? "eager" : "lazy"}
-                    fetchPriority={sIdx === 0 && projects.length === 0 ? "high" : "auto"}
+                    loading={sIdx === 0 && filteredProjects.length === 0 ? "eager" : "lazy"}
+                    fetchPriority={sIdx === 0 && filteredProjects.length === 0 ? "high" : "auto"}
                     decoding="async"
                     width={800}
                     height={600}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                  
                   {/* Badge analogique / numérique */}
-                  <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-black/75 text-white px-2 py-0.5 rounded-full">
+                  <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-black/75 text-white px-2 py-0.5 rounded-full border border-white/10 shadow-md">
                     {photo.isAnalog ? '🎞️ Argentique' : '⚡ Numérique'}
                   </span>
+
                   {/* Bouton Partager */}
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -480,28 +470,30 @@ const CarnetDeRoutesPage: React.FC = () => {
                         embedUrl: embedUrl
                       });
                     }}
-                    className="absolute top-3 right-3 z-10 bg-black/60 hover:bg-black text-white hover:text-amber-500 p-2 rounded-full transition text-xs"
+                    className="absolute top-3 right-3 z-10 bg-black/60 hover:bg-black text-white hover:text-amber-400 p-2 rounded-full transition text-xs border border-white/10 backdrop-blur-md"
                     title="Partager / Intégrer"
                   >
                     🔗
                   </button>
                 </div>
-                {/* Photo details */}
+
+                {/* Détails Photo */}
                 <div className="p-5 space-y-2">
                   <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
                     {photo.title}
                   </h3>
-                  <p className="text-xs text-white">
+                  <p className="text-xs text-gray-400">
                     {photo.location ? `📍 ${photo.location}` : ''}
                     {photo.captureDate ? ` • 📅 ${new Date(photo.captureDate).toLocaleDateString('fr-FR')}` : ''}
                   </p>
                   {photo.shootingIntent && (
-                    <p className="text-sm text-white line-clamp-3 leading-relaxed italic">
+                    <p className="text-sm text-gray-300 line-clamp-3 leading-relaxed italic">
                       "{photo.shootingIntent}"
                     </p>
                   )}
                 </div>
               </div>
+
               <div className="p-5 pt-0">
                 <span className="inline-flex items-center text-xs font-semibold text-amber-400">
                   Afficher la fiche technique &rarr;
@@ -512,217 +504,22 @@ const CarnetDeRoutesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Lightbox for Standalone Photo Detail */}
-      {lightboxPhoto && (
-        <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm"
-          onClick={() => setLightboxPhoto(null)}
-        >
-          <div
-            className="bg-gray-950 border border-white/10 rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col md:flex-row"
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Left: Image */}
-            <div className="flex-1 bg-black flex items-center justify-center min-h-[300px] md:max-h-[90vh]">
-              <img
-                src={`/uploads/${lightboxPhoto.filename}`}
-                alt={lightboxPhoto.title}
-                className="max-w-full max-h-[40vh] md:max-h-[90vh] object-contain"
-              />
-            </div>
-
-            {/* Right: Technical Metadata Info */}
-            <div className="w-full md:w-80 p-6 overflow-y-auto space-y-6 border-t md:border-t-0 md:border-l border-white/10 text-white">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">
-                  {lightboxPhoto.isAnalog ? '🎞️ Argentique' : '⚡ Numérique'}
-                </span>
-                <h2 className="text-xl font-bold mt-2 text-white">{lightboxPhoto.title}</h2>
-                <p className="text-xs text-white mt-1">
-                  {lightboxPhoto.location && `📍 ${lightboxPhoto.location}`}
-                  {lightboxPhoto.captureDate && ` • 📅 ${new Date(lightboxPhoto.captureDate).toLocaleDateString('fr-FR')}`}
-                </p>
-              </div>
-
-              {lightboxPhoto.shootingIntent && (
-                <div className="space-y-1">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400">Intention</h4>
-                  <p className="text-sm text-white leading-relaxed italic">"{lightboxPhoto.shootingIntent}"</p>
-                </div>
-              )}
-
-              {/* Technical block */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400 border-b border-white/10 pb-1">Prise de vue</h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  {lightboxPhoto.gearCameraId && (
-                    <div className="col-span-2">
-                      <span className="text-xs text-white font-light block">Appareil</span>
-                      <span className="font-medium text-white">{lightboxPhoto.gearCameraId.brand} {lightboxPhoto.gearCameraId.model}</span>
-                    </div>
-                  )}
-                  {lightboxPhoto.gearLensId && (
-                    <div className="col-span-2">
-                      <span className="text-xs text-white font-light block">Objectif</span>
-                      <span className="font-medium text-white">{lightboxPhoto.gearLensId.brand} {lightboxPhoto.gearLensId.model}</span>
-                    </div>
-                  )}
-                  {lightboxPhoto.exposureSettings?.aperture && (
-                    <div>
-                      <span className="text-xs text-white font-light block">Ouverture</span>
-                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.aperture}</span>
-                    </div>
-                  )}
-                  {lightboxPhoto.exposureSettings?.shutterSpeed && (
-                    <div>
-                      <span className="text-xs text-white font-light block">Vitesse</span>
-                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.shutterSpeed}</span>
-                    </div>
-                  )}
-                  {(lightboxPhoto.exposureSettings?.iso || lightboxPhoto.filmId?.isoUsed || lightboxPhoto.filmId?.iso) && (
-                    <div>
-                      <span className="text-xs text-white font-light block">Sensibilité</span>
-                      <span className="font-medium text-white">
-                        {lightboxPhoto.exposureSettings?.iso || lightboxPhoto.filmId?.isoUsed || lightboxPhoto.filmId?.iso} ISO
-                      </span>
-                    </div>
-                  )}
-                  {lightboxPhoto.exposureSettings?.focalLength && (
-                    <div>
-                      <span className="text-xs text-white font-light block">Focale</span>
-                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.focalLength}</span>
-                    </div>
-                  )}
-                  {lightboxPhoto.exposureSettings?.light && (
-                    <div>
-                      <span className="text-xs text-white font-light block">Lumière</span>
-                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.light}</span>
-                      {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel || lightboxPhoto.exposureSettings.lightingType || lightboxPhoto.exposureSettings.lightingPower) && (
-                        <span className="block text-[11px] text-amber-300 font-normal mt-0.5">
-                          {lightboxPhoto.exposureSettings.lightingType === 'flash' ? '⚡ Flash' : lightboxPhoto.exposureSettings.lightingType === 'continuous' ? '☀️ Continue' : ''}
-                          {(lightboxPhoto.exposureSettings.lightingBrand || lightboxPhoto.exposureSettings.lightingModel) && ` ${lightboxPhoto.exposureSettings.lightingBrand} ${lightboxPhoto.exposureSettings.lightingModel}`.trim()}
-                          {lightboxPhoto.exposureSettings.lightingPower && ` @ ${lightboxPhoto.exposureSettings.lightingPower}`}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  {lightboxPhoto.exposureSettings?.filter && lightboxPhoto.exposureSettings.filter !== 'Aucun' && (
-                    <div>
-                      <span className="text-xs text-white font-light block">Filtre</span>
-                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.filter}</span>
-                    </div>
-                  )}
-                  {lightboxPhoto.exposureSettings?.ndFilter && lightboxPhoto.exposureSettings.ndFilter !== 'Aucun' && (
-                    <div>
-                      <span className="text-xs text-white font-light block">Filtre ND</span>
-                      <span className="font-medium text-white">{lightboxPhoto.exposureSettings.ndFilter}</span>
-                    </div>
-                  )}
-                  {lightboxPhoto.exposureSettings?.lensHood && (
-                    <div>
-                      <span className="text-xs text-white font-light block">Parasoleil</span>
-                      <span className="font-medium text-white">Oui</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Chemical block for analog */}
-              {(lightboxPhoto.isAnalog || lightboxPhoto.filmId || lightboxPhoto.developmentSettings?.developer) && (
-                <div className="space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400 border-b border-white/10 pb-1">Chimie & Labo</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    {lightboxPhoto.filmId && (
-                      <div className="col-span-2">
-                        <span className="text-xs text-white font-light block">Pellicule</span>
-                        <span className="font-medium text-white">
-                          {(() => {
-                            const brand = lightboxPhoto.filmId.brand || '';
-                            const type = lightboxPhoto.filmId.filmType || '';
-                            return type.toLowerCase().startsWith(brand.toLowerCase()) ? type : `${brand} ${type}`;
-                          })()} (Nominale : {lightboxPhoto.filmId.iso} ISO)
-                          <span className="text-xs text-white block mt-0.5">
-                            Type : {lightboxPhoto.filmId.type === 'BW' ? 'Noir & Blanc' : lightboxPhoto.filmId.type === 'color' ? 'Couleur Négatif' : 'Couleur Diapo'} • Format : {lightboxPhoto.filmId.format}
-                          </span>
-                        </span>
-                      </div>
-                    )}
-                    {(lightboxPhoto.developmentSettings?.developer || lightboxPhoto.filmId?.developmentSettings?.developer) && (
-                      <div>
-                        <span className="text-xs text-white font-light block">Révélateur</span>
-                        <span className="font-medium text-white">
-                          {lightboxPhoto.developmentSettings?.developer || lightboxPhoto.filmId?.developmentSettings?.developer}
-                        </span>
-                      </div>
-                    )}
-                    {(lightboxPhoto.developmentSettings?.dilution || lightboxPhoto.filmId?.developmentSettings?.dilution) && (
-                      <div>
-                        <span className="text-xs text-white font-light block">Dilution</span>
-                        <span className="font-medium text-white">
-                          {lightboxPhoto.developmentSettings?.dilution || lightboxPhoto.filmId?.developmentSettings?.dilution}
-                        </span>
-                      </div>
-                    )}
-                    {(lightboxPhoto.developmentSettings?.time || lightboxPhoto.filmId?.developmentSettings?.time) && (
-                      <div>
-                        <span className="text-xs text-white font-light block">Temps dév.</span>
-                        <span className="font-medium text-white">
-                          {lightboxPhoto.developmentSettings?.time || lightboxPhoto.filmId?.developmentSettings?.time}
-                        </span>
-                      </div>
-                    )}
-                    {(lightboxPhoto.developmentSettings?.temperature || lightboxPhoto.filmId?.developmentSettings?.temperature) && (
-                      <div>
-                        <span className="text-xs text-white font-light block">Température</span>
-                        <span className="font-medium text-white">
-                          {lightboxPhoto.developmentSettings?.temperature || lightboxPhoto.filmId?.developmentSettings?.temperature}
-                        </span>
-                      </div>
-                    )}
-                    {(lightboxPhoto.developmentSettings?.pushPull || lightboxPhoto.filmId?.developmentSettings?.pushPull) && 
-                     (lightboxPhoto.developmentSettings?.pushPull !== 'Aucun' && lightboxPhoto.filmId?.developmentSettings?.pushPull !== 'Aucun') && (
-                      <div>
-                        <span className="text-xs text-white font-light block">Push/Pull</span>
-                        <span className="font-medium text-white">
-                          {lightboxPhoto.developmentSettings?.pushPull || lightboxPhoto.filmId?.developmentSettings?.pushPull}
-                        </span>
-                      </div>
-                    )}
-                    {(lightboxPhoto.developmentSettings?.fixerBrand || lightboxPhoto.filmId?.developmentSettings?.fixerBrand) && (
-                      <div>
-                        <span className="text-xs text-white font-light block">Fixateur</span>
-                        <span className="font-medium text-white">
-                          {lightboxPhoto.developmentSettings?.fixerBrand || lightboxPhoto.filmId?.developmentSettings?.fixerBrand}
-                        </span>
-                      </div>
-                    )}
-                    {(lightboxPhoto.developmentSettings?.fixerDilution || lightboxPhoto.filmId?.developmentSettings?.fixerDilution) && (
-                      <div>
-                        <span className="text-xs text-white font-light block">Dilution fixateur</span>
-                        <span className="font-medium text-white">
-                          {lightboxPhoto.developmentSettings?.fixerDilution || lightboxPhoto.filmId?.developmentSettings?.fixerDilution}
-                        </span>
-                      </div>
-                    )}
-                    {(lightboxPhoto.developmentSettings?.fixerTime || lightboxPhoto.filmId?.developmentSettings?.fixerTime) && (
-                      <div>
-                        <span className="text-xs text-white font-light block">Temps fixage</span>
-                        <span className="font-medium text-white">
-                          {lightboxPhoto.developmentSettings?.fixerTime || lightboxPhoto.filmId?.developmentSettings?.fixerTime}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+      {/* ── LIGHTBOX NOUVELLE GÉNÉRATION AVEC RUBAN DE MINIATURES ── */}
+      {lightboxIndex !== null && filteredPhotos.length > 0 && (
+        <Lightbox
+          photos={filteredPhotos}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          albumTitle="Photos du Carnet de Routes"
+        />
       )}
+
+      {/* ── MODALE DE PARTAGE / CODE INTÉGRATION ── */}
       {shareItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
           <div className="bg-gray-900 border border-white/20 rounded-2xl shadow-2xl max-w-md w-full p-6 relative text-white">
             <button
+              type="button"
               onClick={() => setShareItem(null)}
               className="absolute top-4 right-4 text-gray-300 hover:text-white text-2xl"
             >
@@ -742,6 +539,7 @@ const CarnetDeRoutesPage: React.FC = () => {
                     className="flex-1 bg-black/40 border border-white/10 rounded-lg p-2 text-white text-xs select-all focus:outline-none"
                   />
                   <button
+                    type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(shareItem.url);
                       alert('Lien copié dans le presse-papiers !');
@@ -763,6 +561,7 @@ const CarnetDeRoutesPage: React.FC = () => {
                     className="flex-1 bg-black/40 border border-white/10 rounded-lg p-2 text-white text-xs select-all focus:outline-none"
                   />
                   <button
+                    type="button"
                     onClick={() => {
                       const code = `<iframe src="${shareItem.embedUrl}" width="100%" height="600" frameborder="0"></iframe>`;
                       navigator.clipboard.writeText(code);
@@ -778,6 +577,9 @@ const CarnetDeRoutesPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Bouton Back to Top */}
+      <BackToTop />
     </div>
   );
 };

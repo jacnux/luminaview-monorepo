@@ -10,7 +10,7 @@ interface AlbumViewProps {
   photos: Photo[];
   loadingPhotos: boolean;
   onPhotoClick: (index: number) => void;
-  navigateTo?: (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page', albumId?: string | null) => void;
+  navigateTo?: (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page' | 'series' | 'exhibitions', albumId?: string | null) => void;
 }
 
 const AlbumView: React.FC<AlbumViewProps> = ({

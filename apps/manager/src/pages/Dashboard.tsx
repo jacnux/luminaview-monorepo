@@ -5,7 +5,7 @@
 // tri alphabétique minimal A→Z / Z→A / défaut
 // ============================================================
 
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -13,7 +13,6 @@ import { useToast } from '../context/ToastContext';
 import api from '../utils/api';
 import EditAlbumModal from '../components/EditAlbumModal';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { getAppUrl } from '../utils/urls';
 
 type ViewMode = 'grid' | 'list';
 
@@ -106,13 +105,11 @@ const IconList = () => (
 
 const AlbumCardGrid = ({
   album,
-  username,
   onEdit,
   onDelete,
   onShare,
   onToggleVisibility,
   onToggleFeatured,
-  onToggleGrimoire,
 }: any) => (
   <div className="bg-white/10 dark:bg-gray-800/60 backdrop-blur-lg border border-white/20 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden hover:bg-white/20 dark:hover:bg-gray-700/60 transition transform hover:-translate-y-1 flex flex-col">
     <div className="aspect-square w-full bg-black/20 dark:bg-gray-900 flex items-center justify-center overflow-hidden">
@@ -215,13 +212,11 @@ const AlbumCardGrid = ({
 
 const AlbumCardList = ({
   album,
-  username,
   onEdit,
   onDelete,
   onShare,
   onToggleVisibility,
   onToggleFeatured,
-  onToggleGrimoire,
 }: any) => (
   <div className="bg-white/5 dark:bg-gray-800/40 backdrop-blur border border-white/10 dark:border-gray-700 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-white/10 transition group">
     <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-black/20">

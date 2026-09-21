@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
+// ============================================================
+// CHAMBRE NOIRE — ProjectDetailPage.tsx
+// Sprint 3 Ergonomie v3.0 (Breadcrumbs, Recherche interne, Lightbox Filmstrip, BackToTop)
+// ============================================================
+
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import Breadcrumb from '../components/Breadcrumb';
+import BackToTop from '../components/BackToTop';
+import Lightbox from '../components/Lightbox';
 import { getUserSlug } from '../utils/domain';
 
 const ProjectDetailPage: React.FC = () => {
@@ -9,6 +17,8 @@ const ProjectDetailPage: React.FC = () => {
   const [photos, setPhotos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (!slug) return;
@@ -46,6 +56,22 @@ const ProjectDetailPage: React.FC = () => {
     ? 'http://localhost:7080/dashboard/carnet-routes?tab=ideas'
     : 'https://luminaview.fr/dashboard/carnet-routes?tab=ideas';
 
+  // Filtrage des photos du projet
+  const filteredPhotos = useMemo(() => {
+    if (!searchQuery.trim()) return photos;
+    const q = searchQuery.toLowerCase().trim();
+    return photos.filter(p =>
+      (p.title || '').toLowerCase().includes(q) ||
+      (p.description || '').toLowerCase().includes(q) ||
+      (p.shootingIntent || '').toLowerCase().includes(q) ||
+      (p.location || '').toLowerCase().includes(q) ||
+      (p.gearCameraId?.brand || '').toLowerCase().includes(q) ||
+      (p.gearCameraId?.model || '').toLowerCase().includes(q) ||
+      (p.filmId?.brand || '').toLowerCase().includes(q) ||
+      (p.filmId?.filmType || '').toLowerCase().includes(q)
+    );
+  }, [photos, searchQuery]);
+
   const renderBackLink = (className: string) => {
     if (fromManager) {
       return (
@@ -60,7 +86,7 @@ const ProjectDetailPage: React.FC = () => {
           <span className="text-gray-600 text-xs">•</span>
           <a
             href={dashboardIdeasUrl}
-            className="text-xs text-amber-500/90 hover:text-amber-400 font-medium transition"
+            className="text-xs text-amber-400/90 hover:text-amber-300 font-medium transition"
             title="Retourner aux Idées en préparation dans le Dashboard"
           >
             💡 Idées en préparation
@@ -68,7 +94,7 @@ const ProjectDetailPage: React.FC = () => {
           <span className="text-gray-600 text-xs">•</span>
           <Link
             to={userSlug ? `/?user=${userSlug}` : '/'}
-            className="text-xs text-gray-500 hover:text-yellow-400 transition"
+            className="text-xs text-gray-400 hover:text-amber-400 transition"
           >
             🌐 Chambre Noire publique
           </Link>
@@ -77,7 +103,7 @@ const ProjectDetailPage: React.FC = () => {
     }
     return (
       <Link to={userSlug ? `/?user=${userSlug}` : '/'} className={className}>
-        &larr; Retour Chambre Noire
+        &larr; Retour Carnet de Routes
       </Link>
     );
   };
@@ -86,7 +112,7 @@ const ProjectDetailPage: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto px-6 py-20 text-center">
         <div className="inline-block w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-gray-500 dark:text-gray-400 text-sm">Chargement des détails du projet...</p>
+        <p className="text-gray-400 text-sm">Chargement des détails du projet...</p>
       </div>
     );
   }
@@ -94,7 +120,7 @@ const ProjectDetailPage: React.FC = () => {
   if (error || !project) {
     return (
       <div className="max-w-4xl mx-auto px-6 py-20 text-center space-y-4">
-        <p className="text-red-500 font-medium">{error || 'Projet introuvable'}</p>
+        <p className="text-red-400 font-medium">{error || 'Projet introuvable'}</p>
         <div className="flex justify-center">
           {renderBackLink("inline-block text-amber-500 font-semibold hover:underline")}
         </div>
@@ -105,19 +131,26 @@ const ProjectDetailPage: React.FC = () => {
   const isEmbedded = window.location.pathname.startsWith('/embed/');
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-16">
-      {/* Back link */}
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-12 animate-fade-in text-white">
+      {/* Fil d'Ariane & Navigation */}
       {!isEmbedded && (
-        <div>
-          {renderBackLink("inline-flex items-center text-sm font-semibold text-white hover:text-amber-400 transition-colors")}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <Breadcrumb
+            items={[
+              { label: 'Carnet de Routes', to: '/' },
+              { label: project.name, isCurrent: true },
+            ]}
+            className="mb-0"
+          />
+          {renderBackLink("inline-flex items-center text-xs font-semibold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm")}
         </div>
       )}
 
-      {/* Project Header */}
+      {/* En-tête du Projet */}
       <div className="space-y-6">
         <div className="flex flex-wrap items-center gap-2">
           {project.medium && (
-            <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
+            <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md ${
               project.medium === 'DIGITAL'
                 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
                 : project.medium === 'ANALOG'
@@ -129,25 +162,25 @@ const ProjectDetailPage: React.FC = () => {
           )}
 
           {project.status && (
-            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+            <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${
               project.status === 'PREPARATION'
-                ? 'bg-orange-500/20 text-orange-300'
+                ? 'bg-orange-500/20 text-orange-300 border-orange-500/30'
                 : project.status === 'IN_PROGRESS'
-                ? 'bg-emerald-500/20 text-emerald-300'
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                 : project.status === 'COMPLETED'
-                ? 'bg-blue-500/20 text-blue-300'
-                : 'bg-gray-500/20 text-gray-300'
+                ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                : 'bg-gray-500/20 text-gray-300 border-gray-500/30'
             }`}>
               {project.status === 'PREPARATION' ? '📋 En préparation' : project.status === 'IN_PROGRESS' ? '📸 Prises de vue actives' : project.status === 'COMPLETED' ? '✨ Projet abouti' : '📦 Archivé'}
             </span>
           )}
         </div>
 
-        <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
           {project.name}
         </h1>
 
-        <div className="flex flex-wrap items-center gap-3 text-xs text-white">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
           <span>
             Publié le {new Date(project.createdAt).toLocaleDateString('fr-FR', {
               year: 'numeric',
@@ -163,7 +196,7 @@ const ProjectDetailPage: React.FC = () => {
           {Array.isArray(project.tags) && project.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {project.tags.map((t: string, i: number) => (
-                <span key={i} className="bg-white/10 text-white px-2 py-0.5 rounded text-[10px]">
+                <span key={i} className="bg-white/10 text-gray-300 px-2 py-0.5 rounded text-[10px]">
                   #{t}
                 </span>
               ))}
@@ -182,66 +215,120 @@ const ProjectDetailPage: React.FC = () => {
         )}
 
         {project.description && (
-          <div className="prose dark:prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white text-white max-w-none leading-relaxed font-light text-lg">
+          <div className="prose dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed font-light text-lg">
             <MarkdownRenderer>{project.description}</MarkdownRenderer>
           </div>
         )}
 
         {project.notesMarkdown && (
-          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-white">
+          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3 shadow-lg">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
               💡 Notes, intentions & inspirations
             </span>
-            <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white text-white max-w-none leading-relaxed">
+            <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed">
               <MarkdownRenderer>{project.notesMarkdown}</MarkdownRenderer>
             </div>
           </div>
         )}
 
         {project.makingOf && (
-          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-white">
+          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3 shadow-lg">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
               🎬 Secret de fabrication & Démarche artistique
             </span>
-            <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-white prose-strong:text-white prose-li:text-white text-white max-w-none leading-relaxed">
+            <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed">
               <MarkdownRenderer>{project.makingOf}</MarkdownRenderer>
             </div>
           </div>
         )}
       </div>
 
-      {/* Photos flow (Carnet de voyage style - v1.6.0) */}
+      {/* ── BARRE DE RECHERCHE DES PHOTOS DU PROJET ── */}
+      {photos.length > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-gray-900/80 border border-white/10 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-white">Photographies associées</span>
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">
+              {filteredPhotos.length} / {photos.length}
+            </span>
+          </div>
+
+          <div className="relative w-full sm:w-72">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">🔍</span>
+            <input
+              type="text"
+              placeholder="Rechercher dans ce projet..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-7 py-1.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-amber-400 transition"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Flux de Photos (Carnet de voyage) */}
       <div className="space-y-16">
         {photos.length === 0 && (
           <div className="text-center py-16 rounded-3xl bg-black/20 border border-white/5 space-y-2">
             <span className="text-3xl">📸</span>
             <p className="text-white text-sm font-medium">Séance de prise de vue en cours de réalisation</p>
-            <p className="text-white/80 text-xs">Les photographies associées à ce projet apparaîtront ici dès leur ajout.</p>
+            <p className="text-gray-400 text-xs">Les photographies associées à ce projet apparaîtront ici dès leur ajout.</p>
           </div>
         )}
 
-        {photos.map((photo, idx) => (
+        {searchQuery && filteredPhotos.length === 0 && (
+          <div className="text-center py-12 bg-white/[0.02] border border-white/[0.06] rounded-3xl p-6 space-y-3">
+            <p className="text-gray-400 text-sm">
+              Aucune photo de ce projet ne correspond à « <strong className="text-amber-400">{searchQuery}</strong> ».
+            </p>
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="px-4 py-2 rounded-xl bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 transition"
+            >
+              Effacer la recherche
+            </button>
+          </div>
+        )}
+
+        {filteredPhotos.map((photo, idx) => (
           <div
-            key={photo._id}
-            className="bg-gray-900/60 border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl backdrop-blur-sm"
+            key={photo._id || idx}
+            className="bg-gray-900/70 border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl backdrop-blur-sm"
           >
-            {/* LIGNE 1 : Grille 2 colonnes (Gauche: Photo & Contexte / Droite: Fiche Technique) */}
+            {/* LIGNE 1 : Photo & Fiche Technique */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              {/* COLONNE GAUCHE : Photo & Contexte artistique */}
+              {/* Colonne Photo */}
               <div className="lg:col-span-7 space-y-4">
-                {/* Visual - Photo entière sans recadrage */}
-                <div className="bg-black/60 rounded-2xl overflow-hidden shadow-md relative group border border-white/10 flex items-center justify-center">
+                <div
+                  className="bg-black/60 rounded-2xl overflow-hidden shadow-md relative group border border-white/10 flex items-center justify-center cursor-pointer"
+                  onClick={() => setLightboxIndex(idx)}
+                >
                   <img
                     src={`/uploads/${photo.filename}`}
                     alt={photo.title || `Photo ${idx + 1}`}
                     className="w-full h-auto max-h-[75vh] object-contain rounded-2xl transition-transform duration-500 group-hover:scale-[1.01]"
                   />
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                    <span className="px-3.5 py-1.5 rounded-full bg-black/70 text-amber-400 text-xs font-bold border border-amber-400/40 backdrop-blur-md">
+                      🔍 Agrandir (Lightbox)
+                    </span>
+                  </div>
                   <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-black/80 text-white px-2.5 py-1 rounded-full border border-white/20 backdrop-blur-md">
-                    {idx + 1} / {photos.length}
+                    {idx + 1} / {filteredPhotos.length}
                   </span>
                 </div>
 
-                {/* Titre & Infos de base */}
+                {/* Titre & Infos */}
                 <div className="space-y-2 pt-1">
                   <h3 className="text-2xl font-bold text-white tracking-tight">
                     {photo.title || `Photo #${idx + 1}`}
@@ -260,7 +347,7 @@ const ProjectDetailPage: React.FC = () => {
                       <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400 block">
                         💬 Note & Intention artistique
                       </span>
-                      <p className="text-white text-sm leading-relaxed italic">
+                      <p className="text-gray-200 text-sm leading-relaxed italic">
                         « {photo.shootingIntent} »
                       </p>
                     </div>
@@ -268,7 +355,7 @@ const ProjectDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* COLONNE DROITE : Caractéristiques techniques (Prise de vue, Éclairage, Chimie/Labo) */}
+              {/* Colonne Fiche Technique */}
               <div className="lg:col-span-5 bg-white/[0.04] border border-white/10 rounded-2xl p-5 space-y-5 text-sm shadow-lg">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white border border-white/20 px-2.5 py-1 rounded-full">
@@ -279,7 +366,7 @@ const ProjectDetailPage: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Bloc Prise de vue */}
+                {/* Prise de vue */}
                 <div className="space-y-2.5">
                   <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                     <span>📷</span> Prise de vue
@@ -346,7 +433,7 @@ const ProjectDetailPage: React.FC = () => {
                   </table>
                 </div>
 
-                {/* Bloc Éclairage */}
+                {/* Éclairage */}
                 {(photo.exposureSettings?.light || photo.exposureSettings?.lightingBrand || photo.exposureSettings?.lightingModel || photo.exposureSettings?.lightingType || photo.exposureSettings?.lightingPower) && (
                   <div className="space-y-2.5 pt-2 border-t border-white/10">
                     <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -387,7 +474,7 @@ const ProjectDetailPage: React.FC = () => {
                   </div>
                 )}
 
-                {/* Bloc Chimie & Labo (si argentique) */}
+                {/* Chimie & Labo si argentique */}
                 {(photo.isAnalog || photo.filmId || photo.developmentSettings?.developer) && (
                   <div className="space-y-2.5 pt-2 border-t border-white/10">
                     <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -499,7 +586,7 @@ const ProjectDetailPage: React.FC = () => {
               </div>
             </div>
 
-            {/* LIGNE 2 : Ligne à une seule colonne pleine largeur pour les Secrets de fabrication */}
+            {/* Secret de fabrication */}
             {photo.makingOf && (
               <div className="w-full bg-gradient-to-r from-amber-500/[0.06] to-transparent border border-amber-500/20 rounded-2xl p-6 space-y-3 mt-4">
                 <div className="flex items-center gap-2 text-amber-400">
@@ -516,6 +603,19 @@ const ProjectDetailPage: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* ── LIGHTBOX POUR LE PROJET ── */}
+      {lightboxIndex !== null && filteredPhotos.length > 0 && (
+        <Lightbox
+          photos={filteredPhotos}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          albumTitle={project.name}
+        />
+      )}
+
+      {/* Bouton Back to Top */}
+      <BackToTop />
     </div>
   );
 };

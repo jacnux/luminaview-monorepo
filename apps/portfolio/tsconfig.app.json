@@ -13,6 +13,7 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "@luminaview/types": ["../../packages/types/src/index.ts"],

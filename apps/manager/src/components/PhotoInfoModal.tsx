@@ -1,5 +1,3 @@
-import React from 'react';
-
 const PhotoInfoModal = ({ photo, onClose }: { photo: any, onClose: () => void }) => {
   if (!photo) return null;
 

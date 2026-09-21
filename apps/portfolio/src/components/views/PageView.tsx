@@ -8,7 +8,7 @@ interface PageViewProps {
   pageData: UserPage;
   onPhotoClick: (photos: Photo[], index: number) => void;
   navigateToPage: (slug: string) => void;
-  navigateTo?: (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page', albumId?: string | null) => void;
+  navigateTo?: (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page' | 'series' | 'exhibitions', albumId?: string | null) => void;
   allPages?: UserPage[];
 }
 

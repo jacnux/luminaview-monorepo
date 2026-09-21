@@ -5,7 +5,7 @@
 // suite propre : tri conservé, ajout message si aucun email
 // ===============================
 
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import api from '../utils/api';
 
 interface Comment {

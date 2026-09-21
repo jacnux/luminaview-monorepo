@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { getUserSlug } from '../utils/domain';
 import { getPortfolioUrl, getBlogUrl } from '../utils/urls';
@@ -16,7 +16,6 @@ interface UserProfile {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const theme = 'dark';
   const userSlug = getUserSlug();

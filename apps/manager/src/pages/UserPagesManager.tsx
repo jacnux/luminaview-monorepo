@@ -4,10 +4,10 @@
 //
 //     Mai 2026 v2.5.0
 // ===========================================
-
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -31,12 +31,11 @@ const UserPagesManager = () => {
   const [pageSortAZ, setPageSortAZ] = useState<PageSortMode>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [pageToDelete, setPageToDelete] = useState<{ id: string; title: string } | null>(null);
+  const { user } = useAuth();
   const { theme } = useTheme();
   const { showToast } = useToast();
 
-  const userStorage = localStorage.getItem('user');
-  const userObject = userStorage ? JSON.parse(userStorage) : null;
-  const username = userObject?.name || 'inconnu';
+  const username = user?.name || 'inconnu';
 
   useEffect(() => {
     fetchPages();
@@ -45,9 +44,10 @@ const UserPagesManager = () => {
   const fetchPages = async () => {
     try {
       const res = await api.get('/user-pages/my/list');
-      setPages(res.data);
+      setPages(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error(err);
+      console.error('Erreur chargement pages:', err);
+      setPages([]);
       showToast('Erreur lors du chargement des pages', 'error');
     } finally {
       setLoading(false);
@@ -75,12 +75,13 @@ const UserPagesManager = () => {
   };
 
   const getParentInfo = (page: any) => {
-    if (!page.parentPageId) return null;
-    if (typeof page.parentPageId === 'object' && page.parentPageId.title) {
+    if (!page || !page.parentPageId) return null;
+    if (typeof page.parentPageId === 'object' && page.parentPageId !== null && page.parentPageId.title) {
       return { id: String(page.parentPageId._id), title: page.parentPageId.title };
     }
-    const pid = typeof page.parentPageId === 'object' ? page.parentPageId._id : page.parentPageId;
-    const parent = pages.find((p: any) => String(p._id) === String(pid));
+    const pid = typeof page.parentPageId === 'object' && page.parentPageId !== null ? page.parentPageId._id : page.parentPageId;
+    if (!pid) return null;
+    const parent = pages.find((p: any) => p && String(p._id) === String(pid));
     if (parent) return { id: String(parent._id), title: (parent as any).title };
     return null;
   };
@@ -111,7 +112,9 @@ const UserPagesManager = () => {
 
     // Arborescence récursive multi-niveaux complète (roots -> enfants -> sous-enfants)
     const pageMap = new Map<string, any>();
-    result.forEach(p => pageMap.set(String(p._id), p));
+    result.forEach(p => {
+      if (p && p._id) pageMap.set(String(p._id), p);
+    });
 
     const childrenMap = new Map<string, any[]>();
     const roots: any[] = [];
@@ -136,7 +139,11 @@ const UserPagesManager = () => {
     const visited = new Set<string>();
 
     const traverse = (page: any, depth: number, parentTitle?: string) => {
-      visited.add(String(page._id));
+      if (!page || !page._id) return;
+      const pageIdStr = String(page._id);
+      if (visited.has(pageIdStr)) return; // Protection anti-boucle
+      visited.add(pageIdStr);
+
       hierarchicalList.push({
         ...page,
         level: depth,
@@ -144,7 +151,7 @@ const UserPagesManager = () => {
         parentTitle: parentTitle || getParentInfo(page)?.title
       });
 
-      const children = childrenMap.get(String(page._id)) || [];
+      const children = childrenMap.get(pageIdStr) || [];
       children.forEach(child => traverse(child, depth + 1, page.title));
     };
 
@@ -152,7 +159,7 @@ const UserPagesManager = () => {
 
     // Inclure d'éventuelles pages orphelines
     result.forEach(p => {
-      if (!visited.has(String(p._id))) {
+      if (p && p._id && !visited.has(String(p._id))) {
         const parentInfo = getParentInfo(p);
         hierarchicalList.push({
           ...p,
@@ -168,13 +175,9 @@ const UserPagesManager = () => {
 
   const shellTextClass = theme === 'dark' ? 'text-white' : 'text-gray-900';
   const mutedTextClass = theme === 'dark' ? 'text-gray-400' : 'text-gray-600';
-  const emptyTextClass = 'text-gray-500';
   const cardClass = theme === 'dark'
     ? 'bg-gray-800/70 border border-gray-700 backdrop-blur-xl'
-    : 'bg-white/90 border border-gray-200 backdrop-blur-xl shadow-sm';
-  const shareButtonClass = theme === 'dark'
-    ? 'bg-gray-700 hover:bg-gray-600 text-white'
-    : 'bg-gray-200 hover:bg-gray-300 text-gray-900';
+    : 'bg-white border border-gray-200 backdrop-blur-xl shadow-sm';
   const sortButtonClass = pageSortAZ
     ? 'bg-green-600 hover:bg-green-500 text-white'
     : theme === 'dark'
@@ -191,24 +194,29 @@ const UserPagesManager = () => {
   };
 
   if (loading) {
-    return <div className={`p-8 ${shellTextClass}`}>Chargement...</div>;
+    return (
+      <div className={`p-8 text-center ${shellTextClass}`}>
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-yellow-500 border-t-transparent mb-3" />
+        <p className="text-sm font-medium">Chargement de vos pages...</p>
+      </div>
+    );
   }
 
-  const rootPagesCount = useMemo(() => pages.filter(p => !getParentInfo(p)).length, [pages]);
-  const subPagesCount = useMemo(() => pages.filter(p => getParentInfo(p)).length, [pages]);
+  const rootPagesCount = pages.filter(p => !getParentInfo(p)).length;
+  const subPagesCount = pages.filter(p => getParentInfo(p)).length;
 
   return (
     <div className={`w-full ${shellTextClass}`}>
       <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        <div className="flex justify-between items-center mb-6 gap-4 flex-wrap pb-4 border-b border-white/10">
+        <div className="flex justify-between items-center mb-6 gap-4 flex-wrap pb-4 border-b border-gray-200 dark:border-white/10">
           <div>
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-3xl font-extrabold tracking-tight text-yellow-500">Mes Pages</h1>
-              <span className="text-xs px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-bold">
+              <span className="text-xs px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/30 font-bold">
                 Arborescence : {rootPagesCount} principale{rootPagesCount > 1 ? 's' : ''} · {subPagesCount} sous-page{subPagesCount > 1 ? 's' : ''}
               </span>
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Structure de vos pages : les sous-pages sont regroupées et indentées directement sous leur page parente.
             </p>
           </div>
@@ -233,7 +241,7 @@ const UserPagesManager = () => {
             </button>
             <Link
               to="/dashboard/pages/new"
-              className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold transition"
+              className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold transition shadow-sm"
             >
               + Nouvelle Page
             </Link>
@@ -272,6 +280,7 @@ const UserPagesManager = () => {
               </div>
               {searchTerm && (
                 <button
+                  type="button"
                   onClick={() => setSearchTerm('')}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                 >
@@ -285,14 +294,14 @@ const UserPagesManager = () => {
         )}
 
         {pages.length === 0 ? (
-          <div className="mt-12 max-w-md mx-auto p-8 rounded-2xl bg-white/5 border border-white/10 text-center backdrop-blur shadow-xl">
+          <div className="mt-12 max-w-md mx-auto p-8 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-center backdrop-blur shadow-xl">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-3xl">
               📝
             </div>
-            <h3 className="text-lg font-bold text-white mb-1">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
               Aucune page éditoriale créée
             </h3>
-            <p className="text-sm text-gray-400 mb-6">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
               Créez des pages d'exposition, de présentation ou d'articles de blog enrichies de galeries photos interactives.
             </p>
             <Link
@@ -304,20 +313,20 @@ const UserPagesManager = () => {
             </Link>
           </div>
         ) : filteredAndSortedPages.length === 0 ? (
-          <div className="mt-12 max-w-md mx-auto p-8 rounded-2xl bg-white/5 border border-white/10 text-center backdrop-blur shadow-xl">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center text-3xl border border-white/10">
+          <div className="mt-12 max-w-md mx-auto p-8 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-center backdrop-blur shadow-xl">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-3xl border border-gray-200 dark:border-white/10">
               🔍
             </div>
-            <h3 className="text-lg font-bold text-white mb-1">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
               Aucune page trouvée
             </h3>
-            <p className="text-sm text-gray-400 mb-6">
-              Aucune page ne correspond à « <span className="text-yellow-400 font-medium">{searchTerm}</span> ».
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              Aucune page ne correspond à « <span className="text-yellow-600 dark:text-yellow-400 font-medium">{searchTerm}</span> ».
             </p>
             <button
               type="button"
               onClick={() => setSearchTerm('')}
-              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold transition"
+              className="px-4 py-2 rounded-xl bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20 text-gray-900 dark:text-white text-xs sm:text-sm font-semibold transition"
             >
               Effacer la recherche
             </button>
@@ -343,12 +352,12 @@ const UserPagesManager = () => {
                   <div className="flex-1 min-w-0 w-full">
                     {/* Badge d'identification arborescente */}
                     {isChild ? (
-                      <div className="inline-flex items-center gap-2 px-3 py-1 mb-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold shadow-sm">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 mb-2 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 text-xs font-bold shadow-sm">
                         <span className="text-base font-black leading-none select-none">↳</span>
-                        <span>Sous-page {level > 1 ? `(niveau ${level}) ` : ''}rattachée à : <strong className="text-white underline decoration-amber-400/60">{parentTitle}</strong></span>
+                        <span>Sous-page {level > 1 ? `(niveau ${level}) ` : ''}rattachée à : <strong className="text-gray-900 dark:text-white underline decoration-amber-400/60">{parentTitle}</strong></span>
                       </div>
                     ) : (
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 mb-2 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30 text-[11px] font-bold uppercase tracking-wider">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 mb-2 rounded-md bg-blue-500/15 text-blue-600 dark:text-blue-300 border border-blue-500/30 text-[11px] font-bold uppercase tracking-wider">
                         <span>📁</span>
                         <span>Page Principale</span>
                       </div>
@@ -356,11 +365,11 @@ const UserPagesManager = () => {
 
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="min-w-0">
-                        <h2 className="text-lg sm:text-xl font-extrabold truncate text-white">{page.title}</h2>
+                        <h2 className="text-lg sm:text-xl font-extrabold truncate text-gray-900 dark:text-white">{page.title}</h2>
                         <p className={`text-sm ${mutedTextClass}`}>/{page.slug}</p>
                       </div>
                       <div className="text-sm text-right">
-                        <p className={mutedTextClass}>Ordre menu : <span className="font-semibold text-white">{page.menuOrder ?? 0}</span></p>
+                        <p className={mutedTextClass}>Ordre menu : <span className="font-semibold text-gray-900 dark:text-white">{page.menuOrder ?? 0}</span></p>
                       </div>
                     </div>
 
@@ -380,11 +389,11 @@ const UserPagesManager = () => {
                     </div>
                   </div>
 
-                <div className="flex gap-1.5 sm:gap-2 flex-wrap justify-end w-full lg:w-auto pt-2 lg:pt-0 border-t lg:border-t-0 border-white/5">
+                <div className="flex gap-1.5 sm:gap-2 flex-wrap justify-end w-full lg:w-auto pt-2 lg:pt-0 border-t lg:border-t-0 border-gray-200 dark:border-white/5">
                   <button
                     type="button"
                     onClick={() => copyLink(page.slug)}
-                    className="px-2.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 hover:text-purple-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
+                    className="px-2.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-300 hover:text-purple-700 dark:hover:text-purple-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
                     title="Copier le lien public"
                   >
                     <span>🔗</span>
@@ -394,7 +403,7 @@ const UserPagesManager = () => {
                     href={getPageUrl(username, page.slug)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 hover:text-blue-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
+                    className="px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
                     title="Voir la page publique"
                   >
                     <span>👁️</span>
@@ -402,7 +411,7 @@ const UserPagesManager = () => {
                   </a>
                   <Link
                     to={`/dashboard/pages/edit/${page._id}`}
-                    className="px-2.5 py-1.5 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 hover:text-yellow-100 text-xs sm:text-sm font-bold transition flex items-center gap-1 active:scale-95"
+                    className="px-2.5 py-1.5 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-600 dark:text-yellow-300 hover:text-yellow-700 dark:hover:text-yellow-100 text-xs sm:text-sm font-bold transition flex items-center gap-1 active:scale-95"
                     title="Modifier la page"
                   >
                     <span>✏️</span>
@@ -411,7 +420,7 @@ const UserPagesManager = () => {
                   <button
                     type="button"
                     onClick={() => setPageToDelete({ id: page._id, title: page.title })}
-                    className="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
+                    className="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-300 hover:text-rose-700 dark:hover:text-rose-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
                     title="Supprimer la page"
                   >
                     <span>🗑️</span>

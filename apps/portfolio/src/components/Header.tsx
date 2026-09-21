@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { UserProfile, UserPage } from '../types';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { UserProfile, UserPage, Album } from '../types';
 
 interface HeaderProps {
   profile: UserProfile | null;
@@ -9,7 +9,7 @@ interface HeaderProps {
   currentPageData: UserPage | null;
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
-  navigateTo: (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page', albumId?: string | null) => void;
+  navigateTo: (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page' | 'series' | 'exhibitions', albumId?: string | null) => void;
   navigateToPage: (slug: string) => void;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
@@ -44,7 +44,7 @@ const getCarnetUrl = (name?: string, customUrl?: string): string => {
 const Header: React.FC<HeaderProps> = ({
   profile,
   pages,
-  albums,
+  albums = [],
   currentPage,
   currentPageData,
   menuOpen,
@@ -56,6 +56,42 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const [seriesExpanded, setSeriesExpanded] = useState(false);
   const [exhibitionsExpanded, setExhibitionsExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Fermer la recherche lors d'un clic à l'extérieur
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setIsSearchFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Résultats de recherche instantanés
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return { pages: [], albums: [], total: 0 };
+    const q = searchQuery.toLowerCase().trim();
+
+    const matchedPages = pages.filter(p => 
+      p.title?.toLowerCase().includes(q) ||
+      p.editorialSummary?.toLowerCase().includes(q)
+    );
+
+    const matchedAlbums = albums.filter(a =>
+      a.title?.toLowerCase().includes(q) ||
+      a.description?.toLowerCase().includes(q)
+    );
+
+    return {
+      pages: matchedPages,
+      albums: matchedAlbums,
+      total: matchedPages.length + matchedAlbums.length,
+    };
+  }, [pages, albums, searchQuery]);
 
   // Auto-expand appropriate menu section when visiting an inner page
   useEffect(() => {
@@ -68,6 +104,15 @@ const Header: React.FC<HeaderProps> = ({
     }
   }, [currentPage, currentPageData]);
 
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      e.preventDefault();
+      navigateTo('series');
+      setIsSearchFocused(false);
+      setMenuOpen(false);
+    }
+  };
+
   return (
     <header className="header">
       <div className="header-title">
@@ -75,6 +120,99 @@ const Header: React.FC<HeaderProps> = ({
           {formatName(profile?.name)}
         </a>
         <div className="header-subtitle">Photographies</div>
+      </div>
+
+      {/* Barre de Recherche Rapide dans le Menu Latéral */}
+      <div className="sidebar-search-container" ref={searchContainerRef}>
+        <div className="sidebar-search-input-wrapper">
+          <span className="sidebar-search-icon">🔍</span>
+          <input
+            type="text"
+            placeholder="Rechercher une série..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            onFocus={() => setIsSearchFocused(true)}
+            className="sidebar-search-input"
+            aria-label="Rechercher une série"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setIsSearchFocused(false);
+              }}
+              className="sidebar-search-clear"
+              title="Effacer"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Menu déroulant des résultats instantanés */}
+        {isSearchFocused && searchQuery.trim().length > 0 && (
+          <div className="sidebar-search-results">
+            {searchResults.total === 0 ? (
+              <div className="sidebar-search-empty">
+                <span>Aucune série trouvée</span>
+              </div>
+            ) : (
+              <>
+                <div className="sidebar-search-results-header">
+                  <span>{searchResults.total} résultat{searchResults.total > 1 ? 's' : ''}</span>
+                </div>
+
+                <div className="sidebar-search-list">
+                  {searchResults.pages.map((p) => (
+                    <button
+                      key={p._id}
+                      type="button"
+                      onClick={() => {
+                        navigateToPage(p.slug);
+                        setSearchQuery('');
+                        setIsSearchFocused(false);
+                        setMenuOpen(false);
+                      }}
+                      className="sidebar-search-item"
+                    >
+                      <span className="item-icon">📁</span>
+                      <div className="item-details">
+                        <span className="item-title">{p.title}</span>
+                        {p.editorialSummary && (
+                          <span className="item-snippet">{p.editorialSummary.slice(0, 45)}...</span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+
+                  {searchResults.albums.map((a) => (
+                    <button
+                      key={a._id}
+                      type="button"
+                      onClick={() => {
+                        navigateTo('album', a._id);
+                        setSearchQuery('');
+                        setIsSearchFocused(false);
+                        setMenuOpen(false);
+                      }}
+                      className="sidebar-search-item"
+                    >
+                      <span className="item-icon">🖼️</span>
+                      <div className="item-details">
+                        <span className="item-title">{a.title}</span>
+                        {a.description && (
+                          <span className="item-snippet">{a.description.slice(0, 45)}...</span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Bouton Hamburger Mobile */}
@@ -98,16 +236,31 @@ const Header: React.FC<HeaderProps> = ({
 
             {/* SECTION SÉRIES */}
             {pages.filter(p => p.menuGroup === 'series' && !p.parentPageId && p.showInMenu).length > 0 && (
-              <li>
-                <button
-                  type="button"
-                  onClick={() => setSeriesExpanded(!seriesExpanded)}
-                  className="menu-section-title-btn"
-                  aria-expanded={seriesExpanded}
-                >
-                  <span>Séries</span>
-                  <span className={`chevron-icon ${seriesExpanded ? 'expanded' : ''}`}>▾</span>
-                </button>
+              <li className="menu-group-item">
+                <div className="menu-section-header">
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSeriesExpanded(true);
+                      navigateTo('series');
+                      setMenuOpen(false);
+                    }}
+                    className={`menu-section-link ${currentPage === 'series' ? 'active' : ''}`}
+                    title="Voir toutes les séries photographiques"
+                  >
+                    Séries
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setSeriesExpanded(!seriesExpanded)}
+                    className="menu-chevron-btn"
+                    aria-expanded={seriesExpanded}
+                    aria-label={seriesExpanded ? "Replier les séries" : "Déplier les séries"}
+                  >
+                    <span className={`chevron-icon ${seriesExpanded ? 'expanded' : ''}`}>▾</span>
+                  </button>
+                </div>
                 {seriesExpanded && (
                   <ul className="submenu">
                     {pages.filter(p => p.menuGroup === 'series' && !p.parentPageId && p.showInMenu).map((page) => {
@@ -146,16 +299,31 @@ const Header: React.FC<HeaderProps> = ({
 
             {/* SECTION EXPOSITIONS */}
             {pages.filter(p => p.menuGroup === 'exhibitions' && !p.parentPageId && p.showInMenu).length > 0 && (
-              <li>
-                <button
-                  type="button"
-                  onClick={() => setExhibitionsExpanded(!exhibitionsExpanded)}
-                  className="menu-section-title-btn"
-                  aria-expanded={exhibitionsExpanded}
-                >
-                  <span>Expositions</span>
-                  <span className={`chevron-icon ${exhibitionsExpanded ? 'expanded' : ''}`}>▾</span>
-                </button>
+              <li className="menu-group-item">
+                <div className="menu-section-header">
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setExhibitionsExpanded(true);
+                      navigateTo('exhibitions');
+                      setMenuOpen(false);
+                    }}
+                    className={`menu-section-link ${currentPage === 'exhibitions' ? 'active' : ''}`}
+                    title="Voir toutes les expositions"
+                  >
+                    Expositions
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setExhibitionsExpanded(!exhibitionsExpanded)}
+                    className="menu-chevron-btn"
+                    aria-expanded={exhibitionsExpanded}
+                    aria-label={exhibitionsExpanded ? "Replier les expositions" : "Déplier les expositions"}
+                  >
+                    <span className={`chevron-icon ${exhibitionsExpanded ? 'expanded' : ''}`}>▾</span>
+                  </button>
+                </div>
                 {exhibitionsExpanded && (
                   <ul className="submenu">
                     {pages.filter(p => p.menuGroup === 'exhibitions' && !p.parentPageId && p.showInMenu).map((page) => {
@@ -191,6 +359,19 @@ const Header: React.FC<HeaderProps> = ({
                 )}
               </li>
             )}
+
+            {/* PAGES INDÉPENDANTES (menuGroup === 'none' ou sans groupe) */}
+            {pages.filter(p => (!p.menuGroup || p.menuGroup === 'none') && !p.parentPageId && p.showInMenu).map((page) => (
+              <li key={page._id}>
+                <a 
+                  href="#" 
+                  onClick={(e) => { e.preventDefault(); navigateToPage(page.slug); }}
+                  className={currentPage === 'page' && currentPageData?.slug === page.slug ? 'active' : ''}
+                >
+                  {page.title}
+                </a>
+              </li>
+            ))}
 
             {profile?.hasBlog && (
               <li>

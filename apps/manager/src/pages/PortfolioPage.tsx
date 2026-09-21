@@ -4,12 +4,11 @@
 // v2.6.1 — home title color aligned / redundant label removed
 // ============================================================
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { getAppUrl } from '../utils/urls';
 
 type ContactStatus = 'idle' | 'sending' | 'sent' | 'error';
 type ActiveTab = 'home' | 'series' | 'exhibitions' | 'about';
@@ -239,9 +238,8 @@ const PhotoModal = ({ photo, onClose }: { photo: any; onClose: () => void }) => 
   );
 };
 
-const PortfolioHero = ({ user, authUser, onContact }: any) => {
+const PortfolioHero = ({ user }: any) => {
   const tagline = user.tagline || (user.bio ? stripMarkdownAndHtml(user.bio).split('.')[0] + '.' : 'Photographe & Créateur Visuel');
-  const isOwner = authUser && String((authUser as any)?.id) === String(user._id);
 
   return (
     <header className="relative w-full bg-black border-b border-white/10 overflow-hidden">

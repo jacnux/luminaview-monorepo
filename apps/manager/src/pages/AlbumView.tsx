@@ -305,7 +305,6 @@ const AlbumView = () => {
     : 'px-4 pt-3 sticky top-14 z-20';
 
   const locationState = location.state as { fromPortfolio?: boolean; portfolioPath?: string; portfolioLabel?: string } | null;
-  const viewerBackLink = locationState?.portfolioPath || subdomain ? null : null;
   const viewerBackLabel = locationState?.portfolioLabel || 'Retour au portfolio';
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -291,9 +291,6 @@ const UserPageEditor = () => {
     });
   };
 
-  const updateSection = (index: number, patch: Partial<PageSection>) => {
-    setSections(prev => prev.map((section, i) => (i === index ? { ...section, ...patch } : section)));
-  };
 
   const toggleSummarySection = (targetIndex: number) => {
     setSections(prev =>

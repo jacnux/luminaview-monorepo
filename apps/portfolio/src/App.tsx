@@ -19,6 +19,7 @@ import AlbumView from './components/views/AlbumView';
 import AboutView from './components/views/AboutView';
 import ContactView from './components/views/ContactView';
 import PageView from './components/views/PageView';
+import GroupOverviewView from './components/views/GroupOverviewView';
 import GrimoireView from './components/grimoire/GrimoireView';
 
 // Détection dynamique de l'utilisateur pour le multi-hébergement (multi-tenant)
@@ -44,7 +45,7 @@ const USERNAME = getUsernameFromEnvironment();
 
 const App: React.FC = () => {
   // Navigation
-  const [currentPage, setCurrentPage] = useState<'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page' | 'series' | 'exhibitions'>('home');
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   
   // Theme State
@@ -266,7 +267,7 @@ const App: React.FC = () => {
     }
   };
 
-  const navigateTo = (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page', albumId: string | null = null) => {
+  const navigateTo = (page: 'home' | 'galleries' | 'album' | 'about' | 'contact' | 'page' | 'series' | 'exhibitions', albumId: string | null = null) => {
     setCurrentPage(page);
     setSelectedAlbumId(albumId);
     setMenuOpen(false);
@@ -415,6 +416,26 @@ const App: React.FC = () => {
 
             {currentPage === 'galleries' && (
               <GalleriesView albums={albums} navigateTo={navigateTo} />
+            )}
+
+            {currentPage === 'series' && (
+              <GroupOverviewView
+                title="Séries"
+                pages={pages.filter(p => p.menuGroup === 'series' && !p.parentPageId && p.showInMenu !== false)}
+                allPages={pages}
+                navigateToPage={navigateToPage}
+                navigateTo={navigateTo}
+              />
+            )}
+
+            {currentPage === 'exhibitions' && (
+              <GroupOverviewView
+                title="Expositions"
+                pages={pages.filter(p => p.menuGroup === 'exhibitions' && !p.parentPageId && p.showInMenu !== false)}
+                allPages={pages}
+                navigateToPage={navigateToPage}
+                navigateTo={navigateTo}
+              />
             )}
 
             {currentPage === 'album' && (

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type React from 'react';
 import MarkdownRenderer from '../components/MarkdownRenderer';
-import remarkGfm from 'remark-gfm';
 import api from '../utils/api';
 
 const DashboardAbout: React.FC = () => {
