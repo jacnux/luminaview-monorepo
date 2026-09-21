@@ -415,31 +415,51 @@ const UserPageEditor = () => {
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6 md:p-8">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        {/* En-tête avec Actions directes */}
+        <div className="sticky top-0 z-30 -mx-6 -mt-6 md:-mx-8 md:-mt-8 mb-8 px-6 md:px-8 py-4 bg-gray-950/80 backdrop-blur-md border-b border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-lg">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.28em] text-gray-500 mb-2">Pages éditoriales</div>
-            <h1 className="text-3xl md:text-4xl font-bold text-yellow-400 tracking-tight">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => navigate('/dashboard/pages')}
+                className="text-xs text-gray-400 hover:text-white transition flex items-center gap-1"
+              >
+                ← Retour aux pages
+              </button>
+              <span className="text-gray-600">·</span>
+              <span className="text-[11px] uppercase tracking-[0.24em] text-gray-500">Pages éditoriales</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-yellow-400 tracking-tight mt-1">
               {id ? 'Modifier la page' : 'Créer une page'}
             </h1>
-            <p className="text-gray-400 mt-3 max-w-3xl">
-              Structure la page avec des blocs de texte enrichis (résumé actif, paragraphes, images), des galeries visuelles ou des blocs mixtes 30/70.
-            </p>
           </div>
-          {slug && (
-            <a
-              href={getPageUrl(username, slug)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-yellow-400 border border-white/10 font-semibold text-sm transition self-start sm:self-auto shadow-sm"
-              title="Voir la page sur le Portfolio public"
+
+          <div className="flex items-center gap-3 self-end sm:self-auto">
+            {slug && (
+              <a
+                href={getPageUrl(username, slug)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-yellow-400 border border-white/10 font-medium text-sm transition shadow-sm"
+                title="Voir la page sur le Portfolio public"
+              >
+                <span>👁️</span> <span className="hidden md:inline">Voir la page</span>
+              </a>
+            )}
+
+            <button
+              onClick={handleSave}
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 rounded-xl font-bold text-sm md:text-base text-white disabled:opacity-60 transition shadow-lg shadow-green-500/20 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <span>👁️</span> Voir la page
-            </a>
-          )}
+              <span>💾</span>
+              <span>{loading ? 'Sauvegarde...' : 'Enregistrer'}</span>
+            </button>
+          </div>
         </div>
 
         {message && (
-          <div className="bg-blue-600/90 border border-blue-400/30 p-3 rounded-xl mb-5 text-center text-sm md:text-base">
+          <div className="bg-blue-600/90 border border-blue-400/30 p-3 rounded-xl mb-5 text-center text-sm md:text-base animate-fade-in shadow-md">
             {message}
           </div>
         )}

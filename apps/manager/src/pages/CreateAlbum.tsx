@@ -1,6 +1,49 @@
-import React, { useState, useEffect } from 'react';
+// ============================================================
+// LUMINAVIEW — CreateAlbum.tsx
+// Refonte ergonomique : création album & galerie virtuelle
+// ============================================================
+
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+
+const SORT_OPTIONS: Array<{
+  value: 'date_desc' | 'date_asc' | 'title_asc' | 'title_desc' | 'manual';
+  label: string;
+  sublabel: string;
+  icon: string;
+}> = [
+  {
+    value: 'date_desc',
+    label: 'Plus récentes d’abord',
+    sublabel: 'Date d’ajout décroissante (Défaut)',
+    icon: '📅 ↓',
+  },
+  {
+    value: 'date_asc',
+    label: 'Chronologique',
+    sublabel: 'Plus anciennes d’abord',
+    icon: '⏳ ↑',
+  },
+  {
+    value: 'title_asc',
+    label: 'Alphabétique (A → Z)',
+    sublabel: 'Tri par titre ou nom de fichier',
+    icon: '🔤 A-Z',
+  },
+  {
+    value: 'title_desc',
+    label: 'Alphabétique (Z → A)',
+    sublabel: 'Tri alphabétique inverse',
+    icon: '🔤 Z-A',
+  },
+  {
+    value: 'manual',
+    label: 'Ordre personnalisé',
+    sublabel: 'Séquence définie par l’Index / Manuel (#)',
+    icon: '🔢 #',
+  },
+];
 
 const CreateAlbum = () => {
   const navigate = useNavigate();
@@ -13,57 +56,72 @@ const CreateAlbum = () => {
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [includedTags, setIncludedTags] = useState<string[]>([]);
   const [excludedTags, setExcludedTags] = useState<string[]>([]);
+  const [tagSearchQuery, setTagSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchTags = async () => {
       try {
         const res = await api.get('/photos/tags');
-        setAvailableTags(res.data);
+        if (Array.isArray(res.data)) {
+          setAvailableTags(res.data);
+        }
       } catch (err) {
-        console.error("Erreur chargement tags", err);
+        console.error('Erreur chargement tags', err);
       }
     };
     fetchTags();
   }, []);
 
-  const handleTagClick = (tag: string) => {
-    const isIncluded = includedTags.includes(tag);
-    const isExcluded = excludedTags.includes(tag);
-
-    if (!isIncluded && !isExcluded) {
-      setIncludedTags([...includedTags, tag]);
-    } else if (isIncluded) {
-      setIncludedTags(includedTags.filter(t => t !== tag));
-      setExcludedTags([...excludedTags, tag]);
-    } else {
-      setExcludedTags(excludedTags.filter(t => t !== tag));
+  const handleIncludeTag = (tag: string) => {
+    setExcludedTags(prev => prev.filter(t => t !== tag));
+    if (!includedTags.includes(tag)) {
+      setIncludedTags(prev => [...prev, tag]);
     }
   };
+
+  const handleExcludeTag = (tag: string) => {
+    setIncludedTags(prev => prev.filter(t => t !== tag));
+    if (!excludedTags.includes(tag)) {
+      setExcludedTags(prev => [...prev, tag]);
+    }
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    setIncludedTags(prev => prev.filter(t => t !== tag));
+    setExcludedTags(prev => prev.filter(t => t !== tag));
+  };
+
+  const filteredAvailableTags = useMemo(() => {
+    const q = tagSearchQuery.toLowerCase().trim();
+    return availableTags
+      .filter(t => !includedTags.includes(t) && !excludedTags.includes(t))
+      .filter(t => !q || t.toLowerCase().includes(q))
+      .sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }));
+  }, [availableTags, includedTags, excludedTags, tagSearchQuery]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // CORRECTION BUG : Validation — une galerie virtuelle doit avoir au moins 1 tag inclus
     if (isVirtual && includedTags.length === 0) {
-      alert("Une galerie virtuelle doit avoir au moins un tag inclus (en vert).");
+      alert('Une galerie virtuelle doit avoir au moins un tag inclus (en vert) pour agréger des photos.');
       return;
     }
 
+    setLoading(true);
     try {
       const data: any = {
         title,
         description,
         isPublic,
-        // CORRECTION BUG : On force le booléen strict, pas de valeur ambiguë
         isVirtual: isVirtual === true,
         sortOrder,
         virtualFilter: null,
-        filterValue: null
+        filterValue: null,
       };
 
       if (isVirtual) {
         const excludedWithDash = excludedTags.map(t => `-${t}`);
-        // CORRECTION BUG : toLowerCase() ici pour correspondre aux tags en base
         const filterValue = [...includedTags, ...excludedWithDash]
           .map(t => t.toLowerCase().trim())
           .join(',');
@@ -76,140 +134,283 @@ const CreateAlbum = () => {
       navigate(`/album/${res.data._id}`);
     } catch (error) {
       console.error(error);
-      alert("Erreur lors de la création");
+      alert('Erreur lors de la création de la galerie.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <div className="max-w-lg mx-auto">
-        <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-white mb-4 transition">← Retour</button>
-
-        <h1 className="text-3xl font-bold text-yellow-400 mb-8">
-          {isVirtual ? 'Nouvelle Galerie Virtuelle' : 'Nouvel Album'}
-        </h1>
+    <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-8">
+      <div className="max-w-3xl mx-auto">
+        
+        {/* En-tête de page */}
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <button
+              onClick={() => navigate(-1)}
+              className="text-xs text-gray-400 hover:text-white transition flex items-center gap-1 mb-2"
+            >
+              ← Retour
+            </button>
+            <h1 className="text-2xl sm:text-3xl font-bold text-yellow-400 tracking-tight">
+              {isVirtual ? '✨ Nouvelle Galerie Virtuelle' : '📁 Nouvel Album'}
+            </h1>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm mb-2">Titre</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-white/10 p-3 rounded-lg border border-white/10 focus:ring-2 focus:ring-purple-500 outline-none"
-              required
-            />
+          
+          {/* Section 1 : Infos Générales */}
+          <div className="bg-gray-900 border border-white/10 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-400/90 flex items-center gap-2">
+              <span>📝</span> Informations générales
+            </h2>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">Titre *</label>
+              <input
+                type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                className="w-full bg-black/40 border border-white/15 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400/50"
+                placeholder="Ex : Horizons, Best of 2026..."
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">Description</label>
+              <textarea
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                className="w-full bg-black/40 border border-white/15 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400/50 h-20 resize-none"
+                placeholder="Description facultative..."
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm mb-2">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-white/10 p-3 rounded-lg h-24 border border-white/10"
-            />
-          </div>
+          {/* Section 2 : Visibilité & Mode Galerie */}
+          <div className="bg-gray-900 border border-white/10 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400/90 flex items-center gap-2">
+              <span>✨</span> Mode & Visibilité
+            </h2>
 
-          <div className="flex flex-col gap-4 bg-white/5 p-4 rounded-lg border border-white/10">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} className="w-5 h-5 rounded" />
-              <span>Album Public</span>
-            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="flex items-center gap-3 p-3.5 bg-black/30 rounded-xl border border-white/10 cursor-pointer hover:bg-black/40 transition">
+                <input
+                  type="checkbox"
+                  checked={isPublic}
+                  onChange={e => setIsPublic(e.target.checked)}
+                  className="w-5 h-5 rounded accent-green-500 cursor-pointer"
+                />
+                <div>
+                  <span className="text-white font-medium text-sm">Album Public</span>
+                  <p className="text-xs text-gray-400">Accessible sur votre portfolio public.</p>
+                </div>
+              </label>
 
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={isVirtual} onChange={(e) => {
-                setIsVirtual(e.target.checked);
-                // Reset tags quand on bascule le mode
-                if (!e.target.checked) {
-                  setIncludedTags([]);
-                  setExcludedTags([]);
-                }
-              }} className="w-5 h-5 rounded" />
-              <div>
-                <span>Est une Galerie (Virtuelle)</span>
-                <p className="text-xs text-gray-500 mt-1">Remplissage automatique par tags.</p>
-              </div>
-            </label>
+              <label className="flex items-center gap-3 p-3.5 bg-black/30 rounded-xl border border-white/10 cursor-pointer hover:bg-black/40 transition">
+                <input
+                  type="checkbox"
+                  checked={isVirtual}
+                  onChange={e => {
+                    setIsVirtual(e.target.checked);
+                    if (!e.target.checked) {
+                      setIncludedTags([]);
+                      setExcludedTags([]);
+                    }
+                  }}
+                  className="w-5 h-5 rounded accent-purple-500 cursor-pointer"
+                />
+                <div>
+                  <span className="text-white font-medium text-sm">Galerie Virtuelle</span>
+                  <p className="text-xs text-gray-400">Remplissage dynamique par tags.</p>
+                </div>
+              </label>
+            </div>
 
             {isVirtual && (
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <label className="block text-sm font-bold text-purple-300 mb-1">
-                  Tags de recherche
-                </label>
-                {/* CORRECTION BUG : Avertissement si aucun tag inclus */}
-                {includedTags.length === 0 && (
-                  <p className="text-xs text-yellow-400 mb-2">⚠️ Sélectionnez au moins un tag vert (inclus) pour filtrer les photos.</p>
-                )}
-
-                <div className="flex gap-4 mb-3 text-xs">
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-gray-600"></span> Neutre</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-500"></span> Inclus</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500"></span> Exclu</span>
+              <div className="pt-4 border-t border-white/10 space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <label className="text-sm font-semibold text-gray-200">Filtres de tags</label>
+                  <span className="text-xs text-gray-400">
+                    {includedTags.length} inclus · {excludedTags.length} exclu{excludedTags.length > 1 ? 's' : ''}
+                  </span>
                 </div>
 
-                <div className="flex flex-wrap gap-2 p-3 bg-black/20 rounded-lg max-h-40 overflow-y-auto">
-                  {availableTags.length === 0 && (
-                    <p className="text-gray-500 text-sm italic">Aucun tag trouvé. Ajoutez des tags à vos photos.</p>
+                {/* Tags Inclus / Exclus */}
+                <div className="space-y-2">
+                  {includedTags.length > 0 && (
+                    <div className="p-3 bg-green-950/30 border border-green-500/30 rounded-xl">
+                      <div className="text-[11px] uppercase tracking-wider text-green-400 font-bold mb-1.5">
+                        ✓ Tags Inclus :
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {includedTags.map(tag => (
+                          <span
+                            key={tag}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-green-600 text-white shadow-sm"
+                          >
+                            <span>#{tag}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTag(tag)}
+                              className="hover:text-red-200 text-sm font-bold leading-none ml-1"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   )}
-                  {availableTags.map(tag => {
-                    const isIncluded = includedTags.includes(tag);
-                    const isExcluded = excludedTags.includes(tag);
 
-                    let classes = "px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition border ";
-                    if (isIncluded) {
-                      classes += "bg-green-500 border-green-400 text-white shadow-lg shadow-green-500/20";
-                    } else if (isExcluded) {
-                      classes += "bg-red-500 border-red-400 text-white shadow-lg shadow-red-500/20";
-                    } else {
-                      classes += "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600";
-                    }
+                  {excludedTags.length > 0 && (
+                    <div className="p-3 bg-red-950/30 border border-red-500/30 rounded-xl">
+                      <div className="text-[11px] uppercase tracking-wider text-red-400 font-bold mb-1.5">
+                        − Tags Exclus :
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {excludedTags.map(tag => (
+                          <span
+                            key={tag}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-red-600 text-white shadow-sm"
+                          >
+                            <span>− #{tag}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTag(tag)}
+                              className="hover:text-red-200 text-sm font-bold leading-none ml-1"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                    return (
-                      <button type="button" key={tag} onClick={() => handleTagClick(tag)} className={classes}>
-                        {isExcluded && '− '}{tag}
-                      </button>
-                    );
-                  })}
+                  {includedTags.length === 0 && (
+                    <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-300 text-xs">
+                      ⚠️ Sélectionnez au moins un tag ci-dessous avec le bouton <strong>« + »</strong> pour filtrer les photos.
+                    </div>
+                  )}
                 </div>
 
-                {/* Résumé des tags sélectionnés */}
-                {(includedTags.length > 0 || excludedTags.length > 0) && (
-                  <div className="mt-2 text-xs text-gray-400">
-                    {includedTags.length > 0 && <p>✅ Inclus : {includedTags.join(', ')}</p>}
-                    {excludedTags.length > 0 && <p>❌ Exclus : {excludedTags.join(', ')}</p>}
+                {/* Recherche & Tags Disponibles */}
+                <div className="space-y-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Rechercher un tag..."
+                      value={tagSearchQuery}
+                      onChange={e => setTagSearchQuery(e.target.value)}
+                      className="w-full bg-black/40 border border-white/15 text-white rounded-xl px-4 py-2 pl-9 text-xs focus:outline-none focus:ring-1 focus:ring-purple-400"
+                    />
+                    <span className="absolute left-3 top-2.5 text-xs text-gray-500">🔍</span>
+                    {tagSearchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setTagSearchQuery('')}
+                        className="absolute right-3 top-2.5 text-xs text-gray-400 hover:text-white"
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
-                )}
+
+                  <div className="p-3 bg-black/40 border border-white/10 rounded-xl max-h-44 overflow-y-auto space-y-2">
+                    <div className="text-[11px] text-gray-400">
+                      Tags disponibles ({filteredAvailableTags.length}) :
+                    </div>
+                    {filteredAvailableTags.length === 0 ? (
+                      <p className="text-gray-500 text-xs italic py-2">
+                        {availableTags.length === 0 ? 'Aucun tag trouvé dans vos photos.' : 'Aucun autre tag correspondant.'}
+                      </p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {filteredAvailableTags.map(tag => (
+                          <div
+                            key={tag}
+                            className="inline-flex items-center bg-gray-800 hover:bg-gray-700 border border-white/10 rounded-lg text-xs overflow-hidden transition"
+                          >
+                            <span className="px-2.5 py-1 text-gray-300 font-medium">#{tag}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleIncludeTag(tag)}
+                              className="px-2 py-1 bg-green-700/60 hover:bg-green-600 text-green-100 font-bold border-l border-white/10 transition"
+                              title="Inclure ce tag"
+                            >
+                              +
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleExcludeTag(tag)}
+                              className="px-2 py-1 bg-red-700/60 hover:bg-red-600 text-red-100 font-bold border-l border-white/10 transition"
+                              title="Exclure ce tag"
+                            >
+                              −
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Ordre de tri des photos */}
-          <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-            <label className="block text-sm font-medium text-purple-300 mb-1">
-              Séquence & Ordre d'affichage
-            </label>
-            <p className="text-xs text-gray-400 mb-3">
-              Définissez comment les images seront ordonnées dans cette galerie / cet album.
+          {/* Section 3 : Séquence & Ordre d'affichage */}
+          <div className="bg-gray-900 border border-white/10 p-5 sm:p-6 rounded-2xl space-y-3 shadow-xl">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-400/90 flex items-center gap-2">
+              <span>↕️</span> Séquence & Ordre d'affichage
+            </h2>
+            <p className="text-xs text-gray-400">
+              Définissez comment les images seront ordonnées dans cette galerie.
             </p>
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value as any)}
-              className="w-full bg-white/10 border border-white/20 text-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none cursor-pointer"
-            >
-              <option value="date_desc" className="bg-gray-900 text-white">Plus récentes d'abord (Date décroissante)</option>
-              <option value="date_asc" className="bg-gray-900 text-white">Plus anciennes d'abord (Chronologique)</option>
-              <option value="title_asc" className="bg-gray-900 text-white">Alphabétique (Titre A → Z)</option>
-              <option value="title_desc" className="bg-gray-900 text-white">Alphabétique (Titre Z → A)</option>
-              <option value="manual" className="bg-gray-900 text-white">Ordre personnalisé (Index / Manuel)</option>
-            </select>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              {SORT_OPTIONS.map(opt => {
+                const isSelected = sortOrder === opt.value;
+                return (
+                  <label
+                    key={opt.value}
+                    onClick={() => setSortOrder(opt.value)}
+                    className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition ${
+                      isSelected
+                        ? 'bg-blue-600/20 border-blue-400 text-white shadow-md shadow-blue-500/10 ring-1 ring-blue-400/40'
+                        : 'bg-black/30 border-white/10 text-gray-300 hover:bg-black/50 hover:border-white/20'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="sortOrder"
+                      value={opt.value}
+                      checked={isSelected}
+                      onChange={() => setSortOrder(opt.value)}
+                      className="mt-0.5 accent-blue-500 cursor-pointer"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 font-semibold text-sm">
+                        <span>{opt.label}</span>
+                      </div>
+                      <p className="text-[11px] text-gray-400 mt-0.5 truncate">{opt.sublabel}</p>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
           </div>
 
+          {/* Bouton Créer */}
           <button
             type="submit"
-            disabled={isVirtual && includedTags.length === 0}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-full font-bold shadow-lg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled={loading || (isVirtual && includedTags.length === 0)}
+            className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-2xl font-bold text-lg shadow-xl shadow-purple-500/20 transition disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99]"
           >
-            Créer
+            {loading ? 'Création en cours...' : isVirtual ? '✨ Créer la galerie virtuelle' : '📁 Créer l’album'}
           </button>
         </form>
       </div>
