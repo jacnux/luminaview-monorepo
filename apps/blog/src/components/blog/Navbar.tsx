@@ -48,12 +48,13 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
 
   const getCarnetUrl = () => {
     if (chambreNoireUrl && !chambreNoireUrl.includes('808') && !chambreNoireUrl.includes('/embed/')) {
-      return chambreNoireUrl;
+      const sep = chambreNoireUrl.includes('?') ? '&' : '?';
+      return `${chambreNoireUrl}${sep}from=blog`;
     }
     const hostname = window.location.hostname;
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
-    if (isLocal) return `http://localhost:7082/?user=${blogName}`;
-    return `https://${blogName}.helioscope.fr/carnet`;
+    if (isLocal) return `http://localhost:7082/?user=${blogName}&from=blog`;
+    return `https://${blogName}.helioscope.fr/carnet?from=blog`;
   };
 
   return (

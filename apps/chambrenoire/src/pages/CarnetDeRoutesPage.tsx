@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import { getSubdomain } from '../utils/domain';
-import { getPortfolioUrl } from '../utils/urls';
+import { getPortfolioUrl, getBlogUrl } from '../utils/urls';
 
 const CarnetDeRoutesPage: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -243,6 +243,12 @@ const CarnetDeRoutesPage: React.FC = () => {
     );
   }
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const fromBlog = searchParams.get('from') === 'blog';
+  const userSlug = userProfile?.name || getSubdomain() || 'jac';
+  const backUrl = fromBlog ? getBlogUrl(userSlug) : getPortfolioUrl(userSlug, userProfile?.blogTheme);
+  const backLabel = fromBlog ? 'Retour au Blog' : `Retour au Portfolio ${userProfile?.name ? `(${userProfile.name})` : ''}`;
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 space-y-12">
       {/* Intro Header */}
@@ -250,11 +256,11 @@ const CarnetDeRoutesPage: React.FC = () => {
         <div className="text-center max-w-2xl mx-auto space-y-4">
           <div>
             <a
-              href={getPortfolioUrl(userProfile?.name || getSubdomain() || 'jac', userProfile?.blogTheme)}
+              href={backUrl}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-500/90 hover:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm"
             >
               <span>&larr;</span>
-              <span>Retour au Portfolio {userProfile?.name ? `(${userProfile.name})` : ''}</span>
+              <span>{backLabel}</span>
             </a>
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-gray-950 dark:text-white sm:text-5xl">

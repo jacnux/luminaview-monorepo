@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import { getUserSlug } from '../utils/domain';
-import { getPortfolioUrl } from '../utils/urls';
+import { getPortfolioUrl, getBlogUrl } from '../utils/urls';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,7 +20,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const theme = 'dark';
   const userSlug = getUserSlug();
-  const homeUrl = userSlug ? `/?user=${userSlug}` : '/';
+
+  const searchParams = new URLSearchParams(location.search);
+  const fromBlog = searchParams.get('from') === 'blog';
+  const homeUrl = userSlug ? `/?user=${userSlug}${fromBlog ? '&from=blog' : ''}` : (fromBlog ? '/?from=blog' : '/');
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
@@ -35,7 +38,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [userSlug]);
 
-  const portfolioUrl = getPortfolioUrl(userProfile?.name || userSlug, userProfile?.blogTheme);
+  const returnUrl = fromBlog
+    ? getBlogUrl(userProfile?.name || userSlug)
+    : getPortfolioUrl(userProfile?.name || userSlug, userProfile?.blogTheme);
+
+  const returnLabel = fromBlog ? 'Retour au Blog' : 'Retour Portfolio';
+  const returnTitle = fromBlog
+    ? `Retour au Blog de ${userProfile?.name || userSlug}`
+    : `Retour au Portfolio de ${userProfile?.name || userSlug}`;
 
   // Zone connectée large (albums, galeries, carnet-routes, etc.)
   const isAuthenticatedArea = [
@@ -106,15 +116,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Link>
           </div>
 
-          {/* Lien retour Portfolio */}
+          {/* Lien retour contextuel (Blog ou Portfolio) */}
           <div className="flex items-center gap-3">
             <a
-              href={portfolioUrl}
+              href={returnUrl}
               className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-gray-300 hover:text-amber-400 bg-white/5 hover:bg-white/10 border border-white/10 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm"
-              title={`Retour au Portfolio de ${userProfile?.name || userSlug}`}
+              title={returnTitle}
             >
               <span className="text-amber-500">&larr;</span>
-              <span>Retour Portfolio</span>
+              <span>{returnLabel}</span>
             </a>
           </div>
         </div>

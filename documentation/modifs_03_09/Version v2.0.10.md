@@ -30,3 +30,10 @@ Cette version implémente le **Sprint 1 (Blog)** issu du plan d'amélioration er
 - **Navigation contextuelle « Précédent / Suivant »** : En bas de chaque article, deux cartouches cliquables permettent au lecteur de poursuivre facilement sa navigation vers les publications adjacentes.
 - **Bouton de partage direct** : Action « Copier le lien » avec animation et confirmation visuelle temporaire (_Lien copié !_).
 - **Bouton flottant « Retour en haut »** : Apparition fluide lors du défilement pour remonter en tête de page sans effort.
+
+### 4. Passerelle & Navigation Contextuelle avec Chambre Noire (`apps/blog` & `apps/chambrenoire`)
+
+- **Liaison bidirectionnelle Blog ⇄ Carnet de Route** :
+  - L'accès à Chambre Noire depuis le Blog injecte le paramètre contextuel `?from=blog`.
+  - Chambre Noire adapte dynamiquement ses boutons de retour (barre d'en-tête supérieure et badge d'introduction) en affichant `← Retour au Blog` pointant directement vers le blog d'origine de l'utilisateur.
+  - La navigation entre les projets au sein de Chambre Noire conserve le paramètre d'origine pour garantir un retour sans faille.
