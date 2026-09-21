@@ -335,7 +335,7 @@ const UserPageEditor = () => {
 
   const handleSave = async () => {
     if (!title || !slug) {
-      setMessage("Le titre et l'URL sont obligatoires.");
+      showToast("Le titre et l'URL sont obligatoires.", 'warning');
       return;
     }
 

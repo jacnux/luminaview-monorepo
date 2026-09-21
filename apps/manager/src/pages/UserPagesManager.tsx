@@ -74,6 +74,16 @@ const UserPagesManager = () => {
     });
   };
 
+  const getParentInfo = (page: any) => {
+    if (!page.parentPageId) return null;
+    if (typeof page.parentPageId === 'object' && page.parentPageId.title) {
+      return { id: page.parentPageId._id, title: page.parentPageId.title };
+    }
+    const parent = pages.find((p: any) => p._id === page.parentPageId);
+    if (parent) return { id: parent._id, title: (parent as any).title };
+    return null;
+  };
+
   const filteredAndSortedPages = useMemo(() => {
     let result = pages;
     if (searchTerm.trim()) {
@@ -81,12 +91,54 @@ const UserPagesManager = () => {
       result = result.filter(page =>
         (page.title || '').toLowerCase().includes(term)
       );
+      return result.map(p => {
+        const parent = getParentInfo(p);
+        return { ...p, isChild: Boolean(parent), parentTitle: parent?.title };
+      });
     }
-    if (!pageSortAZ) return result;
-    const copy = [...result];
-    return pageSortAZ === 'az'
-      ? copy.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'fr', { sensitivity: 'base' }))
-      : copy.sort((a, b) => (b.title || '').localeCompare(a.title || '', 'fr', { sensitivity: 'base' }));
+
+    if (pageSortAZ) {
+      const copy = [...result];
+      const sorted = pageSortAZ === 'az'
+        ? copy.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'fr', { sensitivity: 'base' }))
+        : copy.sort((a, b) => (b.title || '').localeCompare(a.title || '', 'fr', { sensitivity: 'base' }));
+      return sorted.map(p => {
+        const parent = getParentInfo(p);
+        return { ...p, isChild: Boolean(parent), parentTitle: parent?.title };
+      });
+    }
+
+    // Organisation arborescente par défaut (pages racines puis leurs sous-pages)
+    const roots = result
+      .filter(p => !getParentInfo(p))
+      .sort((a, b) => (a.menuOrder ?? 0) - (b.menuOrder ?? 0));
+
+    const hierarchicalList: any[] = [];
+
+    roots.forEach(root => {
+      hierarchicalList.push({ ...root, isChild: false });
+      const children = result
+        .filter(p => {
+          const parent = getParentInfo(p);
+          return parent && parent.id === root._id;
+        })
+        .sort((a, b) => (a.menuOrder ?? 0) - (b.menuOrder ?? 0));
+
+      children.forEach(child => {
+        hierarchicalList.push({ ...child, isChild: true, parentTitle: root.title });
+      });
+    });
+
+    // Inclure d'éventuelles pages sous-pages dont le parent n'a pas été trouvé
+    const includedIds = new Set(hierarchicalList.map(p => p._id));
+    result.forEach(p => {
+      if (!includedIds.has(p._id)) {
+        const parent = getParentInfo(p);
+        hierarchicalList.push({ ...p, isChild: Boolean(parent), parentTitle: parent?.title });
+      }
+    });
+
+    return hierarchicalList;
   }, [pages, searchTerm, pageSortAZ]);
 
   const shellTextClass = theme === 'dark' ? 'text-white' : 'text-gray-900';
@@ -195,47 +247,96 @@ const UserPagesManager = () => {
         )}
 
         {pages.length === 0 ? (
-          <p className={`text-center ${emptyTextClass}`}>Aucune page créée.</p>
+          <div className="mt-12 max-w-md mx-auto p-8 rounded-2xl bg-white/5 border border-white/10 text-center backdrop-blur shadow-xl">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-3xl">
+              📝
+            </div>
+            <h3 className="text-lg font-bold text-white mb-1">
+              Aucune page éditoriale créée
+            </h3>
+            <p className="text-sm text-gray-400 mb-6">
+              Créez des pages d'exposition, de présentation ou d'articles de blog enrichies de galeries photos interactives.
+            </p>
+            <Link
+              to="/dashboard/pages/new"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-green-500/20 transition hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <span>+</span>
+              <span>Créer ma première page</span>
+            </Link>
+          </div>
         ) : filteredAndSortedPages.length === 0 ? (
-          <p className={`text-center ${emptyTextClass}`}>Aucun résultat pour « {searchTerm} ».</p>
+          <div className="mt-12 max-w-md mx-auto p-8 rounded-2xl bg-white/5 border border-white/10 text-center backdrop-blur shadow-xl">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center text-3xl border border-white/10">
+              🔍
+            </div>
+            <h3 className="text-lg font-bold text-white mb-1">
+              Aucune page trouvée
+            </h3>
+            <p className="text-sm text-gray-400 mb-6">
+              Aucune page ne correspond à « <span className="text-yellow-400 font-medium">{searchTerm}</span> ».
+            </p>
+            <button
+              type="button"
+              onClick={() => setSearchTerm('')}
+              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold transition"
+            >
+              Effacer la recherche
+            </button>
+          </div>
         ) : (
           <div className="space-y-4">
-            {filteredAndSortedPages.map(page => (
-              <div
-                key={page._id}
-                className={`p-4 rounded-lg flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 ${cardClass}`}
-              >
-                <div className="flex-1 min-w-0 w-full">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                    <div className="min-w-0">
-                      <h2 className="text-xl font-bold truncate">{page.title}</h2>
-                      <p className={`text-sm ${mutedTextClass}`}>/{page.slug}</p>
-                    </div>
-                    <div className="text-sm text-right">
-                      <p className={mutedTextClass}>Ordre menu : <span className="font-semibold">{page.menuOrder ?? 0}</span></p>
-                    </div>
-                  </div>
+            {filteredAndSortedPages.map(page => {
+              const isChild = Boolean((page as any).isChild);
+              const parentTitle = (page as any).parentTitle;
 
-                  <div className="flex gap-2 mt-3 flex-wrap">
-                    <span className={`text-xs px-2 py-1 rounded ${page.isPublished ? 'bg-green-700 text-green-100' : neutralBadgeClass}`}>
-                      {page.isPublished ? '✓ Portfolio' : '✕ Portfolio'}
-                    </span>
-                    <span className={`text-xs px-2 py-1 rounded ${page.showOnBlog ? 'bg-blue-700 text-blue-100' : neutralBadgeClass}`}>
-                      {page.showOnBlog ? '✓ Blog' : '✕ Blog'}
-                    </span>
-                    <span className={`text-xs px-2 py-1 rounded ${page.showInMenu ? 'bg-yellow-700 text-yellow-100' : neutralBadgeClass}`}>
-                      {page.showInMenu ? '✓ Menu' : '✕ Menu'}
-                    </span>
-                    <span className={`text-xs px-2 py-1 rounded ${neutralBadgeClass}`}>
-                      Section : {getMenuGroupLabel(page.menuGroup)}
-                    </span>
-                    {page.parentPageId?.title && (
-                      <span className={`text-xs px-2 py-1 rounded ${neutralBadgeClass}`}>
-                        Parent : {page.parentPageId.title}
+              return (
+                <div
+                  key={page._id}
+                  className={`p-4 rounded-xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 transition duration-200 ${cardClass} ${
+                    isChild
+                      ? 'ml-3 sm:ml-8 border-l-4 border-l-amber-500/80 bg-white/[0.03] dark:bg-gray-800/50'
+                      : ''
+                  }`}
+                >
+                  <div className="flex-1 min-w-0 w-full">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {isChild && (
+                            <span className="text-amber-400 font-black text-lg select-none">
+                              ↳
+                            </span>
+                          )}
+                          <h2 className="text-lg sm:text-xl font-bold truncate text-white">{page.title}</h2>
+                          {isChild && parentTitle && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                              Sous-page de {parentTitle}
+                            </span>
+                          )}
+                        </div>
+                        <p className={`text-sm ${mutedTextClass} ${isChild ? 'pl-5' : ''}`}>/{page.slug}</p>
+                      </div>
+                      <div className="text-sm text-right">
+                        <p className={mutedTextClass}>Ordre menu : <span className="font-semibold text-white">{page.menuOrder ?? 0}</span></p>
+                      </div>
+                    </div>
+
+                    <div className={`flex gap-2 mt-3 flex-wrap ${isChild ? 'pl-5' : ''}`}>
+                      <span className={`text-xs px-2 py-1 rounded font-medium ${page.isPublished ? 'bg-green-700/80 text-green-100' : neutralBadgeClass}`}>
+                        {page.isPublished ? '✓ Portfolio' : '✕ Portfolio'}
                       </span>
-                    )}
+                      <span className={`text-xs px-2 py-1 rounded font-medium ${page.showOnBlog ? 'bg-blue-700/80 text-blue-100' : neutralBadgeClass}`}>
+                        {page.showOnBlog ? '✓ Blog' : '✕ Blog'}
+                      </span>
+                      <span className={`text-xs px-2 py-1 rounded font-medium ${page.showInMenu ? 'bg-yellow-700/80 text-yellow-100' : neutralBadgeClass}`}>
+                        {page.showInMenu ? '✓ Menu' : '✕ Menu'}
+                      </span>
+                      <span className={`text-xs px-2 py-1 rounded ${neutralBadgeClass}`}>
+                        Section : {getMenuGroupLabel(page.menuGroup)}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
                 <div className="flex gap-1.5 sm:gap-2 flex-wrap justify-end w-full lg:w-auto pt-2 lg:pt-0 border-t lg:border-t-0 border-white/5">
                   <button
@@ -277,7 +378,8 @@ const UserPagesManager = () => {
                   </button>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         )}
       </div>

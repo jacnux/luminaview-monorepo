@@ -595,6 +595,14 @@ const Dashboard = () => {
       : copy.sort((a, b) => (b.title || '').localeCompare(a.title || '', 'fr', { sensitivity: 'base' }));
   }, [filteredAlbums, sortAZ]);
 
+  const realAlbumsCount = useMemo(() => albums.filter(a => !a.isVirtual).length, [albums]);
+  const virtualGalleriesCount = useMemo(() => albums.filter(a => a.isVirtual).length, [albums]);
+  const totalPhotosCount = useMemo(() => {
+    return albums
+      .filter(a => !a.isVirtual)
+      .reduce((acc, a) => acc + (a.photos?.length || a.photoCount || 0), 0);
+  }, [albums]);
+
   const albumActions = {
     onEdit: setEditingAlbum,
     onDelete: (album: any) => setAlbumToDelete(album),
@@ -636,6 +644,44 @@ const Dashboard = () => {
               )}
             </div>
           )}
+
+          {/* Sélecteur d'onglets & Indicateurs de volume */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6 pb-4 border-b border-white/10">
+            <div className="flex items-center gap-2">
+              <Link
+                to="/dashboard"
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition duration-200 ${
+                  !isGalleries
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                    : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5'
+                }`}
+              >
+                <span>📁 Albums</span>
+                <span className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${!isGalleries ? 'bg-white/25 text-white' : 'bg-black/30 text-gray-400'}`}>
+                  {realAlbumsCount}
+                </span>
+              </Link>
+
+              <Link
+                to="/galleries"
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition duration-200 ${
+                  isGalleries
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                    : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5'
+                }`}
+              >
+                <span>🗂️ Galeries virtuelles</span>
+                <span className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${isGalleries ? 'bg-white/25 text-white' : 'bg-black/30 text-gray-400'}`}>
+                  {virtualGalleriesCount}
+                </span>
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/10 self-start md:self-auto">
+              <span>📸</span>
+              <span><strong className="text-white font-bold">{totalPhotosCount}</strong> photo{totalPhotosCount > 1 ? 's' : ''} au total</span>
+            </div>
+          </div>
 
           <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
             {/* Barre de recherche et Bouton Créer */}
@@ -751,22 +797,46 @@ const Dashboard = () => {
           </div>
 
           {sortedAlbums.length === 0 && (
-            <div
-              className={`text-center mt-12 ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}
-            >
+            <div className="mt-12 max-w-md mx-auto p-8 rounded-2xl bg-white/5 border border-white/10 text-center backdrop-blur shadow-xl">
               {searchQuery ? (
                 <>
-                  <p className="text-xl mb-2">Aucun résultat pour "{searchQuery}"</p>
-                  <p>Essayez avec d'autres mots-clés.</p>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center text-3xl border border-white/10">
+                    🔍
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1">
+                    Aucun résultat trouvé
+                  </h3>
+                  <p className="text-sm text-gray-400 mb-6">
+                    Aucun élément ne correspond à « <span className="text-yellow-400 font-medium">{searchQuery}</span> ».
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold transition"
+                  >
+                    Effacer la recherche
+                  </button>
                 </>
               ) : (
                 <>
-                  <p className="text-xl mb-2">
-                    Aucun {isGalleries ? 'galerie' : 'album'} pour le moment.
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-3xl">
+                    {isGalleries ? '🗂️' : '📁'}
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1">
+                    {isGalleries ? 'Aucune galerie virtuelle pour le moment' : 'Votre bibliothèque est encore vide'}
+                  </h3>
+                  <p className="text-sm text-gray-400 mb-6">
+                    {isGalleries
+                      ? 'Composez des présentations thématiques personnalisées sans dupliquer vos fichiers sources.'
+                      : 'Téléversez vos premières séries photographiques pour commencer à composer votre portfolio.'}
                   </p>
-                  <p>Commencez par créer votre première galerie !</p>
+                  <Link
+                    to="/create-album"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-blue-600/30 transition hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <span>+</span>
+                    <span>{isGalleries ? 'Créer une galerie' : 'Créer un album'}</span>
+                  </Link>
                 </>
               )}
             </div>
