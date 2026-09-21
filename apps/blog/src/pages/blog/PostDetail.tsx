@@ -138,7 +138,7 @@ const PostDetail: React.FC = () => {
         {/* Pied d'article : Bouton de partage */}
         <div className="mt-12 pt-6 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between flex-wrap gap-4">
           <span className="text-xs text-gray-400 dark:text-gray-500 font-light">
-            Publié dans le journal de <strong>{blogName.toUpperCase()}</strong>
+            Publié dans le journal de <strong>{(blogSlug || 'jac').toUpperCase()}</strong>
           </span>
           <button
             type="button"
