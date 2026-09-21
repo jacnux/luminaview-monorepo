@@ -77,10 +77,11 @@ const UserPagesManager = () => {
   const getParentInfo = (page: any) => {
     if (!page.parentPageId) return null;
     if (typeof page.parentPageId === 'object' && page.parentPageId.title) {
-      return { id: page.parentPageId._id, title: page.parentPageId.title };
+      return { id: String(page.parentPageId._id), title: page.parentPageId.title };
     }
-    const parent = pages.find((p: any) => p._id === page.parentPageId);
-    if (parent) return { id: parent._id, title: (parent as any).title };
+    const pid = typeof page.parentPageId === 'object' ? page.parentPageId._id : page.parentPageId;
+    const parent = pages.find((p: any) => String(p._id) === String(pid));
+    if (parent) return { id: String(parent._id), title: (parent as any).title };
     return null;
   };
 
@@ -93,7 +94,7 @@ const UserPagesManager = () => {
       );
       return result.map(p => {
         const parent = getParentInfo(p);
-        return { ...p, isChild: Boolean(parent), parentTitle: parent?.title };
+        return { ...p, level: parent ? 1 : 0, isChild: Boolean(parent), parentTitle: parent?.title };
       });
     }
 
@@ -104,37 +105,61 @@ const UserPagesManager = () => {
         : copy.sort((a, b) => (b.title || '').localeCompare(a.title || '', 'fr', { sensitivity: 'base' }));
       return sorted.map(p => {
         const parent = getParentInfo(p);
-        return { ...p, isChild: Boolean(parent), parentTitle: parent?.title };
+        return { ...p, level: parent ? 1 : 0, isChild: Boolean(parent), parentTitle: parent?.title };
       });
     }
 
-    // Organisation arborescente par défaut (pages racines puis leurs sous-pages)
-    const roots = result
-      .filter(p => !getParentInfo(p))
-      .sort((a, b) => (a.menuOrder ?? 0) - (b.menuOrder ?? 0));
+    // Arborescence récursive multi-niveaux complète (roots -> enfants -> sous-enfants)
+    const pageMap = new Map<string, any>();
+    result.forEach(p => pageMap.set(String(p._id), p));
 
-    const hierarchicalList: any[] = [];
+    const childrenMap = new Map<string, any[]>();
+    const roots: any[] = [];
 
-    roots.forEach(root => {
-      hierarchicalList.push({ ...root, isChild: false });
-      const children = result
-        .filter(p => {
-          const parent = getParentInfo(p);
-          return parent && parent.id === root._id;
-        })
-        .sort((a, b) => (a.menuOrder ?? 0) - (b.menuOrder ?? 0));
-
-      children.forEach(child => {
-        hierarchicalList.push({ ...child, isChild: true, parentTitle: root.title });
-      });
+    result.forEach(p => {
+      const parentInfo = getParentInfo(p);
+      if (parentInfo && pageMap.has(parentInfo.id)) {
+        if (!childrenMap.has(parentInfo.id)) {
+          childrenMap.set(parentInfo.id, []);
+        }
+        childrenMap.get(parentInfo.id)!.push(p);
+      } else {
+        roots.push(p);
+      }
     });
 
-    // Inclure d'éventuelles pages sous-pages dont le parent n'a pas été trouvé
-    const includedIds = new Set(hierarchicalList.map(p => p._id));
+    const sortByOrder = (a: any, b: any) => (a.menuOrder ?? 0) - (b.menuOrder ?? 0);
+    roots.sort(sortByOrder);
+    childrenMap.forEach(list => list.sort(sortByOrder));
+
+    const hierarchicalList: any[] = [];
+    const visited = new Set<string>();
+
+    const traverse = (page: any, depth: number, parentTitle?: string) => {
+      visited.add(String(page._id));
+      hierarchicalList.push({
+        ...page,
+        level: depth,
+        isChild: depth > 0,
+        parentTitle: parentTitle || getParentInfo(page)?.title
+      });
+
+      const children = childrenMap.get(String(page._id)) || [];
+      children.forEach(child => traverse(child, depth + 1, page.title));
+    };
+
+    roots.forEach(root => traverse(root, 0));
+
+    // Inclure d'éventuelles pages orphelines
     result.forEach(p => {
-      if (!includedIds.has(p._id)) {
-        const parent = getParentInfo(p);
-        hierarchicalList.push({ ...p, isChild: Boolean(parent), parentTitle: parent?.title });
+      if (!visited.has(String(p._id))) {
+        const parentInfo = getParentInfo(p);
+        hierarchicalList.push({
+          ...p,
+          level: parentInfo ? 1 : 0,
+          isChild: Boolean(parentInfo),
+          parentTitle: parentInfo?.title
+        });
       }
     });
 
@@ -169,11 +194,24 @@ const UserPagesManager = () => {
     return <div className={`p-8 ${shellTextClass}`}>Chargement...</div>;
   }
 
+  const rootPagesCount = useMemo(() => pages.filter(p => !getParentInfo(p)).length, [pages]);
+  const subPagesCount = useMemo(() => pages.filter(p => getParentInfo(p)).length, [pages]);
+
   return (
     <div className={`w-full ${shellTextClass}`}>
       <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        <div className="flex justify-between items-center mb-8 gap-4 flex-wrap">
-          <h1 className="text-3xl font-bold text-yellow-500">Mes Pages</h1>
+        <div className="flex justify-between items-center mb-6 gap-4 flex-wrap pb-4 border-b border-white/10">
+          <div>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-3xl font-extrabold tracking-tight text-yellow-500">Mes Pages</h1>
+              <span className="text-xs px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-bold">
+                Arborescence : {rootPagesCount} principale{rootPagesCount > 1 ? 's' : ''} · {subPagesCount} sous-page{subPagesCount > 1 ? 's' : ''}
+              </span>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">
+              Structure de vos pages : les sous-pages sont regroupées et indentées directement sous leur page parente.
+            </p>
+          </div>
           <div className="flex gap-2 items-center flex-wrap">
             <button
               type="button"
@@ -289,33 +327,37 @@ const UserPagesManager = () => {
             {filteredAndSortedPages.map(page => {
               const isChild = Boolean((page as any).isChild);
               const parentTitle = (page as any).parentTitle;
+              const level = (page as any).level || (isChild ? 1 : 0);
+
+              const indentClass = level === 1
+                ? 'ml-4 sm:ml-12 border-l-4 border-l-amber-500 bg-amber-500/[0.04]'
+                : level >= 2
+                ? 'ml-8 sm:ml-24 border-l-4 border-l-yellow-400 bg-yellow-500/[0.06]'
+                : 'border-l-4 border-l-blue-500/50';
 
               return (
                 <div
                   key={page._id}
-                  className={`p-4 rounded-xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 transition duration-200 ${cardClass} ${
-                    isChild
-                      ? 'ml-3 sm:ml-8 border-l-4 border-l-amber-500/80 bg-white/[0.03] dark:bg-gray-800/50'
-                      : ''
-                  }`}
+                  className={`p-4 sm:p-5 rounded-xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 transition-all duration-200 ${cardClass} ${indentClass} shadow-lg`}
                 >
                   <div className="flex-1 min-w-0 w-full">
+                    {/* Badge d'identification arborescente */}
+                    {isChild ? (
+                      <div className="inline-flex items-center gap-2 px-3 py-1 mb-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold shadow-sm">
+                        <span className="text-base font-black leading-none select-none">↳</span>
+                        <span>Sous-page {level > 1 ? `(niveau ${level}) ` : ''}rattachée à : <strong className="text-white underline decoration-amber-400/60">{parentTitle}</strong></span>
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 mb-2 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30 text-[11px] font-bold uppercase tracking-wider">
+                        <span>📁</span>
+                        <span>Page Principale</span>
+                      </div>
+                    )}
+
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {isChild && (
-                            <span className="text-amber-400 font-black text-lg select-none">
-                              ↳
-                            </span>
-                          )}
-                          <h2 className="text-lg sm:text-xl font-bold truncate text-white">{page.title}</h2>
-                          {isChild && parentTitle && (
-                            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                              Sous-page de {parentTitle}
-                            </span>
-                          )}
-                        </div>
-                        <p className={`text-sm ${mutedTextClass} ${isChild ? 'pl-5' : ''}`}>/{page.slug}</p>
+                        <h2 className="text-lg sm:text-xl font-extrabold truncate text-white">{page.title}</h2>
+                        <p className={`text-sm ${mutedTextClass}`}>/{page.slug}</p>
                       </div>
                       <div className="text-sm text-right">
                         <p className={mutedTextClass}>Ordre menu : <span className="font-semibold text-white">{page.menuOrder ?? 0}</span></p>
