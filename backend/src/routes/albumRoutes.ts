@@ -5,6 +5,7 @@
 // ====================================================
 
 import express, { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import path from 'path';
 import fs from 'fs';
 import Album from '../models/Album';
@@ -79,7 +80,31 @@ router.get('/my/albums', authenticateToken, async (req: Request, res: Response) 
     
     let albums = await Album.find(query).sort({ createdAt: -1 }).lean();
 
+    // Agrégation du nombre de photos par album pour cet utilisateur
+    const photoCounts = await Photo.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(req.user.userId)
+        }
+      },
+      {
+        $group: {
+          _id: '$albumId',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const countMap = new Map<string, number>();
+    photoCounts.forEach((pc: { _id: any; count: number }) => {
+      if (pc._id) {
+        countMap.set(pc._id.toString(), pc.count);
+      }
+    });
+
     const updatedAlbums = await Promise.all(albums.map(async (album) => {
+      (album as any).photoCount = countMap.get(album._id.toString()) || 0;
+
       if ((album.isVirtual || album.filterValue) && !album.coverImage && album.virtualFilter === 'tag' && album.filterValue) {
         const rawTags = album.filterValue.split(',').map(t => t.trim()).filter(t => t);
         const positiveTags = rawTags.filter(t => !t.startsWith('-'));

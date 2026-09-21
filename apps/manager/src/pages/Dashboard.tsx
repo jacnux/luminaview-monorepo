@@ -147,6 +147,10 @@ const AlbumCardGrid = ({
             Voir l'album
           </Link>
           <div className="flex flex-wrap items-center gap-1.5 justify-end">
+            <span className="text-[11px] font-semibold px-2 py-1 rounded-lg bg-white/10 text-gray-200 border border-white/15">
+              📷 {album.photoCount ?? 0} photo{(album.photoCount ?? 0) > 1 ? 's' : ''}
+            </span>
+
             <button
               onClick={() => onToggleVisibility(album._id, album.isPublic)}
               className={`text-[11px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border transition ${
@@ -240,6 +244,10 @@ const AlbumCardList = ({
         {album.description || 'Aucune description'}
       </p>
       <div className="flex flex-wrap items-center gap-1.5">
+        <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-white/10 text-gray-200 border border-white/15">
+          📷 {album.photoCount ?? 0} photo{(album.photoCount ?? 0) > 1 ? 's' : ''}
+        </span>
+
         <button
           onClick={() => onToggleVisibility(album._id, album.isPublic)}
           className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded border transition ${
