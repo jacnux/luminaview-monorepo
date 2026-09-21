@@ -80,11 +80,13 @@ router.get('/my/albums', authenticateToken, async (req: Request, res: Response) 
     
     let albums = await Album.find(query).sort({ createdAt: -1 }).lean();
 
-    // Agrégation du nombre de photos par album pour cet utilisateur
+    const albumIds = albums.map(a => a._id);
+
+    // Agrégation du nombre de photos par album
     const photoCounts = await Photo.aggregate([
       {
         $match: {
-          userId: new mongoose.Types.ObjectId(req.user.userId)
+          albumId: { $in: albumIds }
         }
       },
       {
@@ -103,24 +105,26 @@ router.get('/my/albums', authenticateToken, async (req: Request, res: Response) 
     });
 
     const updatedAlbums = await Promise.all(albums.map(async (album) => {
-      (album as any).photoCount = countMap.get(album._id.toString()) || 0;
-
-      if ((album.isVirtual || album.filterValue) && !album.coverImage && album.virtualFilter === 'tag' && album.filterValue) {
+      if (album.isVirtual && album.virtualFilter === 'tag' && album.filterValue) {
         const rawTags = album.filterValue.split(',').map(t => t.trim()).filter(t => t);
         const positiveTags = rawTags.filter(t => !t.startsWith('-'));
         const negativeTags = rawTags.filter(t => t.startsWith('-')).map(t => t.substring(1));
 
-        if (positiveTags.length > 0) {
-          const query: any = { tags: { $all: positiveTags } };
-          query.userId = req.user.userId;
-          if (negativeTags.length > 0) query.tags.$nin = negativeTags;
+        const virtualQuery: any = { userId: req.user.userId };
+        if (positiveTags.length > 0) virtualQuery.tags = { $all: positiveTags };
+        if (negativeTags.length > 0) virtualQuery.tags = { ...(virtualQuery.tags || {}), $nin: negativeTags };
 
-          const photo = await Photo.findOne(query).sort({ createdAt: -1 }).select('filename');
+        (album as any).photoCount = await Photo.countDocuments(virtualQuery);
+
+        if (!album.coverImage && positiveTags.length > 0) {
+          const photo = await Photo.findOne(virtualQuery).sort({ createdAt: -1 }).select('filename');
           if (photo) {
             album.coverImage = photo.filename;
             await Album.updateOne({ _id: album._id }, { coverImage: photo.filename });
           }
         }
+      } else {
+        (album as any).photoCount = countMap.get(album._id.toString()) || 0;
       }
       return album;
     }));
