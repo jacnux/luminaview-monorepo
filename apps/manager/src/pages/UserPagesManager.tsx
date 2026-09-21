@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { getPageUrl } from '../utils/urls';
 
 type PageSortMode = 'az' | 'za' | null;
@@ -29,6 +30,7 @@ const UserPagesManager = () => {
   const [loading, setLoading] = useState(true);
   const [pageSortAZ, setPageSortAZ] = useState<PageSortMode>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [pageToDelete, setPageToDelete] = useState<{ id: string; title: string } | null>(null);
   const { theme } = useTheme();
   const { showToast } = useToast();
 
@@ -52,14 +54,16 @@ const UserPagesManager = () => {
     }
   };
 
-  const handleDelete = async (id: string, title: string) => {
-    if (!window.confirm(`Supprimer "${title}" ?`)) return;
+  const confirmDelete = async () => {
+    if (!pageToDelete) return;
     try {
-      await api.delete(`/user-pages/my/${id}`);
-      setPages(prev => prev.filter(p => p._id !== id));
-      showToast(`Page "${title}" supprimée.`, 'success');
+      await api.delete(`/user-pages/my/${pageToDelete.id}`);
+      setPages(prev => prev.filter(p => p._id !== pageToDelete.id));
+      showToast(`Page "${pageToDelete.title}" supprimée.`, 'success');
     } catch (err) {
       showToast('Erreur lors de la suppression de la page', 'error');
+    } finally {
+      setPageToDelete(null);
     }
   };
 
@@ -233,32 +237,43 @@ const UserPagesManager = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-2 flex-wrap justify-end w-full lg:w-auto">
+                <div className="flex gap-1.5 sm:gap-2 flex-wrap justify-end w-full lg:w-auto pt-2 lg:pt-0 border-t lg:border-t-0 border-white/5">
                   <button
+                    type="button"
                     onClick={() => copyLink(page.slug)}
-                    className={`px-3 py-1 rounded text-sm transition ${shareButtonClass}`}
+                    className="px-2.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 hover:text-purple-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
+                    title="Copier le lien public"
                   >
-                    Partager
+                    <span>🔗</span>
+                    <span className="hidden sm:inline">Partager</span>
                   </button>
                   <a
                     href={getPageUrl(username, page.slug)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`px-3 py-1 rounded text-sm transition ${shareButtonClass}`}
+                    className="px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 hover:text-blue-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
+                    title="Voir la page publique"
                   >
-                    Voir
+                    <span>👁️</span>
+                    <span className="hidden sm:inline">Voir</span>
                   </a>
                   <Link
                     to={`/dashboard/pages/edit/${page._id}`}
-                    className="bg-yellow-500 hover:bg-yellow-400 px-3 py-1 rounded text-sm text-black font-bold transition"
+                    className="px-2.5 py-1.5 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 hover:text-yellow-100 text-xs sm:text-sm font-bold transition flex items-center gap-1 active:scale-95"
+                    title="Modifier la page"
                   >
-                    Modifier
+                    <span>✏️</span>
+                    <span>Modifier</span>
                   </Link>
                   <button
-                    onClick={() => handleDelete(page._id, page.title)}
-                    className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded text-sm text-white transition"
+                    type="button"
+                    onClick={() => setPageToDelete({ id: page._id, title: page.title })}
+                    className="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-100 text-xs sm:text-sm font-medium transition flex items-center gap-1 active:scale-95"
+                    title="Supprimer la page"
                   >
-                    Suppr.
+                    <span>🗑️</span>
+                    <span className="hidden sm:inline">Supprimer</span>
+                    <span className="sm:hidden">Suppr.</span>
                   </button>
                 </div>
               </div>
@@ -266,6 +281,17 @@ const UserPagesManager = () => {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={Boolean(pageToDelete)}
+        title="Supprimer la page"
+        message={`Êtes-vous sûr de vouloir supprimer définitivement la page "${pageToDelete?.title}" ? Cette action est irréversible.`}
+        confirmText="Supprimer définitivement"
+        cancelText="Annuler"
+        isDanger={true}
+        onConfirm={confirmDelete}
+        onCancel={() => setPageToDelete(null)}
+      />
     </div>
   );
 };

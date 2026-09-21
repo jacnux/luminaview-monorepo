@@ -146,6 +146,25 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onSave 
       .sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }));
   }, [availableTags, includedTags, excludedTags, tagSearchQuery]);
 
+  // Prévisualisation en direct de l'ordre selon le sortOrder sélectionné
+  const previewSortedPhotos = useMemo(() => {
+    if (!Array.isArray(photos) || photos.length === 0) return [];
+    const copy = [...photos];
+    switch (sortOrder) {
+      case 'date_asc':
+        return copy.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+      case 'title_asc':
+        return copy.sort((a, b) => (a.title || a.filename || '').localeCompare(b.title || b.filename || '', 'fr', { sensitivity: 'base' }));
+      case 'title_desc':
+        return copy.sort((a, b) => (b.title || b.filename || '').localeCompare(a.title || a.filename || '', 'fr', { sensitivity: 'base' }));
+      case 'manual':
+        return copy.sort((a, b) => (a.manualOrder ?? a.order ?? 0) - (b.manualOrder ?? b.order ?? 0));
+      case 'date_desc':
+      default:
+        return copy.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    }
+  }, [photos, sortOrder]);
+
   // 4. Soumission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,8 +189,8 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onSave 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-6 animate-fade-in">
-      <div className="bg-gray-900 border border-white/15 rounded-3xl shadow-2xl max-w-5xl w-full flex flex-col max-h-[92vh] overflow-hidden text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-0 sm:p-4 md:p-6 animate-fade-in">
+      <div className="bg-gray-900 border-0 sm:border border-white/15 rounded-none sm:rounded-3xl shadow-2xl max-w-5xl w-full h-full sm:h-auto flex flex-col max-h-none sm:max-h-[92vh] overflow-hidden text-white">
         
         {/* EN-TÊTE FIXE (Sticky Header) */}
         <div className="px-6 py-4 border-b border-white/10 bg-gray-900/90 backdrop-blur-md flex items-center justify-between flex-shrink-0 z-10">
@@ -443,6 +462,41 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onSave 
                     );
                   })}
                 </div>
+
+                {/* Aperçu en direct de l'ordre de la séquence */}
+                {previewSortedPhotos.length > 0 && (
+                  <div className="pt-3 border-t border-white/10 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-gray-200 flex items-center gap-1.5">
+                        <span>👁️</span> Aperçu direct de l'ordre ({previewSortedPhotos.length} photos)
+                      </span>
+                      <span className="text-[11px] text-blue-300 font-mono">
+                        {SORT_OPTIONS.find(o => o.value === sortOrder)?.label}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-gray-400">
+                      Voici les premières photos dans l'ordre qui sera affiché :
+                    </p>
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 bg-black/40 p-2.5 rounded-xl border border-white/10 max-h-36 overflow-y-auto">
+                      {previewSortedPhotos.slice(0, 12).map((photo, index) => (
+                        <div
+                          key={photo._id || index}
+                          className="relative group rounded-lg overflow-hidden aspect-square border border-white/15 bg-black/50"
+                          title={photo.title || `Photo #${index + 1}`}
+                        >
+                          <img
+                            src={`/uploads/${photo.thumbnailUrl || photo.filename}`}
+                            alt={photo.title || `Photo ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <span className="absolute top-1 left-1 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm border border-white/20">
+                            #{index + 1}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Photo de Couverture */}

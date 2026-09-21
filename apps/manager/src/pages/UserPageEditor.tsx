@@ -9,6 +9,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import api from '../utils/api';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import { getPageUrl } from '../utils/urls';
 
 type MenuGroup = 'none' | 'series' | 'exhibitions' | 'blog' | 'about';
@@ -76,6 +77,7 @@ const normalizeSlug = (value: string) =>
 const UserPageEditor = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { showToast } = useToast();
 
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
@@ -93,7 +95,6 @@ const UserPageEditor = () => {
   const [showInMenu, setShowInMenu] = useState(false);
   const [albumSortAZ, setAlbumSortAZ] = useState<'az' | 'za'>('az');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -149,13 +150,13 @@ const UserPageEditor = () => {
 
         setSections(formattedSections);
       } catch (err) {
-        alert('Erreur chargement page');
+        showToast('Erreur lors du chargement de la page', 'error');
         navigate('/dashboard/pages');
       }
     };
 
     fetchPageData();
-  }, [id, navigate]);
+  }, [id, navigate, showToast]);
 
   useEffect(() => {
     const fetchAlbums = async () => {
@@ -355,13 +356,12 @@ const UserPageEditor = () => {
     if (hasEditorialMode) {
       const firstSection = cleanedSections[0];
       if (!firstSection || firstSection.type !== 'text') {
-        setMessage(`Une ${pageKindLabel} doit commencer par un bloc texte d'introduction.`);
+        showToast(`Une ${pageKindLabel} doit commencer par un bloc texte d'introduction.`, 'warning');
         return;
       }
     }
 
     setLoading(true);
-    setMessage('');
 
     try {
       await api.post('/user-pages/my/save', {
@@ -379,11 +379,11 @@ const UserPageEditor = () => {
         editorialSummary: computedEditorialSummary,
       });
 
-      setMessage('Page sauvegardée !');
-      setTimeout(() => navigate('/dashboard/pages'), 900);
+      showToast('Page sauvegardée avec succès !', 'success');
+      setTimeout(() => navigate('/dashboard/pages'), 700);
     } catch (err: any) {
       console.error(err);
-      setMessage(err.response?.data?.error || 'Erreur serveur');
+      showToast(err.response?.data?.error || 'Erreur lors de la sauvegarde de la page', 'error');
     } finally {
       setLoading(false);
     }
@@ -457,12 +457,6 @@ const UserPageEditor = () => {
             </button>
           </div>
         </div>
-
-        {message && (
-          <div className="bg-blue-600/90 border border-blue-400/30 p-3 rounded-xl mb-5 text-center text-sm md:text-base animate-fade-in shadow-md">
-            {message}
-          </div>
-        )}
 
         <div className="bg-gray-900 border border-white/10 p-6 rounded-2xl mb-6 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

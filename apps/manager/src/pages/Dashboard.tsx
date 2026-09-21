@@ -12,6 +12,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import api from '../utils/api';
 import EditAlbumModal from '../components/EditAlbumModal';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { getAppUrl } from '../utils/urls';
 
 type ViewMode = 'grid' | 'list';
@@ -449,6 +450,7 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [albumToDelete, setAlbumToDelete] = useState<any | null>(null);
 
   const { user, loading } = useAuth();
   const { theme } = useTheme();
@@ -502,11 +504,9 @@ const Dashboard = () => {
     }
   };
 
-  const deleteAlbum = async (album: any) => {
-    const targetLabel = album?.isVirtual
-      ? 'cette galerie'
-      : 'cet album et ses photos associées';
-    if (!window.confirm(`Supprimer ${targetLabel} ?`)) return;
+  const confirmDeleteAlbum = async () => {
+    if (!albumToDelete) return;
+    const album = albumToDelete;
 
     try {
       const res = await api.delete<DeleteAlbumResponse>(`/albums/${album._id}`);
@@ -533,6 +533,8 @@ const Dashboard = () => {
       showToast(apiMessage || 'Erreur lors de la suppression.', 'error');
       setErrorMessage(apiMessage || 'Erreur lors de la suppression.');
       setFeedbackMessage(null);
+    } finally {
+      setAlbumToDelete(null);
     }
   };
 
@@ -595,7 +597,7 @@ const Dashboard = () => {
 
   const albumActions = {
     onEdit: setEditingAlbum,
-    onDelete: deleteAlbum,
+    onDelete: (album: any) => setAlbumToDelete(album),
     onShare: setSharingAlbum,
     onToggleVisibility: toggleVisibility,
     onToggleFeatured: toggleFeatured,
@@ -787,6 +789,21 @@ const Dashboard = () => {
           onCopy={(msg, type) => showToast(msg, type || 'success')}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={Boolean(albumToDelete)}
+        title={albumToDelete?.isVirtual ? 'Supprimer la galerie' : "Supprimer l'album"}
+        message={
+          albumToDelete?.isVirtual
+            ? `Êtes-vous sûr de vouloir supprimer la galerie virtuelle "${albumToDelete?.title}" ? Aucune photo source ne sera effacée.`
+            : `Êtes-vous sûr de vouloir supprimer définitivement l'album "${albumToDelete?.title}" et toutes ses photos associées ? Cette action est irréversible.`
+        }
+        confirmText="Supprimer définitivement"
+        cancelText="Annuler"
+        isDanger={true}
+        onConfirm={confirmDeleteAlbum}
+        onCancel={() => setAlbumToDelete(null)}
+      />
     </div>
   );
 };

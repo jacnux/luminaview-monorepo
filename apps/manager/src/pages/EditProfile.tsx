@@ -29,6 +29,7 @@ const EditProfile: React.FC = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
 
   const [servicesTab, setServicesTab] = useState<'edit' | 'preview'>('edit');
   const [bioTab, setBioTab] = useState<'edit' | 'preview'>('edit');
@@ -273,6 +274,68 @@ const EditProfile: React.FC = () => {
                 </div>
               </div>
 
+              {/* CARD MODULES & EXTENSIONS (Compacte, avant le Thème Visuel) */}
+              <div className={`p-5 sm:p-6 rounded-2xl space-y-3.5 ${panelClass}`}>
+                <div className="flex items-center justify-between border-b pb-2.5" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                  <h3 className="text-sm sm:text-base font-bold flex items-center gap-2">
+                    <span className="text-yellow-500">⚙️</span> Modules & Extensions
+                  </h3>
+                  <span className={`text-[11px] ${subtleTextClass}`}>
+                    Navigation & outils
+                  </span>
+                </div>
+
+                <div className="space-y-2.5">
+                  {/* Switch Blog */}
+                  <div className={`flex items-center justify-between p-3 rounded-xl border ${sectionBorderClass} transition duration-200 hover:border-yellow-500/30`}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="text-lg">✍️</span>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-xs sm:text-sm text-white truncate">Module Blog</div>
+                        <div className={`text-[11px] ${subtleTextClass} truncate`}>Articles & commentaires</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setHasBlog(!hasBlog)}
+                      className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        hasBlog ? 'bg-amber-500' : theme === 'dark' ? 'bg-gray-800' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          hasBlog ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Switch Carnet */}
+                  <div className={`flex items-center justify-between p-3 rounded-xl border ${sectionBorderClass} transition duration-200 hover:border-yellow-500/30`}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="text-lg">🎞️</span>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-xs sm:text-sm text-white truncate">Chambre Noire</div>
+                        <div className={`text-[11px] ${subtleTextClass} truncate`}>Carnet de création & labo</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setHasCarnet(!hasCarnet)}
+                      className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        hasCarnet ? 'bg-teal-500' : theme === 'dark' ? 'bg-gray-800' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          hasCarnet ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* CARD 2 : STYLE & DESIGN */}
               <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
                 <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
@@ -350,117 +413,71 @@ const EditProfile: React.FC = () => {
                 </div>
               </div>
 
-              {/* CARD 6 : SÉCURITÉ (Déplacé dans la colonne de gauche) */}
-              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
-                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                  <span className="text-yellow-500">🔒</span> Sécurité & Mot de passe
-                </h3>
+              {/* CARD 6 : SÉCURITÉ (Accordéon rétractable) */}
+              <div className={`p-5 sm:p-6 rounded-2xl ${panelClass} transition duration-200`}>
+                <button
+                  type="button"
+                  onClick={() => setIsPasswordOpen(!isPasswordOpen)}
+                  className="w-full flex items-center justify-between text-left group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-yellow-500 text-base">🔒</span>
+                    <span className="font-bold text-sm sm:text-base text-white group-hover:text-yellow-400 transition">
+                      Modifier mon mot de passe
+                    </span>
+                  </div>
+                  <span className={`text-xs px-2.5 py-1 rounded-lg border border-white/10 bg-white/5 text-gray-400 transition transform ${isPasswordOpen ? 'rotate-180 text-yellow-400' : ''}`}>
+                    ▼
+                  </span>
+                </button>
                 
-                <div className="space-y-4">
-                  <div>
-                    <label className={labelClass}>Mot de passe actuel</label>
-                    <input
-                      type="password"
-                      value={currentPassword}
-                      onChange={e => setCurrentPassword(e.target.value)}
-                      className={inputClass}
-                      placeholder="Votre mot de passe actuel"
-                    />
+                {isPasswordOpen && (
+                  <div className="space-y-4 pt-4 mt-4 border-t border-white/10">
+                    <div>
+                      <label className={labelClass}>Mot de passe actuel</label>
+                      <input
+                        type="password"
+                        value={currentPassword}
+                        onChange={e => setCurrentPassword(e.target.value)}
+                        className={inputClass}
+                        placeholder="Votre mot de passe actuel"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Nouveau mot de passe</label>
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={e => setNewPassword(e.target.value)}
+                        className={inputClass}
+                        placeholder="Nouveau mot de passe (min 6 caractères)"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Confirmer le nouveau mot de passe</label>
+                      <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        className={inputClass}
+                        placeholder="Confirmez le nouveau mot de passe"
+                      />
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onClick={handlePasswordSubmit}
+                      className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-2.5 rounded-xl text-sm shadow hover:shadow-lg transition duration-200 active:scale-95"
+                    >
+                      Enregistrer le nouveau mot de passe
+                    </button>
                   </div>
-                  <div>
-                    <label className={labelClass}>Nouveau mot de passe</label>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={e => setNewPassword(e.target.value)}
-                      className={inputClass}
-                      placeholder="Nouveau mot de passe (min 6 caractères)"
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Confirmer le nouveau mot de passe</label>
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={e => setConfirmPassword(e.target.value)}
-                      className={inputClass}
-                      placeholder="Confirmez le nouveau mot de passe"
-                    />
-                  </div>
-                  
-                  <button
-                    type="button"
-                    onClick={handlePasswordSubmit}
-                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-xl shadow hover:shadow-lg transition duration-200 mt-2"
-                  >
-                    Modifier le mot de passe
-                  </button>
-                </div>
+                )}
               </div>
             </div>
 
             {/* COLONNE DROITE (60%) : FORMULAIRES TEXTES HAUTS */}
             <div className="lg:col-span-6 space-y-8">
-              {/* CARD 5 : MODULES & EXTENSIONS (Remonté tout en haut de la colonne droite) */}
-              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
-                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                  <span className="text-yellow-500">⚙️</span> Modules & Extensions
-                </h3>
-                <p className={`text-xs ${subtleTextClass}`}>
-                  Activez ou désactivez les applications additionnelles associées à votre compte. Les menus de navigation s'adapteront automatiquement.
-                </p>
-
-                <div className="space-y-4 pt-2">
-                  {/* Switch Blog */}
-                  <div className={`flex items-center justify-between p-4 rounded-xl border ${sectionBorderClass} transition duration-200`}>
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">✍️</span>
-                      <div>
-                        <div className="font-bold text-sm">Module Blog (Hélioscope)</div>
-                        <div className={`text-xs ${subtleTextClass}`}>Permet d'écrire des articles et de recevoir des commentaires publics.</div>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setHasBlog(!hasBlog)}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                        hasBlog ? 'bg-amber-500' : theme === 'dark' ? 'bg-gray-800' : 'bg-gray-300'
-                      }`}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                          hasBlog ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Switch Carnet */}
-                  <div className={`flex items-center justify-between p-4 rounded-xl border ${sectionBorderClass} transition duration-200`}>
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">🎞️</span>
-                      <div>
-                        <div className="font-bold text-sm">Module Chambre Noire</div>
-                        <div className={`text-xs ${subtleTextClass}`}>Espace de création complet : Idées, Projets de terrain, Matériel & Mémoire de laboratoire.</div>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setHasCarnet(!hasCarnet)}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                        hasCarnet ? 'bg-teal-500' : theme === 'dark' ? 'bg-gray-800' : 'bg-gray-300'
-                      }`}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                          hasCarnet ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
               {/* CARD 3 : IDENTITÉ & TEXTES */}
               <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
                 <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
