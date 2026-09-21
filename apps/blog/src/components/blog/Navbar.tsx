@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ themeClass, chambreNoireUrl = '', hasCa
   const getPortfolioUrl = () => {
     const hostname = window.location.hostname;
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
-    if (isLocal) return `http://localhost:7090/${blogName}`;
+    if (isLocal) return `http://localhost:7090/?user=${blogName}`;
     return `https://${blogName}.helioscope.fr`;
   };
 
