@@ -30,6 +30,8 @@ const EditProfile: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [isThemeOpen, setIsThemeOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
 
   const [servicesTab, setServicesTab] = useState<'edit' | 'preview'>('edit');
   const [bioTab, setBioTab] = useState<'edit' | 'preview'>('edit');
@@ -404,15 +406,29 @@ const EditProfile: React.FC = () => {
                 </div>
               </div>
 
-              {/* CARD 2 : STYLE & DESIGN */}
-              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
-                <h3 className="text-lg font-bold flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                  <span className="text-yellow-500">✦</span> Thème Visuel
-                </h3>
+              {/* CARD 2 : STYLE & DESIGN (Accordéon) */}
+              <div className={`p-5 sm:p-6 rounded-2xl ${panelClass} transition duration-200`}>
+                <button
+                  type="button"
+                  onClick={() => setIsThemeOpen(!isThemeOpen)}
+                  className="w-full flex items-center justify-between text-left group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-yellow-500 text-base">✦</span>
+                    <span className={`font-bold text-sm sm:text-base transition ${theme === 'dark' ? 'text-white group-hover:text-yellow-400' : 'text-gray-900 group-hover:text-yellow-600'}`}>
+                      Thème Visuel
+                    </span>
+                  </div>
+                  <span className={`text-xs px-2.5 py-1 rounded-lg border transition transform ${theme === 'dark' ? 'border-white/10 bg-white/5 text-gray-400' : 'border-gray-200 bg-gray-100 text-gray-500'} ${isThemeOpen ? 'rotate-180 text-yellow-500' : ''}`}>
+                    ▼
+                  </span>
+                </button>
                 
-                <div className="space-y-4">
-                  <label className={labelClass}>Choix de la mise en page globale</label>
-                  <div className="grid grid-cols-1 gap-4">
+                {isThemeOpen && (
+                  <div className="space-y-6 pt-4 mt-4 border-t" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                    <div className="space-y-4">
+                      <label className={labelClass}>Choix de la mise en page globale</label>
+                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                     <button
                       type="button"
                       onClick={() => setBlogTheme('classic')}
@@ -498,6 +514,8 @@ const EditProfile: React.FC = () => {
                     />
                   </div>
                 </div>
+                  </div>
+                )}
               </div>
 
               {/* CARD 6 : SÉCURITÉ (Accordéon rétractable) */}
@@ -749,13 +767,28 @@ const EditProfile: React.FC = () => {
                 </div>
               </div>
 
-              {/* CARD 4 : OFFRES & PRESTATIONS / PROJETS & SERVICES */}
-              <div className={`p-6 sm:p-8 rounded-2xl space-y-6 ${panelClass}`}>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-3 gap-3" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                  <h3 className="text-lg font-bold flex items-center gap-2">
-                    <span className="text-yellow-500">✦</span> Projets & Services
-                  </h3>
-                  <div className={tabToggleContainerClass}>
+              {/* CARD 4 : OFFRES & PRESTATIONS / PROJETS & SERVICES (Accordéon) */}
+              <div className={`p-5 sm:p-6 rounded-2xl ${panelClass} transition duration-200`}>
+                <button
+                  type="button"
+                  onClick={() => setIsServicesOpen(!isServicesOpen)}
+                  className="w-full flex items-center justify-between text-left group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-yellow-500 text-base">✦</span>
+                    <span className={`font-bold text-sm sm:text-base transition ${theme === 'dark' ? 'text-white group-hover:text-yellow-400' : 'text-gray-900 group-hover:text-yellow-600'}`}>
+                      Projets & Services
+                    </span>
+                  </div>
+                  <span className={`text-xs px-2.5 py-1 rounded-lg border transition transform ${theme === 'dark' ? 'border-white/10 bg-white/5 text-gray-400' : 'border-gray-200 bg-gray-100 text-gray-500'} ${isServicesOpen ? 'rotate-180 text-yellow-500' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+
+                {isServicesOpen && (
+                  <>
+                  <div className="space-y-6 pt-4 mt-4 border-t" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-3">
                     <button
                       type="button"
                       onClick={() => setServicesTab('edit')}
@@ -903,6 +936,8 @@ const EditProfile: React.FC = () => {
                     </div>
                   )}
                 </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
