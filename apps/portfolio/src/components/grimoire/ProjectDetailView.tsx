@@ -79,6 +79,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
   };
 
   return (
+    <>
     <motion.div
       className="grimoire-project-page"
       initial={{ opacity: 0, y: 20 }}
@@ -157,24 +158,7 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
         </div>
       )}
 
-      {/* VISIONNEUSE INTERACTIVE LIGHTBOX */}
-      <AnimatePresence>
-        {lightboxIndex !== null && albumPhotos.length > 0 && (
-          <Lightbox
-            photos={albumPhotos}
-            initialIndex={lightboxIndex}
-            onClose={() => setLightboxIndex(null)}
-            onComment={(idx) => {
-              setLightboxIndex(idx);
-              setShowCommentModal(true);
-            }}
-            onReport={(idx) => {
-              setLightboxIndex(idx);
-              setShowReportModal(true);
-            }}
-          />
-        )}
-      </AnimatePresence>
+    </motion.div>
 
       {/* MODALE DE COMMENTAIRE */}
       {showCommentModal && lightboxIndex !== null && albumPhotos[lightboxIndex] && (
@@ -201,7 +185,26 @@ const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ album, photos, on
           error={reportError}
         />
       )}
-    </motion.div>
+
+      {/* VISIONNEUSE INTERACTIVE LIGHTBOX */}
+      <AnimatePresence>
+        {lightboxIndex !== null && albumPhotos.length > 0 && (
+          <Lightbox
+            photos={albumPhotos}
+            initialIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            onComment={(idx) => {
+              setLightboxIndex(idx);
+              setShowCommentModal(true);
+            }}
+            onReport={(idx) => {
+              setLightboxIndex(idx);
+              setShowReportModal(true);
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
