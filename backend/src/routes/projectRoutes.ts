@@ -25,7 +25,7 @@ router.get('/public/all', async (req: Request, res: Response) => {
     const statusParam = req.query.status as string;
     const mediumParam = req.query.medium as string;
 
-    let query: any = {};
+    let query: any = { isPublished: true };
 
     if (statusParam) {
       if (statusParam === 'ALL') {
