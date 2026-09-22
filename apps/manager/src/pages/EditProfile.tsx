@@ -233,42 +233,42 @@ const EditProfile: React.FC = () => {
         </div>
 
         {/* Jauge de complétion du profil */}
-        <div className={`p-4 sm:p-5 rounded-2xl ${panelClass} flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition duration-300`}>
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="relative flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-black text-base shadow-inner">
+        <div className={`px-4 py-3 rounded-xl ${panelClass} flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition duration-300`}>
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold text-xs shadow-inner">
               {profileCompletion.score}%
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-bold flex items-center gap-2">
-                <span>Niveau de complétion de votre profil</span>
+              <div className="text-xs font-semibold flex items-center gap-2">
+                <span>Complétion du profil</span>
                 {profileCompletion.score === 100 ? (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-300 border border-green-500/30 font-semibold">
-                    Complet 🎉
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-300 border border-green-500/30 font-medium">
+                    Complet
                   </span>
                 ) : (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 font-semibold">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 font-medium">
                     En progression
                   </span>
                 )}
               </div>
-              <p className="text-xs text-gray-400 mt-0.5 truncate">
+              <p className="text-[10px] text-gray-400 mt-0.5 truncate max-w-sm">
                 {profileCompletion.missing.length > 0
-                  ? `Conseil : Renseignez ${profileCompletion.missing[0]} pour optimiser votre visibilité.`
-                  : 'Félicitations, votre profil public dispose de toutes les informations optimales !'}
+                  ? `Conseil : Renseignez ${profileCompletion.missing[0]}.`
+                  : 'Félicitations, votre profil est complet !'}
               </p>
             </div>
           </div>
 
-          <div className="w-full sm:w-60 flex-shrink-0 flex flex-col gap-1.5">
-            <div className="w-full bg-black/40 dark:bg-black/60 rounded-full h-2.5 overflow-hidden border border-white/10">
+          <div className="w-full sm:w-48 flex-shrink-0 flex flex-col gap-1">
+            <div className="flex justify-between items-center text-[9px] text-gray-500 font-medium px-0.5">
+              <span>Visibilité</span>
+              <span className="text-gray-400">{profileCompletion.score} / 100</span>
+            </div>
+            <div className="w-full bg-black/40 dark:bg-black/60 rounded-full h-1.5 overflow-hidden border border-white/10 mt-0.5">
               <div
-                className="h-full bg-gradient-to-r from-yellow-500 via-amber-400 to-emerald-400 transition-all duration-500 rounded-full shadow-[0_0_12px_rgba(234,179,8,0.5)]"
+                className="h-full bg-gradient-to-r from-yellow-500 via-amber-400 to-emerald-400 transition-all duration-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.4)]"
                 style={{ width: `${profileCompletion.score}%` }}
               />
-            </div>
-            <div className="flex justify-between items-center text-[10px] text-gray-500 font-medium px-0.5">
-              <span>Visibilité portfolio</span>
-              <span className="text-gray-400">{profileCompletion.score} / 100</span>
             </div>
           </div>
         </div>
