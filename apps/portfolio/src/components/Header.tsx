@@ -113,6 +113,8 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const isGaleriesTheme = profile?.blogTheme === 'portfolio-galeries';
+
   return (
     <header className="header">
       <div className="header-title">
@@ -234,8 +236,21 @@ const Header: React.FC<HeaderProps> = ({
               </a>
             </li>
 
+            {/* SECTION GALERIES (Thème Classique) */}
+            {isGaleriesTheme && (
+              <li>
+                <a 
+                  href="#" 
+                  onClick={(e) => { e.preventDefault(); navigateTo('galleries'); }}
+                  className={currentPage === 'galleries' ? 'active' : ''}
+                >
+                  Galeries
+                </a>
+              </li>
+            )}
+
             {/* SECTION SÉRIES */}
-            {pages.filter(p => p.menuGroup === 'series' && !p.parentPageId && p.showInMenu).length > 0 && (
+            {!isGaleriesTheme && pages.filter(p => p.menuGroup === 'series' && !p.parentPageId && p.showInMenu).length > 0 && (
               <li className="menu-group-item">
                 <div className="menu-section-header">
                   <a
@@ -298,7 +313,7 @@ const Header: React.FC<HeaderProps> = ({
             )}
 
             {/* SECTION EXPOSITIONS */}
-            {pages.filter(p => p.menuGroup === 'exhibitions' && !p.parentPageId && p.showInMenu).length > 0 && (
+            {!isGaleriesTheme && pages.filter(p => p.menuGroup === 'exhibitions' && !p.parentPageId && p.showInMenu).length > 0 && (
               <li className="menu-group-item">
                 <div className="menu-section-header">
                   <a

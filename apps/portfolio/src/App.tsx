@@ -145,7 +145,7 @@ const App: React.FC = () => {
 
   // Initialiser le thème en fonction du profil utilisateur
   useEffect(() => {
-    if (profile?.blogTheme === 'portfolio') {
+    if (profile?.blogTheme === 'portfolio' || profile?.blogTheme === 'portfolio-galeries') {
       const saved = localStorage.getItem('portfolio-theme');
       if (!saved) {
         setTheme('dark');

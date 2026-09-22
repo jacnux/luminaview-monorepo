@@ -455,343 +455,318 @@ const UserPageEditor = () => {
           </div>
         </div>
 
-        <div className="bg-gray-900 border border-white/10 p-6 rounded-2xl mb-6 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className="block text-gray-400 mb-1.5 text-sm">Titre</label>
-              <input
-                type="text"
-                value={title}
-                onChange={handleTitleChange}
-                className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
-                placeholder="Ex : Nature morte, fragments d'atelier"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-400 mb-1.5 text-sm">URL / slug</label>
-              <input
-                type="text"
-                value={slug}
-                onChange={e => setSlug(normalizeSlug(e.target.value))}
-                className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
-                placeholder="nature-morte-fragments-atelier"
-              />
-            </div>
-          </div>
-
-          <div className="mt-6 border-t border-white/10 pt-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Navigation</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-400 mb-1.5 text-sm">Section du menu</label>
-                <select
-                  value={menuGroup}
-                  onChange={e => handleMenuGroupChange(e.target.value as MenuGroup)}
-                  className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
-                >
-                  <option value="none">Aucune</option>
-                  <option value="series">Séries</option>
-                  <option value="exhibitions">Expositions</option>
-                  <option value="blog">Blog</option>
-                  <option value="about">À propos</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-gray-400 mb-1.5 text-sm">Ordre d'affichage</label>
-                <input
-                  type="number"
-                  min={0}
-                  value={menuOrder}
-                  onChange={e => setMenuOrder(Number(e.target.value || 0))}
-                  className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
-                />
-              </div>
-            </div>
-
-            {(menuGroup === 'series' || menuGroup === 'exhibitions') && (
-              <div className="mt-4">
-                <label className="block text-gray-400 mb-1.5 text-sm">Page parente optionnelle</label>
-                <select
-                  value={parentPageId}
-                  onChange={e => setParentPageId(e.target.value)}
-                  className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
-                >
-                  <option value="">Aucune page parente</option>
-                  {eligibleParentPages.map(page => (
-                    <option key={page._id} value={page._id}>
-                      {page.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            <div className="mt-4 flex flex-col sm:flex-row gap-4">
-              <button
-                type="button"
-                onClick={() => setShowInMenu(v => !v)}
-                className={`flex-1 p-3 rounded-xl border transition font-semibold ${
-                  showInMenu
-                    ? 'bg-yellow-600/20 border-yellow-500 text-yellow-100'
-                    : 'bg-gray-800 border-white/10 text-gray-400'
-                }`}
-              >
-                {showInMenu ? 'Visible dans le menu' : 'Masqué du menu'}
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-6 border-t border-white/10 pt-6">
-            <label className="block text-gray-300 mb-1.5 font-semibold">Image de couverture / vignette</label>
-            <p className="text-sm text-gray-500 mb-3">
-              Choisis d'abord une galerie source, puis une image parmi les photos de cette galerie.
-            </p>
-
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Galerie source</label>
-                {sortToggleBtn}
-                <select
-                  className="w-full bg-gray-800 border border-white/10 p-3 rounded-xl"
-                  value={coverAlbumId}
-                  onChange={e => setCoverAlbumId(e.target.value)}
-                >
-                  <option value="">-- Choisir une galerie --</option>
-                  {sortedAlbums.map(alb => (
-                    <option key={alb._id} value={alb._id}>
-                      {alb.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {coverAlbumId && (
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* COLONNE GAUCHE : Paramètres de la page (Sticky) */}
+          <div className="w-full lg:w-[35%] lg:sticky lg:top-24 space-y-6">
+            <div className="bg-gray-900 border border-white/10 p-6 rounded-2xl shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Photo de couverture</label>
-                  {coverPhotos.length > 0 ? (
+                  <label className="block text-gray-400 mb-1.5 text-sm">Titre</label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={handleTitleChange}
+                    className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
+                    placeholder="Ex : Nature morte, fragments d'atelier"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-400 mb-1.5 text-sm">URL / slug</label>
+                  <input
+                    type="text"
+                    value={slug}
+                    onChange={e => setSlug(normalizeSlug(e.target.value))}
+                    className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
+                    placeholder="nature-morte-fragments-atelier"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 border-t border-white/10 pt-6">
+                <h2 className="text-lg font-semibold text-white mb-4">Navigation</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-gray-400 mb-1.5 text-sm">Section du menu</label>
                     <select
-                      className="w-full bg-gray-800 border border-white/10 p-3 rounded-xl"
-                      value={coverImage}
-                      onChange={e => setCoverImage(e.target.value)}
+                      value={menuGroup}
+                      onChange={e => handleMenuGroupChange(e.target.value as MenuGroup)}
+                      className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
                     >
-                      <option value="">-- Choisir une image --</option>
-                      {coverPhotos.map(photo => (
-                        <option key={photo._id} value={photo.filename}>
-                          {photo.title || photo.filename}
+                      <option value="none">Aucune</option>
+                      <option value="series">Séries</option>
+                      <option value="exhibitions">Expositions</option>
+                      <option value="blog">Blog</option>
+                      <option value="about">À propos</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-400 mb-1.5 text-sm">Ordre d'affichage</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={menuOrder}
+                      onChange={e => setMenuOrder(Number(e.target.value || 0))}
+                      className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                {(menuGroup === 'series' || menuGroup === 'exhibitions') && (
+                  <div className="mt-4">
+                    <label className="block text-gray-400 mb-1.5 text-sm">Page parente optionnelle</label>
+                    <select
+                      value={parentPageId}
+                      onChange={e => setParentPageId(e.target.value)}
+                      className="w-full p-3 bg-gray-800 border border-white/10 rounded-xl"
+                    >
+                      <option value="">Aucune page parente</option>
+                      {eligibleParentPages.map(page => (
+                        <option key={page._id} value={page._id}>
+                          {page.title}
                         </option>
                       ))}
                     </select>
-                  ) : (
-                    <p className="text-gray-500 text-sm italic">Aucune photo disponible dans cette galerie.</p>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
 
-              {coverImage && (
-                <div className="flex items-center gap-4 mt-2">
-                  <img src={`/uploads/${coverImage}`} className="h-20 w-20 object-cover rounded-lg border border-white/10" alt="Aperçu" />
-                  <button type="button" onClick={() => setCoverImage('')} className="text-sm text-red-400 hover:text-red-300">
-                    Supprimer l'image
+                <div className="mt-4 flex flex-col gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowInMenu(v => !v)}
+                    className={`w-full p-3 rounded-xl border transition font-semibold ${
+                      showInMenu
+                        ? 'bg-yellow-600/20 border-yellow-500 text-yellow-100'
+                        : 'bg-gray-800 border-white/10 text-gray-400'
+                    }`}
+                  >
+                    {showInMenu ? 'Visible dans le menu' : 'Masqué du menu'}
                   </button>
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
 
-          <div className="mt-6 border-t border-white/10 pt-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Visibilité</h2>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="button"
-                onClick={handleTogglePublished}
-                className={`flex-1 p-3 rounded-xl border transition font-semibold ${
-                  isPublished
-                    ? 'bg-green-700/20 border-green-500 text-green-100'
-                    : 'bg-gray-800 border-white/10 text-gray-400'
-                }`}
-              >
-                {isPublished ? 'Publié sur le portfolio' : 'Hors ligne portfolio'}
-              </button>
+              <div className="mt-6 border-t border-white/10 pt-6">
+                <label className="block text-gray-300 mb-1.5 font-semibold">Image de couverture / vignette</label>
+                <p className="text-sm text-gray-500 mb-3">
+                  Choisis d'abord une galerie source, puis une image parmi les photos de cette galerie.
+                </p>
 
-              <button
-                type="button"
-                onClick={handleToggleShowOnBlog}
-                className={`flex-1 p-3 rounded-xl border transition font-semibold ${
-                  showOnBlog
-                    ? 'bg-blue-700/20 border-blue-500 text-blue-100'
-                    : 'bg-gray-800 border-white/10 text-gray-400'
-                }`}
-              >
-                {showOnBlog ? 'Visible sur le blog' : 'Masqué du blog'}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gray-900 border border-white/10 p-6 rounded-2xl mb-6 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5">
-            <div>
-              <h2 className="text-xl font-semibold text-white">Structure de page</h2>
-              <p className="text-gray-400 mt-1 text-sm">
-                {sections.length} bloc{sections.length > 1 ? 's' : ''} · {visualSectionCount} bloc{visualSectionCount > 1 ? 's' : ''} visuel{visualSectionCount > 1 ? 's' : ''}
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button onClick={() => addSection('text')} className="px-4 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold transition">
-                + Texte
-              </button>
-              <button onClick={() => addSection('gallery')} className="px-4 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-semibold transition">
-                + Galerie
-              </button>
-              <button onClick={() => addSection('split_text_gallery')} className="px-4 py-3 bg-teal-600 hover:bg-teal-500 rounded-xl font-semibold transition">
-                + Mixte 30/70
-              </button>
-            </div>
-          </div>
-
-          {sections.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-8 text-center text-gray-500">
-              Aucun bloc pour l'instant. Commence par un texte d'introduction (résumé actif), puis ajoute une galerie ou un bloc mixte.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {sections.map((section, index) => (
-                <div key={section.id || index} className="bg-black/30 p-5 rounded-2xl border border-white/10">
-                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
-                    <div>
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="font-semibold text-yellow-300 uppercase text-xs tracking-[0.24em]">
-                          {SECTION_LABELS[section.type]}
-                        </span>
-                        <span className="text-xs text-gray-500">Bloc {index + 1}</span>
-                        {section.summary && (
-                          <span className="text-[11px] px-2.5 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30 text-yellow-200 font-medium">
-                            ★ Intro éditoriale (Résumé actif)
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-400 mt-2">{SECTION_DESCRIPTIONS[section.type]}</p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => moveSection(index, 'up')}
-                        disabled={index === 0}
-                        className="px-3 py-2 rounded-lg bg-gray-800 text-sm text-gray-300 disabled:opacity-30 hover:bg-gray-700"
-                      >
-                        Monter
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveSection(index, 'down')}
-                        disabled={index === sections.length - 1}
-                        className="px-3 py-2 rounded-lg bg-gray-800 text-sm text-gray-300 disabled:opacity-30 hover:bg-gray-700"
-                      >
-                        Descendre
-                      </button>
-                      {section.type === 'text' && (
-                        <button
-                          type="button"
-                          onClick={() => toggleSummarySection(index)}
-                          className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                            section.summary
-                              ? 'bg-yellow-500 text-black font-semibold shadow-sm'
-                              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                          }`}
-                          title={
-                            section.summary
-                              ? 'Ce bloc est défini comme le résumé éditorial officiel'
-                              : 'Définir ce bloc comme le résumé / texte d’introduction officiel'
-                          }
-                        >
-                          {section.summary ? '★ Résumé actif' : 'Définir comme résumé'}
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => removeSection(index)}
-                        className="px-3 py-2 rounded-lg bg-red-900/40 text-red-300 text-sm hover:bg-red-900/60"
-                      >
-                        Supprimer
-                      </button>
-                    </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Galerie source</label>
+                    {sortToggleBtn}
+                    <select
+                      className="w-full bg-gray-800 border border-white/10 p-3 rounded-xl"
+                      value={coverAlbumId}
+                      onChange={e => setCoverAlbumId(e.target.value)}
+                    >
+                      <option value="">-- Choisir une galerie --</option>
+                      {sortedAlbums.map(alb => (
+                        <option key={alb._id} value={alb._id}>
+                          {alb.title}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
-                  {section.type === 'text' && (
+                  {coverAlbumId && (
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm text-gray-400">
-                          Texte {section.summary ? '(Introduction & Résumé éditorial)' : ''}
-                        </label>
-                        {section.summary && (
-                          <span className="text-xs text-yellow-400/80">
-                            Markdown riche, paragraphes et images <code className="text-yellow-300">![alt](url)</code> pris en charge
-                          </span>
-                        )}
-                      </div>
-                      <textarea
-                        className="w-full min-h-[11rem] bg-gray-800 border border-white/10 p-3 rounded-xl focus:border-yellow-500/50 focus:outline-none transition"
-                        value={section.content}
-                        onChange={e => updateSectionContent(index, 'content', e.target.value)}
-                        placeholder="Texte libre en markdown (paragraphes, images, cartels, note curatoriale)..."
-                      />
+                      <label className="block text-sm text-gray-400 mb-2">Photo de couverture</label>
+                      {coverPhotos.length > 0 ? (
+                        <select
+                          className="w-full bg-gray-800 border border-white/10 p-3 rounded-xl"
+                          value={coverImage}
+                          onChange={e => setCoverImage(e.target.value)}
+                        >
+                          <option value="">-- Choisir une image --</option>
+                          {coverPhotos.map(photo => (
+                            <option key={photo._id} value={photo.filename}>
+                              {photo.title || photo.filename}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <p className="text-gray-500 text-sm italic">Aucune photo disponible dans cette galerie.</p>
+                      )}
                     </div>
                   )}
 
-                  {section.type === 'gallery' && (
-                    <div className="flex flex-col gap-1">
-                      <label className="block text-sm text-gray-400 mb-1">Album lié</label>
-                      {sortToggleBtn}
-                      <select
-                        className="w-full bg-gray-800 border border-white/10 p-3 rounded-xl"
-                        onChange={e => updateSectionContent(index, 'albumIds', e.target.value)}
-                        value={section.albumIds[0] || ''}
-                      >
-                        <option value="">-- Choisir un album --</option>
-                        {sortedAlbums.map(alb => (
-                          <option key={alb._id} value={alb._id}>
-                            {alb.title}
-                          </option>
-                        ))}
-                      </select>
+                  {coverImage && (
+                    <div className="flex items-center gap-4 mt-2">
+                      <img src={`/uploads/${coverImage}`} className="h-20 w-20 object-cover rounded-lg border border-white/10" alt="Aperçu" />
+                      <button type="button" onClick={() => setCoverImage('')} className="text-sm text-red-400 hover:text-red-300">
+                        Supprimer l'image
+                      </button>
                     </div>
                   )}
+                </div>
+              </div>
 
-                  {section.type === 'split_text_gallery' && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="mt-6 border-t border-white/10 pt-6">
+                <h2 className="text-lg font-semibold text-white mb-4">Visibilité</h2>
+                <div className="flex flex-col gap-4">
+                  <button
+                    type="button"
+                    onClick={handleTogglePublished}
+                    className={`w-full p-3 rounded-xl border transition font-semibold ${
+                      isPublished
+                        ? 'bg-green-700/20 border-green-500 text-green-100'
+                        : 'bg-gray-800 border-white/10 text-gray-400'
+                    }`}
+                  >
+                    {isPublished ? 'Publié sur le portfolio' : 'Hors ligne portfolio'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleToggleShowOnBlog}
+                    className={`w-full p-3 rounded-xl border transition font-semibold ${
+                      showOnBlog
+                        ? 'bg-blue-700/20 border-blue-500 text-blue-100'
+                        : 'bg-gray-800 border-white/10 text-gray-400'
+                    }`}
+                  >
+                    {showOnBlog ? 'Visible sur le blog' : 'Masqué du blog'}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <button
+              onClick={handleSave}
+              disabled={loading}
+              className="w-full py-3.5 bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl font-bold text-lg disabled:opacity-60 transition shadow-lg hover:shadow-green-500/10"
+            >
+              {loading ? 'Sauvegarde...' : 'Enregistrer la page'}
+            </button>
+          </div>
+
+          {/* COLONNE DROITE : Structure de la page */}
+          <div className="w-full lg:w-[65%]">
+            <div className="bg-gray-900 border border-white/10 p-6 rounded-2xl shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-5 border-b border-white/10 pb-5">
+                <div>
+                  <h2 className="text-xl font-semibold text-white">Structure de page</h2>
+                  <p className="text-gray-400 mt-1 text-sm">
+                    {sections.length} bloc{sections.length > 1 ? 's' : ''} · {visualSectionCount} bloc{visualSectionCount > 1 ? 's' : ''} visuel{visualSectionCount > 1 ? 's' : ''}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => addSection('text')} className="px-3 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold transition">
+                    + Texte
+                  </button>
+                  <button onClick={() => addSection('gallery')} className="px-3 py-2 text-sm bg-purple-600 hover:bg-purple-500 rounded-xl font-semibold transition">
+                    + Galerie
+                  </button>
+                  <button onClick={() => addSection('split_text_gallery')} className="px-3 py-2 text-sm bg-teal-600 hover:bg-teal-500 rounded-xl font-semibold transition">
+                    + Mixte 30/70
+                  </button>
+                </div>
+              </div>
+
+              {sections.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-8 text-center text-gray-500">
+                  Aucun bloc pour l'instant. Commence par un texte d'introduction (résumé actif), puis ajoute une galerie ou un bloc mixte.
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {sections.map((section, index) => (
+                    <div key={section.id || index} className="bg-black/30 p-5 rounded-2xl border border-white/10">
+                      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
                         <div>
-                          <div className="text-sm text-gray-300 font-medium">Bloc mixte</div>
-                          <div className="text-xs text-gray-500">Ratio recommandé : 30 texte / 70 galerie.</div>
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <span className="font-semibold text-yellow-300 uppercase text-xs tracking-[0.24em]">
+                              {SECTION_LABELS[section.type]}
+                            </span>
+                            <span className="text-xs text-gray-500">Bloc {index + 1}</span>
+                            {section.summary && (
+                              <span className="text-[11px] px-2.5 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30 text-yellow-200 font-medium">
+                                ★ Intro éditoriale (Résumé actif)
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-400 mt-2">{SECTION_DESCRIPTIONS[section.type]}</p>
                         </div>
-                        <div className="text-xs px-2.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-200">
-                          Ratio {section.ratio || '30/70'}
+
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => moveSection(index, 'up')}
+                            disabled={index === 0}
+                            className="px-3 py-1.5 rounded-lg bg-gray-800 text-xs text-gray-300 disabled:opacity-30 hover:bg-gray-700"
+                          >
+                            Monter
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveSection(index, 'down')}
+                            disabled={index === sections.length - 1}
+                            className="px-3 py-1.5 rounded-lg bg-gray-800 text-xs text-gray-300 disabled:opacity-30 hover:bg-gray-700"
+                          >
+                            Descendre
+                          </button>
+                          {section.type === 'text' && (
+                            <button
+                              type="button"
+                              onClick={() => toggleSummarySection(index)}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                                section.summary
+                                  ? 'bg-yellow-500 text-black font-semibold shadow-sm'
+                                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                              }`}
+                              title={
+                                section.summary
+                                  ? 'Ce bloc est défini comme le résumé éditorial officiel'
+                                  : 'Définir ce bloc comme le résumé / texte d’introduction officiel'
+                              }
+                            >
+                              {section.summary ? '★ Résumé actif' : 'Définir comme résumé'}
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeSection(index)}
+                            className="px-3 py-1.5 rounded-lg bg-red-900/40 text-red-300 text-xs hover:bg-red-900/60"
+                          >
+                            Supprimer
+                          </button>
                         </div>
                       </div>
 
-                      <div className="flex flex-col md:flex-row gap-4">
-                        <div className="w-full md:w-[30%]">
-                          <label className="block text-sm text-gray-400 mb-2">Texte</label>
+                      {section.type === 'text' && (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="block text-sm text-gray-400">
+                              Texte {section.summary ? '(Introduction & Résumé éditorial)' : ''}
+                            </label>
+                            {section.summary && (
+                              <span className="text-xs text-yellow-400/80">
+                                Markdown riche <code className="text-yellow-300">![alt](url)</code> pris en charge
+                              </span>
+                            )}
+                          </div>
                           <textarea
-                            className="w-full min-h-[12rem] bg-gray-800 border border-white/10 p-3 rounded-xl text-sm focus:border-teal-500/50 focus:outline-none transition"
+                            className="w-full min-h-[14rem] bg-gray-800 border border-white/10 p-3 rounded-xl focus:border-yellow-500/50 focus:outline-none transition"
                             value={section.content}
                             onChange={e => updateSectionContent(index, 'content', e.target.value)}
-                            placeholder="Texte d'accompagnement, cartel, contexte, note de salle..."
+                            placeholder="Texte libre en markdown (paragraphes, images, cartels, note curatoriale)..."
                           />
                         </div>
+                      )}
 
-                        <div className="w-full md:w-[70%]">
-                          <label className="block text-sm text-gray-400 mb-2">Album lié</label>
-                          {sortToggleBtn}
+                      {section.type === 'gallery' && (
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <label className="block text-sm text-gray-400 mb-1">Album lié</label>
+                            {sortToggleBtn}
+                          </div>
                           <select
                             className="w-full bg-gray-800 border border-white/10 p-3 rounded-xl"
                             onChange={e => updateSectionContent(index, 'albumIds', e.target.value)}
                             value={section.albumIds[0] || ''}
                           >
-                            <option value="">-- Sélectionner un album --</option>
+                            <option value="">-- Choisir un album --</option>
                             {sortedAlbums.map(alb => (
                               <option key={alb._id} value={alb._id}>
                                 {alb.title}
@@ -799,22 +774,59 @@ const UserPageEditor = () => {
                             ))}
                           </select>
                         </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                      )}
 
-        <button
-          onClick={handleSave}
-          disabled={loading}
-          className="w-full py-3.5 bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl font-bold text-lg disabled:opacity-60 transition shadow-lg hover:shadow-green-500/10"
-        >
-          {loading ? 'Sauvegarde...' : 'Enregistrer les modifications'}
-        </button>
+                      {section.type === 'split_text_gallery' && (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between flex-wrap gap-3">
+                            <div>
+                              <div className="text-sm text-gray-300 font-medium">Bloc mixte</div>
+                              <div className="text-xs text-gray-500">Ratio recommandé : 30 texte / 70 galerie.</div>
+                            </div>
+                            <div className="text-xs px-2.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-200">
+                              Ratio {section.ratio || '30/70'}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col md:flex-row gap-4">
+                            <div className="w-full md:w-[40%]">
+                              <label className="block text-sm text-gray-400 mb-2">Texte</label>
+                              <textarea
+                                className="w-full min-h-[12rem] bg-gray-800 border border-white/10 p-3 rounded-xl text-sm focus:border-teal-500/50 focus:outline-none transition"
+                                value={section.content}
+                                onChange={e => updateSectionContent(index, 'content', e.target.value)}
+                                placeholder="Texte d'accompagnement, cartel..."
+                              />
+                            </div>
+
+                            <div className="w-full md:w-[60%]">
+                              <div className="flex items-center justify-between mb-2">
+                                <label className="block text-sm text-gray-400">Album lié</label>
+                                {sortToggleBtn}
+                              </div>
+                              <select
+                                className="w-full bg-gray-800 border border-white/10 p-3 rounded-xl"
+                                onChange={e => updateSectionContent(index, 'albumIds', e.target.value)}
+                                value={section.albumIds[0] || ''}
+                              >
+                                <option value="">-- Sélectionner un album --</option>
+                                {sortedAlbums.map(alb => (
+                                  <option key={alb._id} value={alb._id}>
+                                    {alb.title}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -439,10 +439,29 @@ const EditProfile: React.FC = () => {
                       }`}
                     >
                       <div className="flex justify-between w-full items-center mb-2">
-                        <span className="font-bold text-sm">Artfolio</span>
+                        <span className="font-bold text-sm">Artfolio (Éditorial)</span>
                         {blogTheme === 'portfolio' && <span className="w-2.5 h-2.5 bg-yellow-500 rounded-full"></span>}
                       </div>
-                      <p className="text-xs text-gray-500 leading-relaxed">Design sombre et doré, avec menu latéral fixe. Idéal pour une présentation artistique immersive et contrastée.</p>
+                      <p className="text-xs text-gray-500 leading-relaxed">Design sombre et doré, avec menu latéral fixe. Inclut les Séries et Expositions.</p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setBlogTheme('portfolio-galeries')}
+                      className={`flex flex-col items-start p-5 rounded-2xl border-2 text-left transition duration-300 ${
+                        blogTheme === 'portfolio-galeries'
+                          ? 'border-yellow-500 bg-yellow-500/[0.04]'
+                          : theme === 'dark' ? 'border-white/15 bg-black/20 hover:border-white/30' : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex justify-between w-full items-center mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-sm">Artfolio (Galeries)</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium">Classique</span>
+                        </div>
+                        {blogTheme === 'portfolio-galeries' && <span className="w-2.5 h-2.5 bg-yellow-500 rounded-full"></span>}
+                      </div>
+                      <p className="text-xs text-gray-500 leading-relaxed">Même design que Artfolio, mais centré uniquement sur vos Galeries (sans Séries ni Expositions).</p>
                     </button>
 
                     <button
