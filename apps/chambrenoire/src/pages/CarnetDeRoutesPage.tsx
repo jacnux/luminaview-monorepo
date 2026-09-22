@@ -132,13 +132,6 @@ const CarnetDeRoutesPage: React.FC = () => {
       {!isEmbedded && (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <Breadcrumb items={[{ label: 'Carnet de Routes', isCurrent: true }]} className="mb-0" />
-          <a
-            href={backUrl}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm"
-          >
-            <span>&larr;</span>
-            <span>{backLabel}</span>
-          </a>
         </div>
       )}
 
