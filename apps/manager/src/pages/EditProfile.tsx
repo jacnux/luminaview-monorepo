@@ -183,9 +183,11 @@ const EditProfile: React.FC = () => {
   return (
     <div className={`w-full px-4 py-4 sm:px-8 sm:py-6 ${shellTextClass}`}>
       <form onSubmit={handleSubmit} className="max-w-6xl mx-auto space-y-6">
-        {/* Sticky Header */}
-        <div className="sticky top-2 sm:top-4 z-40 bg-gray-900/90 dark:bg-gray-950/90 backdrop-blur-xl border border-white/10 dark:border-gray-800 rounded-2xl p-3 sm:p-4 flex items-center justify-between shadow-2xl gap-4">
-          <div className="flex items-center gap-3 min-w-0">
+        {/* Sticky Header & Jauge de complétion */}
+        <div className="sticky top-2 sm:top-4 z-40 bg-gray-900/90 dark:bg-gray-950/90 backdrop-blur-xl border border-white/10 dark:border-gray-800 rounded-2xl p-3 sm:p-4 shadow-2xl flex flex-col xl:flex-row xl:items-center justify-between gap-4 sm:gap-6 transition duration-300">
+          
+          {/* Section Gauche : Retour et Titre */}
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <Link
               to="/dashboard"
               className={`p-2 text-xs font-semibold rounded-xl border transition flex items-center gap-1.5 flex-shrink-0 ${
@@ -198,8 +200,8 @@ const EditProfile: React.FC = () => {
               <span>←</span>
               <span className="hidden sm:inline">Dashboard</span>
             </Link>
-            <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent truncate">
+            <div className="min-w-0 flex flex-col justify-center">
+              <h1 className="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent truncate leading-tight">
                 Mon Profil
               </h1>
               <p className="text-[11px] text-gray-400 truncate hidden md:block">
@@ -208,11 +210,44 @@ const EditProfile: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Section Droite : Complétion et Bouton Enregistrer */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-5 w-full xl:w-auto xl:flex-shrink-0">
+            
+            {/* Jauge de complétion intégrée */}
+            <div className="flex items-center gap-3 flex-1 sm:flex-none bg-black/5 dark:bg-white/5 p-2 pr-3 sm:pr-4 rounded-xl border border-black/5 dark:border-white/5 min-w-[240px] sm:min-w-[280px]">
+              <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-600 dark:text-yellow-400 font-bold text-xs sm:text-sm shadow-inner">
+                {profileCompletion.score}%
+              </div>
+              <div className="flex-1 min-w-0 flex flex-col justify-center">
+                <div className="flex justify-between items-center mb-1.5">
+                  <div className="text-[10px] sm:text-xs font-semibold flex items-center gap-1.5 text-gray-700 dark:text-gray-200">
+                    <span>Complétion</span>
+                    {profileCompletion.score === 100 ? (
+                      <span className="text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-400 font-medium">Complet</span>
+                    ) : (
+                      <span className="text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/10 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400 font-medium">En cours</span>
+                    )}
+                  </div>
+                </div>
+                <div className="w-full bg-black/10 dark:bg-black/40 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-yellow-500 via-amber-400 to-emerald-400 transition-all duration-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.4)]"
+                    style={{ width: `${profileCompletion.score}%` }}
+                  />
+                </div>
+                {profileCompletion.missing.length > 0 && (
+                  <p className="text-[9px] text-gray-500 dark:text-gray-400 mt-1 truncate">
+                    Astuce: Renseignez {profileCompletion.missing[0]}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Bouton d'enregistrement */}
             <button
               type="submit"
               disabled={saving}
-              className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 disabled:opacity-50 text-black font-bold px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl text-xs sm:text-sm shadow-lg hover:scale-[1.02] active:scale-[0.98] transition flex items-center gap-2"
+              className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 disabled:opacity-50 text-black font-bold px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl text-xs sm:text-sm shadow-lg hover:scale-[1.02] active:scale-[0.98] transition flex items-center justify-center gap-2 flex-shrink-0 h-[36px] sm:h-[42px]"
             >
               {saving ? (
                 <>
@@ -229,47 +264,6 @@ const EditProfile: React.FC = () => {
                 </>
               )}
             </button>
-          </div>
-        </div>
-
-        {/* Jauge de complétion du profil */}
-        <div className={`px-4 py-3 rounded-xl ${panelClass} flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition duration-300`}>
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold text-xs shadow-inner">
-              {profileCompletion.score}%
-            </div>
-            <div className="min-w-0">
-              <div className="text-xs font-semibold flex items-center gap-2">
-                <span>Complétion du profil</span>
-                {profileCompletion.score === 100 ? (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-300 border border-green-500/30 font-medium">
-                    Complet
-                  </span>
-                ) : (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 font-medium">
-                    En progression
-                  </span>
-                )}
-              </div>
-              <p className="text-[10px] text-gray-400 mt-0.5 truncate max-w-sm">
-                {profileCompletion.missing.length > 0
-                  ? `Conseil : Renseignez ${profileCompletion.missing[0]}.`
-                  : 'Félicitations, votre profil est complet !'}
-              </p>
-            </div>
-          </div>
-
-          <div className="w-full sm:w-48 flex-shrink-0 flex flex-col gap-1">
-            <div className="flex justify-between items-center text-[9px] text-gray-500 font-medium px-0.5">
-              <span>Visibilité</span>
-              <span className="text-gray-400">{profileCompletion.score} / 100</span>
-            </div>
-            <div className="w-full bg-black/40 dark:bg-black/60 rounded-full h-1.5 overflow-hidden border border-white/10 mt-0.5">
-              <div
-                className="h-full bg-gradient-to-r from-yellow-500 via-amber-400 to-emerald-400 transition-all duration-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.4)]"
-                style={{ width: `${profileCompletion.score}%` }}
-              />
-            </div>
           </div>
         </div>
 
