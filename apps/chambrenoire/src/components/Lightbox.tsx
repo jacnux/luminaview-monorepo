@@ -344,13 +344,23 @@ const Lightbox: React.FC<LightboxProps> = ({ photos, initialIndex, onClose, albu
       </header>
 
       {/* ── ZONE CENTRALE (IMAGE & NAVIGATION) ── */}
-      <div className="relative flex-1 flex items-center justify-center overflow-hidden">
+      <div 
+        className="relative flex-1 w-full flex items-center justify-center overflow-hidden min-h-0 p-2 sm:p-6"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onDoubleClick={resetZoom}
+      >
         {/* Flèche Précédent */}
         <button
           type="button"
-          onClick={handlePrev}
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePrev();
+          }}
           disabled={photos.length <= 1}
-          className="absolute left-3 sm:left-6 z-20 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/40 hover:bg-black/80 border border-white/15 text-white flex items-center justify-center hover:scale-110 active:scale-95 disabled:opacity-10 transition backdrop-blur-md shadow-2xl"
+          className="absolute left-3 sm:left-6 z-20 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/40 hover:bg-black/80 border border-white/15 text-white flex items-center justify-center hover:scale-110 active:scale-95 disabled:opacity-10 transition backdrop-blur-md shadow-2xl cursor-pointer"
           title="Photo précédente (←)"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -358,33 +368,26 @@ const Lightbox: React.FC<LightboxProps> = ({ photos, initialIndex, onClose, albu
           </svg>
         </button>
 
-        {/* Conteneur Photo avec Zoom & Pan */}
-        <div
-          className="w-full h-full flex items-center justify-center p-2 sm:p-6 overflow-hidden cursor-default"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onDoubleClick={resetZoom}
-        >
-          <img
-            src={`/uploads/${currentPhoto.filename}`}
-            alt={photoTitle}
-            className="max-w-full max-h-full object-contain transition-transform duration-100 select-none shadow-2xl rounded-sm"
-            style={{
-              transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
-              cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
-            }}
-            draggable={false}
-          />
-        </div>
+        <img
+          src={`/uploads/${currentPhoto.filename}`}
+          alt={photoTitle}
+          className="w-full h-full object-contain transition-transform duration-100 select-none shadow-2xl rounded-sm"
+          style={{
+            transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
+            cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+          }}
+          draggable={false}
+        />
 
         {/* Flèche Suivant */}
         <button
           type="button"
-          onClick={handleNext}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNext();
+          }}
           disabled={photos.length <= 1}
-          className="absolute right-3 sm:right-6 z-20 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/40 hover:bg-black/80 border border-white/15 text-white flex items-center justify-center hover:scale-110 active:scale-95 disabled:opacity-10 transition backdrop-blur-md shadow-2xl"
+          className="absolute right-3 sm:right-6 z-20 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/40 hover:bg-black/80 border border-white/15 text-white flex items-center justify-center hover:scale-110 active:scale-95 disabled:opacity-10 transition backdrop-blur-md shadow-2xl cursor-pointer"
           title="Photo suivante (→)"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

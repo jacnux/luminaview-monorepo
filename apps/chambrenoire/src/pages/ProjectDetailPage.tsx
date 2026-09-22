@@ -131,6 +131,7 @@ const ProjectDetailPage: React.FC = () => {
   const isEmbedded = window.location.pathname.startsWith('/embed/');
 
   return (
+    <>
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-12 animate-fade-in text-white">
       {/* Fil d'Ariane & Navigation */}
       {!isEmbedded && (
@@ -604,19 +605,20 @@ const ProjectDetailPage: React.FC = () => {
         ))}
       </div>
 
-      {/* ── LIGHTBOX POUR LE PROJET ── */}
-      {lightboxIndex !== null && filteredPhotos.length > 0 && (
-        <Lightbox
-          photos={filteredPhotos}
-          initialIndex={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
-          albumTitle={project.name}
-        />
-      )}
-
       {/* Bouton Back to Top */}
       <BackToTop />
     </div>
+
+    {/* ── LIGHTBOX POUR LE PROJET ── */}
+    {lightboxIndex !== null && filteredPhotos.length > 0 && (
+      <Lightbox
+        photos={filteredPhotos}
+        initialIndex={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        albumTitle={project.name}
+      />
+    )}
+    </>
   );
 };
 
