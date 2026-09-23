@@ -38,7 +38,9 @@ interface Props {
   className?: string;
 }
 
-const MarkdownRenderer: React.FC<Props> = ({ children, className }) => (
+const MarkdownRenderer: React.FC<Props> = ({ children, className }) => {
+  const content = typeof children === 'string' ? children.replace(/\n/g, '  \n') : children;
+  return (
   <ReactMarkdown
     className={className}
     remarkPlugins={[remarkGfm]}
@@ -100,8 +102,9 @@ const MarkdownRenderer: React.FC<Props> = ({ children, className }) => (
       ),
     }}
   >
-    {children}
+    {content}
   </ReactMarkdown>
-);
+  );
+};
 
 export default MarkdownRenderer;

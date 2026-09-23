@@ -345,12 +345,12 @@ const ProjectDetailPage: React.FC = () => {
 
                   {photo.shootingIntent && (
                     <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 space-y-1.5 mt-3">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400 block">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400 block mb-2">
                         💬 Note & Intention artistique
                       </span>
-                      <p className="text-gray-200 text-sm leading-relaxed italic">
-                        « {photo.shootingIntent} »
-                      </p>
+                      <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed">
+                        <MarkdownRenderer>{photo.shootingIntent}</MarkdownRenderer>
+                      </div>
                     </div>
                   )}
                 </div>
