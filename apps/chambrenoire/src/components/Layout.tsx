@@ -22,7 +22,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const searchParams = new URLSearchParams(location.search);
   const fromBlog = searchParams.get('from') === 'blog';
-  const homeUrl = userSlug ? `/?user=${userSlug}${fromBlog ? '&from=blog' : ''}` : (fromBlog ? '/?from=blog' : '/');
+  const fromManager = searchParams.get('from') === 'manager' || searchParams.get('from') === 'dashboard';
+  const homeUrl = userSlug ? `/?user=${userSlug}${fromBlog ? '&from=blog' : (fromManager ? '&from=manager' : '')}` : (fromBlog ? '/?from=blog' : (fromManager ? '/?from=manager' : '/'));
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
@@ -37,14 +38,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [userSlug]);
 
-  const returnUrl = fromBlog
-    ? getBlogUrl(userProfile?.name || userSlug)
-    : getPortfolioUrl(userProfile?.name || userSlug, userProfile?.blogTheme);
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const managerUrl = isLocal ? 'http://localhost:7080/dashboard/carnet-routes' : 'https://luminaview.fr/dashboard/carnet-routes';
 
-  const returnLabel = fromBlog ? 'Retour au Blog' : 'Retour Portfolio';
-  const returnTitle = fromBlog
-    ? `Retour au Blog de ${userProfile?.name || userSlug}`
-    : `Retour au Portfolio de ${userProfile?.name || userSlug}`;
+  const returnUrl = fromManager 
+    ? managerUrl
+    : (fromBlog ? getBlogUrl(userProfile?.name || userSlug) : getPortfolioUrl(userProfile?.name || userSlug, userProfile?.blogTheme));
+
+  const returnLabel = fromManager ? 'Retour au Manager' : (fromBlog ? 'Retour au Blog' : 'Retour Portfolio');
+  const returnTitle = fromManager
+    ? `Retour au tableau de bord Manager`
+    : (fromBlog ? `Retour au Blog de ${userProfile?.name || userSlug}` : `Retour au Portfolio de ${userProfile?.name || userSlug}`);
 
   // Zone connectée large (albums, galeries, carnet-routes, etc.)
   const isAuthenticatedArea = [

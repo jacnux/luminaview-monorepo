@@ -26,7 +26,17 @@ const ProjectDetailPage: React.FC = () => {
     setError(null);
 
     const userSlug = getUserSlug();
-    fetch(`/api/projects/public/project/${slug}?user=${userSlug}`)
+    
+    // Intercepter un éventuel token de prévisualisation (preview_token) de l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const previewToken = urlParams.get('preview_token');
+    
+    const headers: HeadersInit = {};
+    if (previewToken) {
+      headers['Authorization'] = `Bearer ${previewToken}`;
+    }
+
+    fetch(`/api/projects/public/project/${slug}?user=${userSlug}`, { headers })
       .then(async res => {
         if (!res.ok) {
           const errData = await res.json().catch(() => null);

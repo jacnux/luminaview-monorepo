@@ -660,10 +660,15 @@ const CarnetRoutesManager: React.FC = () => {
   const getProjectPublicUrl = (project: any) => {
     const name = (user?.name || 'jac').toLowerCase();
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    // Ajout du token de preview si le projet n'est pas publié
+    const token = localStorage.getItem('token');
+    const previewQuery = (!project.isPublished && token) ? `&preview_token=${token}` : '';
+
     if (isLocal) {
-      return `http://localhost:7082/project/${project.slug}?user=${name}&from=manager`;
+      return `http://localhost:7082/project/${project.slug}?user=${name}&from=manager${previewQuery}`;
     }
-    return `https://${name}-carnet.helioscope.fr/project/${project.slug}?from=manager`;
+    return `https://${name}-carnet.helioscope.fr/project/${project.slug}?from=manager${previewQuery}`;
   };
 
   const getProjectEmbedUrl = (project: any) => {
@@ -2273,12 +2278,12 @@ const CarnetRoutesManager: React.FC = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition border ${
-                                isDark
-                                  ? 'text-blue-400 hover:text-blue-300 bg-blue-500/10 border-transparent'
-                                  : 'text-blue-700 hover:text-blue-800 bg-blue-50 border-blue-200'
+                                !p.isPublished 
+                                  ? (isDark ? 'text-orange-400 hover:text-orange-300 bg-orange-500/10 border-transparent' : 'text-orange-700 hover:text-orange-800 bg-orange-50 border-orange-200')
+                                  : (isDark ? 'text-blue-400 hover:text-blue-300 bg-blue-500/10 border-transparent' : 'text-blue-700 hover:text-blue-800 bg-blue-50 border-blue-200')
                               }`}
                             >
-                              Voir
+                              {!p.isPublished ? 'Aperçu' : 'Voir'}
                             </a>
                             <button
                               onClick={() => handleEditProject(p)}
