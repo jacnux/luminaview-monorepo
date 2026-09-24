@@ -74,25 +74,22 @@ router.get('/public/project/:slug', async (req: Request, res: Response) => {
 
     let isAuthorized = false;
     const authHeader = req.headers['authorization'];
-    console.log(`[DEBUG projectRoutes] Accessing ${project.slug}. authHeader:`, !!authHeader);
     if (authHeader) {
       const token = authHeader.split(' ')[1];
       if (token) {
         try {
           const secret = process.env.JWT_SECRET || 'default_secret';
           const decoded: any = jwt.verify(token, secret);
-          console.log(`[DEBUG projectRoutes] Decoded token:`, decoded, `Project User ID:`, project.userId.toString());
           if (decoded && (decoded.userId === project.userId.toString() || decoded.isAdmin)) {
             isAuthorized = true;
           }
-        } catch (err) {
-          console.log(`[DEBUG projectRoutes] Token verification failed:`, err);
+        } catch {
+          // Token invalide ou expiré
         }
       }
     }
 
     if (!project.isPublished && !isAuthorized) {
-      console.log(`[DEBUG projectRoutes] Access denied. isPublished: ${project.isPublished}, isAuthorized: ${isAuthorized}`);
       return res.status(403).json({ error: 'Ce projet est privé (non publié dans le carnet de routes)' });
     }
 

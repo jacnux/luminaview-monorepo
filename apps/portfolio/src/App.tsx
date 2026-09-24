@@ -474,7 +474,7 @@ const App: React.FC = () => {
             )}
 
             {currentPage === 'contact' && (
-              <ContactView />
+              <ContactView profile={profile} navigateTo={navigateTo} />
             )}
 
         {!isEmbedMode && <Footer profile={profile} />}

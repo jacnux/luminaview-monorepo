@@ -238,14 +238,21 @@ const transporter = nodemailer.createTransport(transporterOptions);
 
 // 6. POST CONTACT (Public — envoie un email au propriétaire du portfolio)
 router.post('/contact', async (req: Request, res: Response) => {
-  const { toUserId, fromName, fromEmail, message } = req.body;
+  const { toUserId, toUsername, fromName, fromEmail, message } = req.body;
 
-  if (!toUserId || !fromName || !fromEmail || !message) {
+  const target = toUserId || toUsername;
+  if (!target || !fromName || !fromEmail || !message) {
     return res.status(400).json({ error: 'Tous les champs sont obligatoires' });
   }
 
   try {
-    const recipient = await User.findById(toUserId).select('email name');
+    let recipient = null;
+    if (typeof target === 'string' && target.match(/^[0-9a-fA-F]{24}$/)) {
+      recipient = await User.findById(target).select('email name');
+    }
+    if (!recipient) {
+      recipient = await User.findOne({ name: new RegExp('^' + target + '$', 'i') }).select('email name');
+    }
     if (!recipient) return res.status(404).json({ error: 'Utilisateur introuvable' });
 
     await transporter.sendMail({
