@@ -156,6 +156,30 @@ router.get('/public/standalone', async (req: Request, res: Response) => {
   }
 });
 
+// 0.2 GET SINGLE PUBLIC PHOTO
+router.get('/public/:id', async (req: Request, res: Response) => {
+  try {
+    const photo = await Photo.findOne({
+      _id: req.params.id,
+      $or: [
+        { showOnBlog: true },
+        { projectId: { $ne: null } }
+      ]
+    })
+      .populate('gearCameraId')
+      .populate('gearLensId')
+      .populate('filmId');
+
+    if (!photo) {
+      return res.status(404).json({ error: 'Photo introuvable' });
+    }
+
+    res.json(photo);
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur récupération photo' });
+  }
+});
+
 // 0.1 UPLOAD MAKING-OF / NOTES ATTACHMENT IMAGE
 router.post('/making-of/upload', authenticateToken, uploadMulter.single('image'), async (req: Request, res: Response) => {
   try {

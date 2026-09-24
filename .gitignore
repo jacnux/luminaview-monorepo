@@ -17,6 +17,7 @@ yarn-debug.log*
 yarn-error.log*
 logs/
 *.log
+scratch/
 
 # Runtime data
 data/

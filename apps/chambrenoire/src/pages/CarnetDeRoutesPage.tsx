@@ -423,9 +423,9 @@ const CarnetDeRoutesPage: React.FC = () => {
 
           {/* Cartes Photos Isolées */}
           {filteredPhotos.map((photo, sIdx) => (
-            <div
+            <Link
               key={`photo-${photo._id}`}
-              onClick={() => setLightboxIndex(sIdx)}
+              to={`/photo/${photo._id}`}
               className="relative group bg-gray-900 border border-white/[0.08] rounded-2xl shadow-md hover:shadow-2xl hover:border-amber-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between"
             >
               <div>
@@ -492,7 +492,7 @@ const CarnetDeRoutesPage: React.FC = () => {
                   Afficher la fiche technique &rarr;
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

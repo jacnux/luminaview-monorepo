@@ -13,6 +13,7 @@ import AlbumView from './pages/AlbumView';
 import EmbedAlbumView from './pages/EmbedAlbumView';
 import CarnetDeRoutesPage from './pages/CarnetDeRoutesPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
+import PhotoDetailPage from './pages/PhotoDetailPage';
 
 // ============================================================
 // ROUTES APP PRINCIPALE
@@ -26,6 +27,7 @@ const MainRoutes: React.FC = () => {
         {/* Public Chambre Noire */}
         <Route path="/" element={<CarnetDeRoutesPage />} />
         <Route path="/project/:slug" element={<ProjectDetailPage />} />
+        <Route path="/photo/:id" element={<PhotoDetailPage />} />
         <Route path="/album/:id" element={<AlbumView />} />
         <Route path="/embed/album/:id" element={<EmbedAlbumView />} />
         <Route path="/embed/carnet-de-routes" element={<CarnetDeRoutesPage />} />

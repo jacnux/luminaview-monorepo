@@ -41,14 +41,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const managerUrl = isLocal ? 'http://localhost:7080/dashboard/carnet-routes' : 'https://luminaview.fr/dashboard/carnet-routes';
 
-  const returnUrl = fromManager 
-    ? managerUrl
-    : (fromBlog ? getBlogUrl(userProfile?.name || userSlug) : getPortfolioUrl(userProfile?.name || userSlug, userProfile?.blogTheme));
+  const isSubPage = location.pathname !== '/' && !location.pathname.startsWith('/embed');
 
-  const returnLabel = fromManager ? 'Retour au Manager' : (fromBlog ? 'Retour au Blog' : 'Retour Portfolio');
-  const returnTitle = fromManager
-    ? `Retour au tableau de bord Manager`
-    : (fromBlog ? `Retour au Blog de ${userProfile?.name || userSlug}` : `Retour au Portfolio de ${userProfile?.name || userSlug}`);
+  const returnUrl = isSubPage
+    ? homeUrl
+    : (fromManager 
+      ? managerUrl
+      : (fromBlog ? getBlogUrl(userProfile?.name || userSlug) : getPortfolioUrl(userProfile?.name || userSlug, userProfile?.blogTheme)));
+
+  const returnLabel = isSubPage
+    ? 'Retour au Carnet'
+    : (fromManager ? 'Retour au Manager' : (fromBlog ? 'Retour au Blog' : 'Retour Portfolio'));
+    
+  const returnTitle = isSubPage
+    ? 'Retour au Carnet de Routes'
+    : (fromManager
+      ? `Retour au tableau de bord Manager`
+      : (fromBlog ? `Retour au Blog de ${userProfile?.name || userSlug}` : `Retour au Portfolio de ${userProfile?.name || userSlug}`));
 
   // Zone connectée large (albums, galeries, carnet-routes, etc.)
   const isAuthenticatedArea = [
