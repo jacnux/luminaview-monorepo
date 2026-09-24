@@ -33,6 +33,7 @@ AGENTS.md
 copy_data.sh
 deploy.sh
 backup.sh
+capture_ecran/
 
 # Test reports & Dev folders
 test_performance/
