@@ -19,11 +19,11 @@ const ContactView: React.FC<ContactViewProps> = ({ profile }) => {
     if (!profile) return;
     setStatus('loading');
     try {
-      await axios.post('/api/blog/contact', {
-        name,
-        email,
+      await axios.post('/api/users/contact', {
+        fromName: name,
+        fromEmail: email,
         message,
-        toUser: profile.email
+        toUserId: profile._id
       });
       setStatus('success');
       setName(''); setEmail(''); setMessage('');

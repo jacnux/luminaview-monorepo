@@ -590,6 +590,7 @@ body {
   font-size: 0.9rem;
   outline: none;
   background-color: var(--color-bg-alt);
+  color: var(--color-text);
 }
 
 .form-input:focus, .form-textarea:focus {
