@@ -29,6 +29,10 @@ caddy_config/
 .vscode/
 .idea/
 *.tsbuildinfo
+AGENTS.md
+copy_data.sh
+deploy.sh
+backup.sh
 
 # Test reports & Dev folders
 test_performance/
