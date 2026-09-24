@@ -27,9 +27,9 @@ const CarnetDeRoutesPage: React.FC = () => {
     setLoading(true);
 
     Promise.all([
-      fetch(`/api/projects/public/all?user=${getSubdomain() || 'jac'}`).then(r => r.json()),
-      fetch(`/api/photos/public/standalone?user=${getSubdomain() || 'jac'}`).then(r => r.json()),
-      fetch(`/api/users/public/profile?user=${getSubdomain() || 'jac'}`).then(r => r.json()).catch(() => null),
+      fetch(`/api/projects/public/all?user=${getSubdomain() || 'jac'}`).then(r => r.ok ? r.json() : []).catch(() => []),
+      fetch(`/api/photos/public/standalone?user=${getSubdomain() || 'jac'}`).then(r => r.ok ? r.json() : []).catch(() => []),
+      fetch(`/api/users/public/profile?user=${getSubdomain() || 'jac'}`).then(r => r.ok ? r.json() : null).catch(() => null),
     ])
       .then(([projData, photoData, userData]) => {
         const projs = Array.isArray(projData) ? projData : [];
