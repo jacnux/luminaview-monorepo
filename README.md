@@ -4,6 +4,16 @@
 
 ---
 
+## 🌟 Nouveautés Récentes (LuminaView v2.x)
+
+Le projet a récemment bénéficié d'une refonte ergonomique majeure (Sprints v2.0 à v2.2) incluant :
+- **Modularité Totale** : Le Blog et la Chambre Noire peuvent désormais être activés ou désactivés (ON/OFF) selon vos besoins. Les thèmes du Portfolio (comme *Artfolio* ou *Grimoire*) s'adaptent à vos envies.
+- **Éditeur de Pages Libres** : Une toute nouvelle interface à deux colonnes pour créer vos pages personnalisées (À propos, Services...) de manière fluide.
+- **Ergonomie du Studio** : Jauge de complétion du profil, tri interactif des albums en temps réel, et suppression des boîtes de dialogue bloquantes au profit de modales sécurisées et discrètes.
+- **Aperçu Sécurisé (v2.2)** : Les projets de la Chambre Noire maintenus en "Hors Ligne" (brouillons) disposent d'un accès par lien sécurisé, permettant au photographe de vérifier le rendu final avant publication.
+
+---
+
 ## 🏛️ Architecture du Monorepo
 
 ```
