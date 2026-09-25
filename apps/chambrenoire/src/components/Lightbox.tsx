@@ -471,10 +471,14 @@ const Lightbox: React.FC<LightboxProps> = ({ photos, initialIndex, onClose, albu
                     <span className="font-semibold text-white">ISO {currentPhoto.iso}</span>
                   </div>
                 )}
-                {currentPhoto.filmStock && (
+                {(currentPhoto.filmId || currentPhoto.filmStock) && (
                   <div className="flex justify-between">
                     <span className="text-gray-400">Pellicule :</span>
-                    <span className="font-semibold text-amber-400">{currentPhoto.filmStock}</span>
+                    <span className="font-semibold text-amber-400">
+                      {currentPhoto.filmId 
+                        ? `${currentPhoto.filmId.brand || ''} ${currentPhoto.filmId.filmType || ''} ${currentPhoto.filmId.format ? `(${currentPhoto.filmId.format})` : ''}`.trim() 
+                        : currentPhoto.filmStock}
+                    </span>
                   </div>
                 )}
                 {currentPhoto.location && (
