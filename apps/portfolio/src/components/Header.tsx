@@ -218,7 +218,12 @@ const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Bouton Hamburger Mobile */}
-      <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+      <button
+        className="menu-toggle"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label={menuOpen ? "Fermer le menu principal" : "Ouvrir le menu principal"}
+        aria-expanded={menuOpen}
+      >
         ☰
       </button>
 

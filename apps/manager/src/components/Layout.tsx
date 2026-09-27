@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useComments } from '../context/CommentsContext';
+import { Folder, Image, FileText, PenSquare, Film, MessageSquare, Globe, Edit3 } from 'lucide-react';
 import { getAppUrl, getVitrineUrl } from '../utils/urls';
 
 interface LayoutProps {
@@ -119,7 +120,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
                   }`}
                 >
-                  <span>📁</span> Albums
+                  <Folder className="w-4 h-4" /> Albums
                 </Link>
 
                 <Link
@@ -132,7 +133,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
                   }`}
                 >
-                  <span>🗂️</span> Galeries
+                  <Image className="w-4 h-4" /> Galeries
                 </Link>
 
                 <Link
@@ -145,7 +146,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
                   }`}
                 >
-                  <span>📄</span> Pages
+                  <FileText className="w-4 h-4" /> Pages
                 </Link>
 
                 {user?.hasBlog && (
@@ -159,7 +160,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
                     }`}
                   >
-                    <span>📝</span> Blog
+                    <PenSquare className="w-4 h-4" /> Blog
                   </Link>
                 )}
 
@@ -174,7 +175,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         : 'text-gray-600 hover:text-black hover:bg-black/[0.04]'
                     }`}
                   >
-                    <span>🎞️</span> Chambre Noire
+                    <Film className="w-4 h-4" /> Chambre Noire
                   </Link>
                 )}
               </nav>
@@ -194,7 +195,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span>💬</span> Commentaires
+                    <MessageSquare className="w-4 h-4" /> Commentaires
                   </div>
                   {unreadCount > 0 && (
                     <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none animate-pulse">
@@ -213,7 +214,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       : 'text-amber-600 hover:text-amber-700 hover:bg-black/[0.04]'
                   }`}
                 >
-                  <span>🌍</span> Voir ma vitrine
+                  <Globe className="w-4 h-4" /> Voir ma vitrine
                 </a>
                 {user?.hasBlog && (
                   <a
@@ -226,7 +227,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         : 'text-indigo-600 hover:text-indigo-700 hover:bg-black/[0.04]'
                     }`}
                   >
-                    <span>✍️</span> Voir mon blog
+                    <Edit3 className="w-4 h-4" /> Voir mon blog
                   </a>
                 )}
                 {user?.hasCarnet && (

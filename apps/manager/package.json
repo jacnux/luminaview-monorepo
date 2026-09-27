@@ -18,6 +18,7 @@
     "@luminaview/utils": "file:../../packages/utils",
     "axios": "^1.6.0",
     "framer-motion": "^10.16.0",
+    "lucide-react": "^0.294.0",
     "react-markdown": "^9.0.0",
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",

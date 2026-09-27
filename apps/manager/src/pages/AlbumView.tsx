@@ -7,7 +7,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../utils/api';
-import { getSubdomain } from '../utils/domain';
 import Lightbox from '../components/Lightbox';
 import EditPhotoModal from '../components/EditPhotoModal';
 import PhotoInfoModal from '../components/PhotoInfoModal';
@@ -238,7 +237,7 @@ const AlbumView = () => {
   const isViewer = searchParams.get('mode') === 'viewer';
   const isSlideshow = searchParams.get('mode') === 'slideshow';
   const isPublicContext = isViewer || album?.isPublic;
-  const subdomain = getSubdomain();
+
 
   useEffect(() => {
     if (!id) return;

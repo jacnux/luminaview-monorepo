@@ -39,6 +39,7 @@ const GrimoireHeader: React.FC<GrimoireHeaderProps> = ({
             className="grimoire-menu-btn"
             onClick={() => setDrawerOpen(true)}
             aria-label="Ouvrir le menu"
+            aria-expanded={drawerOpen}
           >
             <div className="grimoire-hamburger">
               <span className="line" />
@@ -77,6 +78,8 @@ const GrimoireHeader: React.FC<GrimoireHeaderProps> = ({
                   className="grimoire-right-main-link portfolio-link-title"
                   onClick={() => setPortfolioExpanded(!portfolioExpanded)}
                   onMouseEnter={() => setPortfolioExpanded(true)}
+                  aria-expanded={portfolioExpanded}
+                  aria-label={portfolioExpanded ? "Masquer la liste des galeries" : "Afficher la liste des galeries"}
                 >
                   <span>Galeries</span>
                   {portfolioExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}

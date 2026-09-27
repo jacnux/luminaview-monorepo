@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import api from '../utils/api';
+import { Folder, Image } from 'lucide-react';
 import EditAlbumModal from '../components/EditAlbumModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 
@@ -659,7 +660,7 @@ const Dashboard = () => {
                     : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5'
                 }`}
               >
-                <span>📁 Albums</span>
+                <span className="flex items-center gap-1.5"><Folder className="w-4 h-4" /> Albums</span>
                 <span className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${!isGalleries ? 'bg-white/25 text-white' : 'bg-black/30 text-gray-400'}`}>
                   {realAlbumsCount}
                 </span>
@@ -673,7 +674,7 @@ const Dashboard = () => {
                     : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/5'
                 }`}
               >
-                <span>🗂️ Galeries virtuelles</span>
+                <span className="flex items-center gap-1.5"><Image className="w-4 h-4" /> Galeries virtuelles</span>
                 <span className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${isGalleries ? 'bg-white/25 text-white' : 'bg-black/30 text-gray-400'}`}>
                   {virtualGalleriesCount}
                 </span>
