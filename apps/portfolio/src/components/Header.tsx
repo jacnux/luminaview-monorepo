@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { UserProfile, UserPage, Album } from '../types';
+import { Search, X, ChevronDown, Folder, Image, Newspaper, BookOpen, User, Mail, Sun, Moon } from 'lucide-react';
 
 interface HeaderProps {
   profile: UserProfile | null;
@@ -117,17 +118,22 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="header">
+      {/* Brand & Logo */}
       <div className="header-title">
-        <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }} className="logo">
+        <a 
+          href="#" 
+          onClick={(e) => { e.preventDefault(); navigateTo('home'); }} 
+          className="logo"
+        >
           {formatName(profile?.name)}
         </a>
         <div className="header-subtitle">Photographies</div>
       </div>
 
-      {/* Barre de Recherche Rapide dans le Menu Latéral */}
+      {/* Barre de Recherche Rapide dans la Sidebar */}
       <div className="sidebar-search-container" ref={searchContainerRef}>
         <div className="sidebar-search-input-wrapper">
-          <span className="sidebar-search-icon">🔍</span>
+          <Search size={15} className="sidebar-search-icon" />
           <input
             type="text"
             placeholder="Rechercher une série..."
@@ -148,7 +154,7 @@ const Header: React.FC<HeaderProps> = ({
               className="sidebar-search-clear"
               title="Effacer"
             >
-              ✕
+              <X size={14} />
             </button>
           )}
         </div>
@@ -179,11 +185,11 @@ const Header: React.FC<HeaderProps> = ({
                       }}
                       className="sidebar-search-item"
                     >
-                      <span className="item-icon">📁</span>
+                      <Folder size={14} className="item-icon-svg text-amber-400" />
                       <div className="item-details">
                         <span className="item-title">{p.title}</span>
                         {p.editorialSummary && (
-                          <span className="item-snippet">{p.editorialSummary.slice(0, 45)}...</span>
+                          <span className="item-snippet">{p.editorialSummary.slice(0, 40)}...</span>
                         )}
                       </div>
                     </button>
@@ -201,11 +207,11 @@ const Header: React.FC<HeaderProps> = ({
                       }}
                       className="sidebar-search-item"
                     >
-                      <span className="item-icon">🖼️</span>
+                      <Image size={14} className="item-icon-svg text-teal-400" />
                       <div className="item-details">
                         <span className="item-title">{a.title}</span>
                         {a.description && (
-                          <span className="item-snippet">{a.description.slice(0, 45)}...</span>
+                          <span className="item-snippet">{a.description.slice(0, 40)}...</span>
                         )}
                       </div>
                     </button>
@@ -224,10 +230,10 @@ const Header: React.FC<HeaderProps> = ({
         aria-label={menuOpen ? "Fermer le menu principal" : "Ouvrir le menu principal"}
         aria-expanded={menuOpen}
       >
-        ☰
+        {menuOpen ? <X size={24} /> : '☰'}
       </button>
 
-      {/* Barre de navigation */}
+      {/* Barre de navigation principale */}
       <div className="menu-bg">
         <nav id="menu-container">
           <ul className={`menu ${menuOpen ? 'open' : ''}`}>
@@ -241,7 +247,7 @@ const Header: React.FC<HeaderProps> = ({
               </a>
             </li>
 
-            {/* SECTION GALERIES (Thème Classique) */}
+            {/* SECTION GALERIES */}
             {isGaleriesTheme && (
               <li>
                 <a 
@@ -278,7 +284,7 @@ const Header: React.FC<HeaderProps> = ({
                     aria-expanded={seriesExpanded}
                     aria-label={seriesExpanded ? "Replier les séries" : "Déplier les séries"}
                   >
-                    <span className={`chevron-icon ${seriesExpanded ? 'expanded' : ''}`}>▾</span>
+                    <ChevronDown size={14} className={`chevron-icon ${seriesExpanded ? 'expanded' : ''}`} />
                   </button>
                 </div>
                 {seriesExpanded && (
@@ -341,7 +347,7 @@ const Header: React.FC<HeaderProps> = ({
                     aria-expanded={exhibitionsExpanded}
                     aria-label={exhibitionsExpanded ? "Replier les expositions" : "Déplier les expositions"}
                   >
-                    <span className={`chevron-icon ${exhibitionsExpanded ? 'expanded' : ''}`}>▾</span>
+                    <ChevronDown size={14} className={`chevron-icon ${exhibitionsExpanded ? 'expanded' : ''}`} />
                   </button>
                 </div>
                 {exhibitionsExpanded && (
@@ -380,7 +386,7 @@ const Header: React.FC<HeaderProps> = ({
               </li>
             )}
 
-            {/* PAGES INDÉPENDANTES (menuGroup === 'none' ou sans groupe) */}
+            {/* PAGES INDÉPENDANTES */}
             {pages.filter(p => (!p.menuGroup || p.menuGroup === 'none') && !p.parentPageId && p.showInMenu).map((page) => (
               <li key={page._id}>
                 <a 
@@ -397,8 +403,11 @@ const Header: React.FC<HeaderProps> = ({
               <li>
                 <a 
                   href={getBlogUrl(profile?.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
                 >
-                  Actualités
+                  <span>Actualités</span>
                 </a>
               </li>
             )}
@@ -407,8 +416,11 @@ const Header: React.FC<HeaderProps> = ({
               <li>
                 <a 
                   href={getCarnetUrl(profile?.name, profile?.chambreNoireUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
                 >
-                  Carnet de route
+                  <span>Carnet de route</span>
                 </a>
               </li>
             )}
@@ -422,6 +434,7 @@ const Header: React.FC<HeaderProps> = ({
                 À propos
               </a>
             </li>
+
             <li>
               <a 
                 href="#" 
@@ -431,27 +444,26 @@ const Header: React.FC<HeaderProps> = ({
                 Contact
               </a>
             </li>
-            <li style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--color-border)' }}>
+
+            {/* Basculeur de thème moderne */}
+            <li className="sidebar-theme-wrapper">
               <button
+                type="button"
                 onClick={toggleTheme}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--color-text-dark)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  fontFamily: 'var(--font-title)',
-                  fontSize: '0.85rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  padding: '4px 0',
-                  opacity: 0.8
-                }}
-                className="hover:opacity-100 transition duration-200"
+                className="sidebar-theme-btn"
+                aria-label={theme === 'light' ? 'Basculer en mode sombre' : 'Basculer en mode clair'}
               >
-                {theme === 'light' ? '🌙 Mode Sombre' : '☀️ Mode Clair'}
+                {theme === 'light' ? (
+                  <>
+                    <Moon size={15} className="text-amber-400" />
+                    <span>Mode Sombre</span>
+                  </>
+                ) : (
+                  <>
+                    <Sun size={15} className="text-amber-400" />
+                    <span>Mode Clair</span>
+                  </>
+                )}
               </button>
             </li>
           </ul>

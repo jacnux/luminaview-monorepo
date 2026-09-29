@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Album } from '../../types';
 import MarkdownRenderer from '../MarkdownRenderer';
 import { pageVariants, containerVariants, itemVariants } from './variants';
+import { Search, X, Image as ImageIcon } from 'lucide-react';
 
 interface GalleriesViewProps {
   albums: Album[];
@@ -27,10 +28,11 @@ const GalleriesView: React.FC<GalleriesViewProps> = ({ albums, navigateTo }) => 
       initial="initial"
       animate="animate"
       key="galleries"
+      className="galleries-view-container space-y-8"
     >
-      <div className="galleries-header-bar">
+      <div className="galleries-header-bar flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="section-title" style={{ marginBottom: '4px' }}>Mes Galeries</h2>
+          <h2 className="section-title mb-1">Mes Galeries</h2>
           <p className="section-subtitle-text">
             {albums.length > 0 ? (
               searchQuery.trim() ? (
@@ -43,23 +45,23 @@ const GalleriesView: React.FC<GalleriesViewProps> = ({ albums, navigateTo }) => 
         </div>
 
         {albums.length > 2 && (
-          <div className="gallery-search-box">
-            <span className="search-icon">🔍</span>
+          <div className="gallery-search-box relative flex items-center">
+            <Search size={16} className="search-icon absolute left-3 text-stone-400 pointer-events-none" />
             <input
               type="text"
               placeholder="Rechercher une galerie..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="gallery-search-input"
+              className="gallery-search-input pl-9 pr-8 py-2 rounded-full text-xs bg-stone-900/60 border border-stone-700/60 text-stone-100 placeholder-stone-400 focus:outline-none focus:border-amber-500/60 transition-all"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="search-clear-btn"
+                className="search-clear-btn absolute right-2.5 text-stone-400 hover:text-stone-200 cursor-pointer"
                 title="Effacer"
               >
-                ✕
+                <X size={14} />
               </button>
             )}
           </div>
@@ -67,16 +69,16 @@ const GalleriesView: React.FC<GalleriesViewProps> = ({ albums, navigateTo }) => 
       </div>
 
       {albums.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#999', margin: '40px 0' }}>Aucune galerie publique disponible pour le moment.</p>
+        <p className="text-center text-stone-400 py-12">Aucune galerie publique disponible pour le moment.</p>
       ) : filteredAlbums.length === 0 ? (
-        <div className="gallery-empty-state">
-          <div className="empty-icon">🔍</div>
-          <h3>Aucune galerie trouvée</h3>
-          <p>Aucun résultat ne correspond à « <strong>{searchQuery}</strong> »</p>
+        <div className="gallery-empty-state text-center py-16 space-y-4">
+          <Search size={32} className="mx-auto text-amber-500/60" />
+          <h3 className="text-lg font-medium text-stone-200">Aucune galerie trouvée</h3>
+          <p className="text-sm text-stone-400">Aucun résultat ne correspond à « <strong>{searchQuery}</strong> »</p>
           <button
             type="button"
             onClick={() => setSearchQuery('')}
-            className="empty-reset-btn"
+            className="empty-reset-btn px-4 py-2 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-full text-xs font-medium hover:bg-amber-500/25 transition-all cursor-pointer"
           >
             Réinitialiser la recherche
           </button>
@@ -104,10 +106,11 @@ const GalleriesView: React.FC<GalleriesViewProps> = ({ albums, navigateTo }) => 
                     loading="lazy"
                     decoding="async"
                     className="gallery-cover" 
-                    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                   />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#e5e7eb', color: '#9ca3af' }}>📷</div>
+                  <div className="w-full h-full flex items-center justify-center bg-stone-900 text-stone-500">
+                    <ImageIcon size={28} />
+                  </div>
                 )}
               </div>
               <div className="gallery-info">

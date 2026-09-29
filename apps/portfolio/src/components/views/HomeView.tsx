@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { UserProfile, Album } from '../../types';
 import MarkdownRenderer from '../MarkdownRenderer';
 import { pageVariants, containerVariants, itemVariants } from './variants';
+import { Sparkles, ArrowRight, Image as ImageIcon } from 'lucide-react';
 
 interface HomeViewProps {
   profile: UserProfile | null;
@@ -26,17 +27,21 @@ const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
     return null;
   };
 
+  const homeImage = getHomeImage();
+
   return (
     <motion.div
       variants={pageVariants}
       initial="initial"
       animate="animate"
       key="home"
+      className="home-view-container space-y-10"
     >
-      <div className="home-photo-container">
-        {getHomeImage() ? (
+      {/* Photo de couverture / Hero Banner */}
+      <div className="home-photo-container relative group">
+        {homeImage ? (
           <img 
-            src={getHomeImage()!} 
+            src={homeImage} 
             alt={formatName(profile?.name)} 
             className="home-photo"
             fetchPriority="high"
@@ -45,26 +50,32 @@ const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
             height={675}
           />
         ) : (
-          <div style={{ height: '300px', backgroundColor: '#eaeaea', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: '#999' }}>Aucun visuel d'accueil configuré</span>
+          <div className="flex h-72 items-center justify-center bg-stone-900 text-stone-500 font-medium">
+            <span>Aucun visuel d'accueil configuré</span>
           </div>
         )}
       </div>
+
+      {/* Citation / Tagline du photographe */}
       {profile?.tagline && (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div className="home-tagline-card">
+        <div className="flex justify-center">
+          <div className="home-tagline-card flex items-center gap-2">
+            <Sparkles size={16} className="text-amber-400 shrink-0" />
             <MarkdownRenderer>{profile.tagline}</MarkdownRenderer>
           </div>
         </div>
       )}
+
+      {/* Texte de présentation du portfolio */}
       <div className="home-text">
         <MarkdownRenderer>{profile?.portfolioIntro || "Bienvenue sur mon site, avec les photos que j'aime partager !"}</MarkdownRenderer>
       </div>
 
       {/* SECTION NOUVEAUTÉS - LES GALERIES DU PHOTOGRAPHE */}
       {featuredAlbums.length > 0 && (
-        <div className="home-news-section" style={{ marginTop: '50px' }}>
-          <h2 className="section-title" style={{ marginBottom: '30px' }}>Nouveautés</h2>
+        <div className="home-news-section mt-12">
+          <h2 className="section-title mb-6">Nouveautés</h2>
+
           <motion.div 
             className="grid-gallery"
             variants={containerVariants}
@@ -87,10 +98,11 @@ const HomeView: React.FC<HomeViewProps> = ({ profile, albums, navigateTo }) => {
                       loading="lazy"
                       decoding="async"
                       className="gallery-cover" 
-                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                     />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#e5e7eb', color: '#9ca3af' }}>📷</div>
+                    <div className="w-full h-full flex items-center justify-center bg-stone-900 text-stone-500">
+                      <ImageIcon size={28} />
+                    </div>
                   )}
                 </div>
                 <div className="gallery-info">

@@ -17,6 +17,7 @@
     "@luminaview/types": "file:../../packages/types",
     "@luminaview/ui": "file:../../packages/ui",
     "@luminaview/utils": "file:../../packages/utils",
+    "@luminaview/design-system": "file:../../packages/design-system",
     "axios": "^1.4.0",
     "framer-motion": "^10.12.0",
     "lucide-react": "^0.294.0",
