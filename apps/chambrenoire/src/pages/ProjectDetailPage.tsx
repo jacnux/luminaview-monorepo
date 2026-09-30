@@ -260,19 +260,54 @@ const ProjectDetailPage: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
               📷 Idées de photos rattachées ({photoIdeas.length})
             </span>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               {photoIdeas.map((photoIdea: any) => (
-                <div key={photoIdea._id} className="p-4 rounded-xl bg-black/30 border border-white/10 space-y-2">
-                  <h4 className="font-bold text-white text-sm">{photoIdea.name}</h4>
-                  {photoIdea.notesMarkdown && (
-                    <div className="text-xs text-gray-300 line-clamp-3 prose prose-invert prose-xs">
-                      <MarkdownRenderer>{photoIdea.notesMarkdown}</MarkdownRenderer>
+                <div key={photoIdea._id} className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-3 shadow-md">
+                  <div className="flex justify-between items-start gap-2 border-b border-white/10 pb-2">
+                    <h4 className="font-bold text-white text-base">{photoIdea.name}</h4>
+                    {photoIdea.targetDate && (
+                      <span className="text-[10px] text-amber-400 font-semibold shrink-0 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
+                        📅 {new Date(photoIdea.targetDate).toLocaleDateString('fr-FR')}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Tableau Cartouche Synthétique */}
+                  {(photoIdea.description || photoIdea.referencesMarkdown || photoIdea.suggestedKeywordsMarkdown) && (
+                    <div className="rounded-xl overflow-hidden border border-white/10 bg-black/30 text-xs">
+                      <table className="w-full text-left border-collapse">
+                        <tbody>
+                          {photoIdea.description && (
+                            <tr className="border-b border-white/10">
+                              <td className="py-2 px-3 font-bold text-amber-300/90 w-32 align-top shrink-0">Description</td>
+                              <td className="py-2 px-3 text-gray-200">{photoIdea.description}</td>
+                            </tr>
+                          )}
+                          {photoIdea.referencesMarkdown && (
+                            <tr className="border-b border-white/10">
+                              <td className="py-2 px-3 font-bold text-amber-300/90 w-32 align-top shrink-0">Références</td>
+                              <td className="py-2 px-3 text-gray-200 prose prose-invert prose-xs max-w-none">
+                                <MarkdownRenderer>{photoIdea.referencesMarkdown}</MarkdownRenderer>
+                              </td>
+                            </tr>
+                          )}
+                          {photoIdea.suggestedKeywordsMarkdown && (
+                            <tr>
+                              <td className="py-2 px-3 font-bold text-amber-300/90 w-32 align-top shrink-0">Mots-suggérés</td>
+                              <td className="py-2 px-3 text-gray-200 prose prose-invert prose-xs max-w-none">
+                                <MarkdownRenderer>{photoIdea.suggestedKeywordsMarkdown}</MarkdownRenderer>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   )}
-                  {photoIdea.targetDate && (
-                    <span className="text-[10px] text-amber-300 font-semibold block">
-                      📅 Date visée : {new Date(photoIdea.targetDate).toLocaleDateString('fr-FR')}
-                    </span>
+
+                  {photoIdea.notesMarkdown && (
+                    <div className="text-xs text-gray-300 prose prose-invert prose-xs max-w-none bg-white/5 p-3 rounded-xl border border-white/5">
+                      <MarkdownRenderer>{photoIdea.notesMarkdown}</MarkdownRenderer>
+                    </div>
                   )}
                 </div>
               ))}

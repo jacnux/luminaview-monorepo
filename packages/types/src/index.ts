@@ -133,6 +133,8 @@ export interface Project {
   isPublished?: boolean;
   coverImage?: string;
   makingOf?: string;
+  referencesMarkdown?: string;
+  suggestedKeywordsMarkdown?: string;
   createdAt?: string;
   updatedAt?: string;
 }

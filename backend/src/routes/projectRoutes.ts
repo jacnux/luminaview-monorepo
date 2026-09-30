@@ -192,7 +192,9 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       targetDate,
       isPublished,
       coverImage,
-      makingOf
+      makingOf,
+      referencesMarkdown,
+      suggestedKeywordsMarkdown
     } = req.body;
 
     if (!name) {
@@ -223,7 +225,9 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       targetDate: targetDate ? new Date(targetDate) : undefined,
       isPublished: isPublished ?? false,
       coverImage,
-      makingOf: makingOf || ''
+      makingOf: makingOf || '',
+      referencesMarkdown: referencesMarkdown || '',
+      suggestedKeywordsMarkdown: suggestedKeywordsMarkdown || ''
     });
 
     await project.save();
@@ -281,7 +285,9 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       targetDate,
       isPublished,
       coverImage,
-      makingOf
+      makingOf,
+      referencesMarkdown,
+      suggestedKeywordsMarkdown
     } = req.body;
 
     if (name && name !== project.name) {
@@ -308,6 +314,8 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     project.isPublished = isPublished ?? project.isPublished;
     project.coverImage = coverImage !== undefined ? coverImage : project.coverImage;
     if (makingOf !== undefined) project.makingOf = makingOf;
+    if (referencesMarkdown !== undefined) project.referencesMarkdown = referencesMarkdown;
+    if (suggestedKeywordsMarkdown !== undefined) project.suggestedKeywordsMarkdown = suggestedKeywordsMarkdown;
 
     await project.save();
     res.json(project);

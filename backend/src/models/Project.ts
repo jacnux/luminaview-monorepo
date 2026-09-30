@@ -19,6 +19,8 @@ export interface IProject extends Document {
   isPublished: boolean;
   coverImage?: string;
   makingOf?: string; // Contenu Markdown du secret de fabrication du projet
+  referencesMarkdown?: string;
+  suggestedKeywordsMarkdown?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,7 +55,9 @@ const ProjectSchema = new Schema<IProject>({
   targetDate: { type: Date },
   isPublished: { type: Boolean, default: false },
   coverImage: { type: String },
-  makingOf: { type: String, default: '' }
+  makingOf: { type: String, default: '' },
+  referencesMarkdown: { type: String, default: '' },
+  suggestedKeywordsMarkdown: { type: String, default: '' }
 }, { timestamps: true });
 
 // Un utilisateur ne peut pas avoir deux projets avec le même slug

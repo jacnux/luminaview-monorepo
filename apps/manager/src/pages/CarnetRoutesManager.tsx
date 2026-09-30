@@ -77,6 +77,11 @@ const CarnetRoutesManager: React.FC = () => {
   const [ideaParentProjectId, setIdeaParentProjectId] = useState<string>('');
   const [filterIdeaType, setFilterIdeaType] = useState<'ALL' | 'PROJECT' | 'PHOTO'>('ALL');
   const [ideaNotesMarkdown, setIdeaNotesMarkdown] = useState('');
+  const [ideaDescription, setIdeaDescription] = useState('');
+  const [ideaReferencesMarkdown, setIdeaReferencesMarkdown] = useState('');
+  const [ideaSuggestedKeywordsMarkdown, setIdeaSuggestedKeywordsMarkdown] = useState('');
+  const [ideaPreviewReferences, setIdeaPreviewReferences] = useState(false);
+  const [ideaPreviewSuggestedKeywords, setIdeaPreviewSuggestedKeywords] = useState(false);
   const [ideaTags, setIdeaTags] = useState('');
   const [ideaTargetDate, setIdeaTargetDate] = useState('');
   const [ideaCover, setIdeaCover] = useState('');
@@ -212,12 +217,15 @@ const CarnetRoutesManager: React.FC = () => {
 
       const payload = {
         name: ideaName,
+        description: ideaDescription,
         status: 'IDEA',
         ideaType: finalIdeaType,
         parentProjectId: finalParentProjectId,
         medium: 'UNDECIDED',
         tags: ideaTags ? ideaTags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
         notesMarkdown: ideaNotesMarkdown,
+        referencesMarkdown: ideaReferencesMarkdown,
+        suggestedKeywordsMarkdown: ideaSuggestedKeywordsMarkdown,
         targetDate: ideaTargetDate ? ideaTargetDate : undefined,
         coverImage: ideaCover,
         isPublished: false
@@ -239,10 +247,13 @@ const CarnetRoutesManager: React.FC = () => {
   const handleEditIdea = (idea: any) => {
     setEditingIdea(idea);
     setIdeaName(idea.name || '');
+    setIdeaDescription(idea.description || '');
     const parentId = idea.parentProjectId?._id || (typeof idea.parentProjectId === 'string' ? idea.parentProjectId : '');
     setIdeaType(idea.ideaType || (parentId ? 'PHOTO' : 'PROJECT'));
     setIdeaParentProjectId(parentId);
-    setIdeaNotesMarkdown(idea.notesMarkdown || idea.description || '');
+    setIdeaNotesMarkdown(idea.notesMarkdown || '');
+    setIdeaReferencesMarkdown(idea.referencesMarkdown || '');
+    setIdeaSuggestedKeywordsMarkdown(idea.suggestedKeywordsMarkdown || '');
     setIdeaTags(Array.isArray(idea.tags) ? idea.tags.join(', ') : '');
     setIdeaTargetDate(idea.targetDate ? idea.targetDate.split('T')[0] : '');
     setIdeaCover(idea.coverImage || '');
@@ -706,13 +717,18 @@ const CarnetRoutesManager: React.FC = () => {
 
     // Boîte à idées
     setIdeaName('');
+    setIdeaDescription('');
     setIdeaType('PROJECT');
     setIdeaParentProjectId('');
     setIdeaNotesMarkdown('');
+    setIdeaReferencesMarkdown('');
+    setIdeaSuggestedKeywordsMarkdown('');
     setIdeaTags('');
     setIdeaTargetDate('');
     setIdeaCover('');
     setIdeaPreviewMarkdown(false);
+    setIdeaPreviewReferences(false);
+    setIdeaPreviewSuggestedKeywords(false);
     setIdeaUploadingImage(false);
 
     // Projet
@@ -1360,215 +1376,315 @@ const CarnetRoutesManager: React.FC = () => {
 
               {/* Formulaire de création / modification d'une idée */}
               {showAddIdea && (
-                <form onSubmit={handleSaveIdea} className={`rounded-2xl p-6 space-y-4 max-w-2xl border ${
+                <form onSubmit={handleSaveIdea} className={`rounded-2xl p-6 space-y-4 ${
+                  ideaType === 'PHOTO' ? 'max-w-5xl' : 'max-w-2xl'
+                } border ${
                   isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-md'
                 }`}>
                   <h3 className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
                     {editingIdea ? '✏️ Modifier l\'Idée' : '💡 Noter une Nouvelle Idée'}
                   </h3>
-                  <div className="grid gap-4">
-                    <div>
-                      <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Titre de l'idée *</label>
-                      <input
-                        type="text"
-                        value={ideaName}
-                        onChange={e => setIdeaName(e.target.value)}
-                        className={`w-full rounded-lg p-2.5 text-sm focus:outline-none focus:border-yellow-500 border ${
-                          isDark
-                            ? 'bg-black/40 border-white/10 text-white placeholder-gray-500'
-                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-yellow-500'
-                        }`}
-                        placeholder="ex: Brumes d'automne au lever du jour, Portraits contrastés en clair-obscur..."
-                        required
-                      />
-                    </div>
 
-                    {/* Choix du type d'idée : Projet vs Photo */}
-                    {/* Choix du type d'idée : Radio Cards Prominentes */}
-                    <div className="space-y-2">
-                      <label className={`block text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Nature de l'idée *
-                      </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setIdeaType('PROJECT');
-                            setIdeaParentProjectId('');
-                          }}
-                          className={`p-3 rounded-xl border text-left transition flex items-start gap-3 ${
-                            ideaType === 'PROJECT'
-                              ? 'bg-yellow-500/20 border-yellow-500 text-yellow-600 dark:text-yellow-300 ring-2 ring-yellow-500/50 font-bold'
-                              : isDark
-                              ? 'bg-black/30 border-white/10 text-gray-400 hover:border-white/20'
-                              : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <span className="text-2xl">📁</span>
-                          <div>
-                            <div className="font-bold text-xs">Idée de Projet</div>
-                            <div className="text-[10px] opacity-75 mt-0.5 font-normal">Un grand projet global, un thème ou une série</div>
-                          </div>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => setIdeaType('PHOTO')}
-                          className={`p-3 rounded-xl border text-left transition flex items-start gap-3 ${
-                            ideaType === 'PHOTO'
-                              ? 'bg-purple-500/20 border-purple-500 text-purple-600 dark:text-purple-300 ring-2 ring-purple-500/50 font-bold'
-                              : isDark
-                              ? 'bg-black/30 border-white/10 text-gray-400 hover:border-white/20'
-                              : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <span className="text-2xl">📷</span>
-                          <div>
-                            <div className="font-bold text-xs">Idée de Photo</div>
-                            <div className="text-[10px] opacity-75 mt-0.5 font-normal">Une prise de vue ou shot note (autonome ou dans un projet)</div>
-                          </div>
-                        </button>
-                      </div>
-
-                      {ideaType === 'PHOTO' && (
-                        <div className="pt-2">
-                          <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                            📁 Rattacher cette photo à un projet (optionnel) :
-                          </label>
-                          <select
-                            value={String(ideaParentProjectId || '')}
-                            onChange={e => setIdeaParentProjectId(e.target.value)}
-                            className={`w-full rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500 border ${
-                              isDark
-                                ? 'bg-black/50 border-purple-500/40 text-white'
-                                : 'bg-white border-purple-300 text-gray-900 focus:ring-1 focus:ring-purple-500'
-                            }`}
-                          >
-                            <option value="">-- Autonome (aucun projet rattaché) --</option>
-                            {allMasterProjects.map(p => (
-                              <option key={String(p._id)} value={String(p._id)}>
-                                📁 {p.name} {p.status === 'IDEA' ? '(Idée de projet)' : '(Projet actif)'}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className={ideaType === 'PHOTO' ? "grid grid-cols-1 lg:grid-cols-12 gap-6" : "grid gap-4"}>
+                    {/* Colonne Principale */}
+                    <div className={ideaType === 'PHOTO' ? "lg:col-span-6 space-y-4" : "space-y-4"}>
                       <div>
-                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Tags / Thématiques (séparés par des virgules)</label>
+                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Titre de l'idée *</label>
                         <input
                           type="text"
-                          value={ideaTags}
-                          onChange={e => setIdeaTags(e.target.value)}
-                          className={`w-full rounded-lg p-2 text-xs focus:outline-none focus:border-yellow-500 border ${
+                          value={ideaName}
+                          onChange={e => setIdeaName(e.target.value)}
+                          className={`w-full rounded-lg p-2.5 text-sm focus:outline-none focus:border-yellow-500 border ${
                             isDark
-                              ? 'bg-black/40 border-white/10 text-white placeholder-gray-600'
+                              ? 'bg-black/40 border-white/10 text-white placeholder-gray-500'
                               : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-yellow-500'
                           }`}
-                          placeholder="ex: paysage, automne, n&b, repérage"
+                          placeholder="ex: Brumes d'automne au lever du jour, Portraits contrastés en clair-obscur..."
+                          required
                         />
                       </div>
-                      <div>
-                        <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Échéance cible / Date visée (optionnel)</label>
-                        <input
-                          type="date"
-                          value={ideaTargetDate}
-                          onChange={e => setIdeaTargetDate(e.target.value)}
-                          className={`w-full rounded-lg p-2 text-xs focus:outline-none focus:border-yellow-500 border ${
-                            isDark
-                              ? 'bg-black/40 border-white/10 text-white'
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                        />
-                      </div>
-                    </div>
 
-                    {/* Markdown Notes & Intentions */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-xs font-semibold text-yellow-600 dark:text-yellow-400">
-                          📝 Notes & Intentions (Markdown complet)
+                      {/* Choix du type d'idée : Radio Cards Prominentes */}
+                      <div className="space-y-2">
+                        <label className={`block text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                          Nature de l'idée *
                         </label>
-                        <div className="flex gap-2">
-                          <label
-                            htmlFor="idea-image-upload"
-                            className={`cursor-pointer text-[10px] font-bold uppercase px-2 py-1 rounded border transition ${
-                              ideaUploadingImage
-                                ? 'border-yellow-400/30 text-yellow-500/50'
-                                : 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10'
-                            }`}
-                            title="Insérer une image d'inspiration ou de référence"
-                          >
-                            {ideaUploadingImage ? '⏳ Upload...' : '📎 Image / Référence'}
-                          </label>
-                          <input
-                            id="idea-image-upload"
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            disabled={ideaUploadingImage}
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              setIdeaUploadingImage(true);
-                              try {
-                                const formData = new FormData();
-                                formData.append('image', file);
-                                const res = await api.post('/photos/making-of/upload', formData, {
-                                  headers: { 'Content-Type': 'multipart/form-data' }
-                                });
-                                const url = res.data.url;
-                                const mdSnippet = `\n![${file.name}](${url})\n`;
-                                setIdeaNotesMarkdown(prev => prev + mdSnippet);
-                              } catch (err: any) {
-                                const msg = err.response?.data?.error || err.message || "Erreur de communication avec le serveur";
-                                alert(`Erreur lors de l'upload de l'image : ${msg}`);
-                              } finally {
-                                setIdeaUploadingImage(false);
-                                e.target.value = '';
-                              }
-                            }}
-                          />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <button
                             type="button"
-                            onClick={() => setIdeaPreviewMarkdown(p => !p)}
-                            className="text-[10px] font-bold uppercase px-2 py-1 rounded border border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10 transition"
+                            onClick={() => {
+                              setIdeaType('PROJECT');
+                              setIdeaParentProjectId('');
+                            }}
+                            className={`p-3 rounded-xl border text-left transition flex items-start gap-3 ${
+                              ideaType === 'PROJECT'
+                                ? 'bg-yellow-500/20 border-yellow-500 text-yellow-600 dark:text-yellow-300 ring-2 ring-yellow-500/50 font-bold'
+                                : isDark
+                                ? 'bg-black/30 border-white/10 text-gray-400 hover:border-white/20'
+                                : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                            }`}
                           >
-                            {ideaPreviewMarkdown ? '✏️ Éditer' : '👁 Aperçu'}
+                            <span className="text-2xl">📁</span>
+                            <div>
+                              <div className="font-bold text-xs">Idée de Projet</div>
+                              <div className="text-[10px] opacity-75 mt-0.5 font-normal">Un grand projet global, un thème ou une série</div>
+                            </div>
                           </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setIdeaType('PHOTO')}
+                            className={`p-3 rounded-xl border text-left transition flex items-start gap-3 ${
+                              ideaType === 'PHOTO'
+                                ? 'bg-purple-500/20 border-purple-500 text-purple-600 dark:text-purple-300 ring-2 ring-purple-500/50 font-bold'
+                                : isDark
+                                ? 'bg-black/30 border-white/10 text-gray-400 hover:border-white/20'
+                                : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            <span className="text-2xl">📷</span>
+                            <div>
+                              <div className="font-bold text-xs">Idée de Photo</div>
+                              <div className="text-[10px] opacity-75 mt-0.5 font-normal">Une prise de vue ou shot note (autonome ou dans un projet)</div>
+                            </div>
+                          </button>
+                        </div>
+
+                        {ideaType === 'PHOTO' && (
+                          <div className="pt-2">
+                            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                              📁 Rattacher cette photo à un projet (optionnel) :
+                            </label>
+                            <select
+                              value={String(ideaParentProjectId || '')}
+                              onChange={e => setIdeaParentProjectId(e.target.value)}
+                              className={`w-full rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500 border ${
+                                isDark
+                                  ? 'bg-black/50 border-purple-500/40 text-white'
+                                  : 'bg-white border-purple-300 text-gray-900 focus:ring-1 focus:ring-purple-500'
+                              }`}
+                            >
+                              <option value="">-- Autonome (aucun projet rattaché) --</option>
+                              {allMasterProjects.map(p => (
+                                <option key={String(p._id)} value={String(p._id)}>
+                                  📁 {p.name} {p.status === 'IDEA' ? '(Idée de projet)' : '(Projet actif)'}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Tags / Thématiques (séparés par des virgules)</label>
+                          <input
+                            type="text"
+                            value={ideaTags}
+                            onChange={e => setIdeaTags(e.target.value)}
+                            className={`w-full rounded-lg p-2 text-xs focus:outline-none focus:border-yellow-500 border ${
+                              isDark
+                                ? 'bg-black/40 border-white/10 text-white placeholder-gray-600'
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-yellow-500'
+                            }`}
+                            placeholder="ex: paysage, automne, n&b, repérage"
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Échéance cible / Date visée (optionnel)</label>
+                          <input
+                            type="date"
+                            value={ideaTargetDate}
+                            onChange={e => setIdeaTargetDate(e.target.value)}
+                            className={`w-full rounded-lg p-2 text-xs focus:outline-none focus:border-yellow-500 border ${
+                              isDark
+                                ? 'bg-black/40 border-white/10 text-white'
+                                : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                          />
                         </div>
                       </div>
 
-                      {ideaPreviewMarkdown ? (
-                        <div
-                          className={`w-full min-h-[140px] rounded-lg p-3 text-sm max-w-none overflow-auto border ${
-                            isDark
-                              ? 'bg-black/40 border-white/10 text-gray-200 prose prose-invert'
-                              : 'bg-amber-50/40 border-gray-200 text-gray-800 prose prose-neutral'
-                          }`}
-                        >
-                          {ideaNotesMarkdown ? (
-                            <MarkdownRenderer>{ideaNotesMarkdown}</MarkdownRenderer>
+                      {/* Markdown Notes & Intentions */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-xs font-semibold text-yellow-600 dark:text-yellow-400">
+                            📝 Notes & Intentions (Markdown complet)
+                          </label>
+                          <div className="flex gap-2">
+                            <label
+                              htmlFor="idea-image-upload"
+                              className={`cursor-pointer text-[10px] font-bold uppercase px-2 py-1 rounded border transition ${
+                                ideaUploadingImage
+                                  ? 'border-yellow-400/30 text-yellow-500/50'
+                                  : 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10'
+                              }`}
+                              title="Insérer une image d'inspiration ou de référence"
+                            >
+                              {ideaUploadingImage ? '⏳ Upload...' : '📎 Image / Référence'}
+                            </label>
+                            <input
+                              id="idea-image-upload"
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={ideaUploadingImage}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setIdeaUploadingImage(true);
+                                try {
+                                  const formData = new FormData();
+                                  formData.append('image', file);
+                                  const res = await api.post('/photos/making-of/upload', formData, {
+                                    headers: { 'Content-Type': 'multipart/form-data' }
+                                  });
+                                  const url = res.data.url;
+                                  const mdSnippet = `\n![${file.name}](${url})\n`;
+                                  setIdeaNotesMarkdown(prev => prev + mdSnippet);
+                                } catch (err: any) {
+                                  const msg = err.response?.data?.error || err.message || "Erreur de communication avec le serveur";
+                                  alert(`Erreur lors de l'upload de l'image : ${msg}`);
+                                } finally {
+                                  setIdeaUploadingImage(false);
+                                  e.target.value = '';
+                                }
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setIdeaPreviewMarkdown(p => !p)}
+                              className="text-[10px] font-bold uppercase px-2 py-1 rounded border border-yellow-500/50 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/10 transition"
+                            >
+                              {ideaPreviewMarkdown ? '✏️ Éditer' : '👁 Aperçu'}
+                            </button>
+                          </div>
+                        </div>
+
+                        {ideaPreviewMarkdown ? (
+                          <div
+                            className={`w-full min-h-[140px] rounded-lg p-3 text-sm max-w-none overflow-auto border ${
+                              isDark
+                                ? 'bg-black/40 border-white/10 text-gray-200 prose prose-invert'
+                                : 'bg-amber-50/40 border-gray-200 text-gray-800 prose prose-neutral'
+                            }`}
+                          >
+                            {ideaNotesMarkdown ? (
+                              <MarkdownRenderer>{ideaNotesMarkdown}</MarkdownRenderer>
+                            ) : (
+                              <span className="text-gray-400 italic">Aucune note saisie.</span>
+                            )}
+                          </div>
+                        ) : (
+                          <textarea
+                            value={ideaNotesMarkdown}
+                            onChange={e => setIdeaNotesMarkdown(e.target.value)}
+                            rows={5}
+                            placeholder={`Décrivez vos idées, inspirations, lieux de repérage...\n\nExemple :\n# Intention\nCapturer l'ambiance des ruelles au lever du soleil.\n\n- Boîtier à privilégier : Léger\n- Heure dorée : 06h30 - 07h30\n- Lieux : Quartier historique`}
+                            className={`w-full rounded-lg p-3 text-xs resize-y font-mono leading-relaxed focus:outline-none focus:border-yellow-500 border ${
+                              isDark
+                                ? 'bg-black/40 border-white/10 text-white placeholder-gray-600'
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-yellow-500'
+                            }`}
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Cartouche Latéral Droit (Spécifique aux Idées de Photo) */}
+                    {ideaType === 'PHOTO' && (
+                      <div className={`lg:col-span-6 p-4 rounded-2xl border space-y-4 ${
+                        isDark ? 'bg-purple-950/20 border-purple-500/30' : 'bg-purple-50/70 border-purple-200'
+                      }`}>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-300 flex items-center gap-1.5 border-b pb-2 border-purple-500/20">
+                          <span>📸 Cartouche de la photo (Fiche de repérage)</span>
+                        </h4>
+
+                        {/* Point 1 : Description (texte libre) */}
+                        <div className="space-y-1">
+                          <label className={`block text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                            📝 Description (Texte libre)
+                          </label>
+                          <textarea
+                            value={ideaDescription}
+                            onChange={e => setIdeaDescription(e.target.value)}
+                            rows={3}
+                            placeholder="Description synthétique de la photo, intention visuelle, cadrage préférentiel..."
+                            className={`w-full rounded-lg p-2.5 text-xs focus:outline-none focus:border-purple-500 border ${
+                              isDark
+                                ? 'bg-black/40 border-white/10 text-white placeholder-gray-500'
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                          />
+                        </div>
+
+                        {/* Point 2 : Références (Markdown libre) */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-center">
+                            <label className={`block text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                              📚 Références (Texte libre Markdown)
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setIdeaPreviewReferences(p => !p)}
+                              className="text-[10px] font-bold uppercase px-2 py-0.5 rounded border border-purple-500/40 text-purple-600 dark:text-purple-300 hover:bg-purple-500/10 transition"
+                            >
+                              {ideaPreviewReferences ? '✏️ Éditer' : '👁 Aperçu'}
+                            </button>
+                          </div>
+                          {ideaPreviewReferences ? (
+                            <div className={`w-full min-h-[80px] rounded-lg p-2.5 text-xs border ${
+                              isDark ? 'bg-black/40 border-white/10 text-gray-200 prose prose-invert prose-xs' : 'bg-white border-gray-200 text-gray-800 prose prose-neutral prose-xs'
+                            }`}>
+                              {ideaReferencesMarkdown ? <MarkdownRenderer>{ideaReferencesMarkdown}</MarkdownRenderer> : <span className="text-gray-400 italic">Aucune référence.</span>}
+                            </div>
                           ) : (
-                            <span className="text-gray-400 italic">Aucune note saisie.</span>
+                            <textarea
+                              value={ideaReferencesMarkdown}
+                              onChange={e => setIdeaReferencesMarkdown(e.target.value)}
+                              rows={3}
+                              placeholder="Ex: Photographes de référence (Fan Ho, Saul Leiter), livres, tableaux ou liens d'inspiration..."
+                              className={`w-full rounded-lg p-2.5 text-xs font-mono focus:outline-none focus:border-purple-500 border ${
+                                isDark ? 'bg-black/40 border-white/10 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                            />
                           )}
                         </div>
-                      ) : (
-                        <textarea
-                          value={ideaNotesMarkdown}
-                          onChange={e => setIdeaNotesMarkdown(e.target.value)}
-                          rows={6}
-                          placeholder={`Décrivez vos idées, inspirations, lieux de repérage...\n\nExemple :\n# Intention\nCapturer l'ambiance des ruelles au lever du soleil.\n\n- Boîtier à privilégier : Léger\n- Heure dorée : 06h30 - 07h30\n- Lieux : Quartier historique`}
-                          className={`w-full rounded-lg p-3 text-xs resize-y font-mono leading-relaxed focus:outline-none focus:border-yellow-500 border ${
-                            isDark
-                              ? 'bg-black/40 border-white/10 text-white placeholder-gray-600'
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-yellow-500'
-                          }`}
-                        />
-                      )}
-                    </div>
+
+                        {/* Point 3 : Mots-suggérés (Markdown libre) */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-center">
+                            <label className={`block text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                              🏷️ Mots-suggérés (Texte libre Markdown)
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setIdeaPreviewSuggestedKeywords(p => !p)}
+                              className="text-[10px] font-bold uppercase px-2 py-0.5 rounded border border-purple-500/40 text-purple-600 dark:text-purple-300 hover:bg-purple-500/10 transition"
+                            >
+                              {ideaPreviewSuggestedKeywords ? '✏️ Éditer' : '👁 Aperçu'}
+                            </button>
+                          </div>
+                          {ideaPreviewSuggestedKeywords ? (
+                            <div className={`w-full min-h-[80px] rounded-lg p-2.5 text-xs border ${
+                              isDark ? 'bg-black/40 border-white/10 text-gray-200 prose prose-invert prose-xs' : 'bg-white border-gray-200 text-gray-800 prose prose-neutral prose-xs'
+                            }`}>
+                              {ideaSuggestedKeywordsMarkdown ? <MarkdownRenderer>{ideaSuggestedKeywordsMarkdown}</MarkdownRenderer> : <span className="text-gray-400 italic">Aucun mot-clé suggéré.</span>}
+                            </div>
+                          ) : (
+                            <textarea
+                              value={ideaSuggestedKeywordsMarkdown}
+                              onChange={e => setIdeaSuggestedKeywordsMarkdown(e.target.value)}
+                              rows={3}
+                              placeholder="Ex: High-contrast, silhouettes, brume, contre-jour, drame..."
+                              className={`w-full rounded-lg p-2.5 text-xs font-mono focus:outline-none focus:border-purple-500 border ${
+                                isDark ? 'bg-black/40 border-white/10 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                              }`}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className={`flex gap-3 pt-3 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
@@ -1700,6 +1816,38 @@ const CarnetRoutesManager: React.FC = () => {
                                   #{t}
                                 </span>
                               ))}
+                            </div>
+                          )}
+
+                          {/* Cartouche synthétique sous forme de Tableau pour Idée Photo */}
+                          {idea.ideaType === 'PHOTO' && (idea.description || idea.referencesMarkdown || idea.suggestedKeywordsMarkdown) && (
+                            <div className={`mt-2 rounded-xl overflow-hidden border ${isDark ? 'bg-black/40 border-purple-500/30 text-gray-200' : 'bg-purple-50/60 border-purple-200 text-gray-900'}`}>
+                              <table className="w-full text-left text-xs border-collapse">
+                                <tbody>
+                                  {idea.description && (
+                                    <tr className={`border-b ${isDark ? 'border-white/10' : 'border-purple-200/60'}`}>
+                                      <td className="py-2 px-3 font-bold opacity-75 w-28 align-top shrink-0">Description</td>
+                                      <td className="py-2 px-3">{idea.description}</td>
+                                    </tr>
+                                  )}
+                                  {idea.referencesMarkdown && (
+                                    <tr className={`border-b ${isDark ? 'border-white/10' : 'border-purple-200/60'}`}>
+                                      <td className="py-2 px-3 font-bold opacity-75 w-28 align-top shrink-0">Références</td>
+                                      <td className="py-2 px-3 prose prose-invert prose-xs max-w-none">
+                                        <MarkdownRenderer>{idea.referencesMarkdown}</MarkdownRenderer>
+                                      </td>
+                                    </tr>
+                                  )}
+                                  {idea.suggestedKeywordsMarkdown && (
+                                    <tr>
+                                      <td className="py-2 px-3 font-bold opacity-75 w-28 align-top shrink-0">Mots-suggérés</td>
+                                      <td className="py-2 px-3 prose prose-invert prose-xs max-w-none">
+                                        <MarkdownRenderer>{idea.suggestedKeywordsMarkdown}</MarkdownRenderer>
+                                      </td>
+                                    </tr>
+                                  )}
+                                </tbody>
+                              </table>
                             </div>
                           )}
 
