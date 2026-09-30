@@ -99,16 +99,21 @@ router.get('/public/project/:slug', async (req: Request, res: Response) => {
       .populate('filmId')
       .sort({ index: 1, createdAt: 1 });
 
-    res.json({ project, photos });
+    const photoIdeas = await Project.find({
+      userId: project.userId,
+      parentProjectId: project._id
+    }).sort({ createdAt: -1 });
+
+    res.json({ project, photos, photoIdeas });
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération du détail du projet public' });
   }
 });
 
-// 1. GET ALL PROJECTS FOR USER (AVEC FILTRES STATUS, MEDIUM, TAG)
+// 1. GET ALL PROJECTS FOR USER (AVEC FILTRES STATUS, MEDIUM, TAG, IDEATYPE, PARENTPROJECTID)
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { status, medium, tag } = req.query;
+    const { status, medium, tag, ideaType, parentProjectId } = req.query;
     const query: any = { userId: req.user.userId };
 
     if (status && status !== 'ALL') {
@@ -120,18 +125,30 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     if (tag) {
       query.tags = tag;
     }
+    if (ideaType && ideaType !== 'ALL') {
+      query.ideaType = ideaType;
+    }
+    if (parentProjectId) {
+      if (parentProjectId === 'NONE') {
+        query.parentProjectId = null;
+      } else {
+        query.parentProjectId = parentProjectId;
+      }
+    }
 
-    const projects = await Project.find(query).sort({ createdAt: -1 });
+    const projects = await Project.find(query)
+      .populate('parentProjectId', 'name slug')
+      .sort({ createdAt: -1 });
     res.json(projects);
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération des projets' });
   }
 });
 
-// 2. GET SINGLE PROJECT DETAILS (AND ITS PHOTOS)
+// 2. GET SINGLE PROJECT DETAILS (AND ITS PHOTOS AND PHOTO IDEAS)
 router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const project = await Project.findById(req.params.id);
+    const project = await Project.findById(req.params.id).populate('parentProjectId', 'name slug');
     if (!project) return res.status(404).json({ error: 'Projet introuvable' });
     if (project.userId.toString() !== req.user.userId) {
       return res.status(403).json({ error: 'Action non autorisée' });
@@ -142,7 +159,13 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
       .populate('gearLensId')
       .populate('filmId')
       .sort({ index: 1, createdAt: 1 });
-    res.json({ project, photos });
+
+    const photoIdeas = await Project.find({
+      userId: req.user.userId,
+      parentProjectId: project._id
+    }).sort({ createdAt: -1 });
+
+    res.json({ project, photos, photoIdeas });
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération du détail du projet' });
   }
@@ -156,6 +179,8 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       description,
       status,
       medium,
+      ideaType,
+      parentProjectId,
       tags,
       notesMarkdown,
       targetDate,
@@ -185,6 +210,8 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       slug,
       status: status || 'IN_PROGRESS',
       medium: medium || (status === 'IDEA' ? 'UNDECIDED' : 'ANALOG'),
+      ideaType: ideaType || 'PROJECT',
+      parentProjectId: parentProjectId || null,
       tags: Array.isArray(tags) ? tags : [],
       notesMarkdown: notesMarkdown || '',
       targetDate: targetDate ? new Date(targetDate) : undefined,
@@ -209,13 +236,14 @@ router.post('/:id/concretize', authenticateToken, async (req: Request, res: Resp
       return res.status(403).json({ error: 'Action non autorisée' });
     }
 
-    const { medium, status, targetDate, isPublished } = req.body;
+    const { medium, status, targetDate, isPublished, parentProjectId } = req.body;
     if (!medium || medium === 'UNDECIDED') {
       return res.status(400).json({ error: 'Veuillez sélectionner un médium valide (Numérique, Argentique ou Hybride)' });
     }
 
     project.medium = medium;
     project.status = status || 'IN_PROGRESS';
+    if (parentProjectId !== undefined) project.parentProjectId = parentProjectId || null;
     if (targetDate) project.targetDate = new Date(targetDate);
     project.isPublished = isPublished !== undefined ? isPublished : true; // Par défaut, un projet concrétisé est publié
 
@@ -240,6 +268,8 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       description,
       status,
       medium,
+      ideaType,
+      parentProjectId,
       tags,
       notesMarkdown,
       targetDate,
@@ -264,6 +294,8 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     project.description = description ?? project.description;
     if (status !== undefined) project.status = status;
     if (medium !== undefined) project.medium = medium;
+    if (ideaType !== undefined) project.ideaType = ideaType;
+    if (parentProjectId !== undefined) project.parentProjectId = parentProjectId || null;
     if (tags !== undefined) project.tags = Array.isArray(tags) ? tags : [];
     if (notesMarkdown !== undefined) project.notesMarkdown = notesMarkdown;
     if (targetDate !== undefined) project.targetDate = targetDate ? new Date(targetDate) : undefined;
@@ -318,6 +350,9 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
 
     // Supprimer la référence de projet dans toutes les photos associées
     await Photo.updateMany({ projectId: project._id }, { $set: { projectId: null } });
+
+    // Détacher les idées de photos rattachées à ce projet
+    await Project.updateMany({ parentProjectId: project._id }, { $set: { parentProjectId: null } });
 
     await Project.findByIdAndDelete(req.params.id);
     res.json({ message: 'Projet supprimé avec succès' });

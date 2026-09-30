@@ -73,6 +73,9 @@ const CarnetRoutesManager: React.FC = () => {
   // --- Form States ---
   // Boîte à Idées
   const [ideaName, setIdeaName] = useState('');
+  const [ideaType, setIdeaType] = useState<'PROJECT' | 'PHOTO'>('PROJECT');
+  const [ideaParentProjectId, setIdeaParentProjectId] = useState<string>('');
+  const [filterIdeaType, setFilterIdeaType] = useState<'ALL' | 'PROJECT' | 'PHOTO'>('ALL');
   const [ideaNotesMarkdown, setIdeaNotesMarkdown] = useState('');
   const [ideaTags, setIdeaTags] = useState('');
   const [ideaTargetDate, setIdeaTargetDate] = useState('');
@@ -204,9 +207,14 @@ const CarnetRoutesManager: React.FC = () => {
     if (!ideaName) return alert('Le nom de l\'idée est requis');
 
     try {
+      const finalIdeaType = (ideaType === 'PHOTO' || Boolean(ideaParentProjectId)) ? 'PHOTO' : 'PROJECT';
+      const finalParentProjectId = (finalIdeaType === 'PHOTO' && ideaParentProjectId) ? ideaParentProjectId : null;
+
       const payload = {
         name: ideaName,
         status: 'IDEA',
+        ideaType: finalIdeaType,
+        parentProjectId: finalParentProjectId,
         medium: 'UNDECIDED',
         tags: ideaTags ? ideaTags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
         notesMarkdown: ideaNotesMarkdown,
@@ -231,6 +239,9 @@ const CarnetRoutesManager: React.FC = () => {
   const handleEditIdea = (idea: any) => {
     setEditingIdea(idea);
     setIdeaName(idea.name || '');
+    const parentId = idea.parentProjectId?._id || (typeof idea.parentProjectId === 'string' ? idea.parentProjectId : '');
+    setIdeaType(idea.ideaType || (parentId ? 'PHOTO' : 'PROJECT'));
+    setIdeaParentProjectId(parentId);
     setIdeaNotesMarkdown(idea.notesMarkdown || idea.description || '');
     setIdeaTags(Array.isArray(idea.tags) ? idea.tags.join(', ') : '');
     setIdeaTargetDate(idea.targetDate ? idea.targetDate.split('T')[0] : '');
@@ -290,6 +301,8 @@ const CarnetRoutesManager: React.FC = () => {
         notesMarkdown: projectNotesMarkdown,
         status: projectStatus,
         medium: projectMedium,
+        ideaType: editingItem?.ideaType || 'PROJECT',
+        parentProjectId: editingItem?.parentProjectId ? getParentIdStr(editingItem.parentProjectId) : null,
         tags: projectTags ? projectTags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
         targetDate: projectTargetDate ? projectTargetDate : undefined,
         isPublished: projectPublished,
@@ -693,6 +706,8 @@ const CarnetRoutesManager: React.FC = () => {
 
     // Boîte à idées
     setIdeaName('');
+    setIdeaType('PROJECT');
+    setIdeaParentProjectId('');
     setIdeaNotesMarkdown('');
     setIdeaTags('');
     setIdeaTargetDate('');
@@ -758,8 +773,16 @@ const CarnetRoutesManager: React.FC = () => {
     setDevFixerTime('5mn');
   };
 
+  const getParentIdStr = (parentField: any): string => {
+    if (!parentField) return '';
+    if (typeof parentField === 'string') return parentField;
+    if (typeof parentField === 'object' && parentField._id) return String(parentField._id);
+    return String(parentField);
+  };
+
   const ideasList = projects.filter(p => p.status === 'IDEA');
-  const activeProjectsList = projects.filter(p => p.status !== 'IDEA');
+  const allMasterProjects = projects.filter(p => !getParentIdStr(p.parentProjectId));
+  const activeProjectsList = allMasterProjects.filter(p => p.status !== 'IDEA');
 
   // Collecter tous les tags d'idées pour filtre rapide
   const allIdeaTags = Array.from(
@@ -1246,21 +1269,61 @@ const CarnetRoutesManager: React.FC = () => {
                 )}
               </div>
 
-              {/* Filtres de recherche des idées */}
+              {/* Filtres de recherche et type d'idées */}
               <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-                <div className="w-full sm:w-72">
-                  <input
-                    type="text"
-                    placeholder="Rechercher une idée, un mot-clé..."
-                    value={searchIdeaQuery}
-                    onChange={e => setSearchIdeaQuery(e.target.value)}
-                    className={`w-full rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-yellow-500 border ${
-                      isDark
-                        ? 'bg-black/40 border-white/10 text-white placeholder-gray-500'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-yellow-500'
-                    }`}
-                  />
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <div className="w-full sm:w-60">
+                    <input
+                      type="text"
+                      placeholder="Rechercher une idée, un mot-clé..."
+                      value={searchIdeaQuery}
+                      onChange={e => setSearchIdeaQuery(e.target.value)}
+                      className={`w-full rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-yellow-500 border ${
+                        isDark
+                          ? 'bg-black/40 border-white/10 text-white placeholder-gray-500'
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-1 focus:ring-yellow-500'
+                      }`}
+                    />
+                  </div>
+
+                  {/* Pills pour filtrer par Type d'Idée */}
+                  <div className={`flex items-center p-1 rounded-xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-gray-200'}`}>
+                    <button
+                      type="button"
+                      onClick={() => setFilterIdeaType('ALL')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+                        filterIdeaType === 'ALL'
+                          ? 'bg-yellow-500 text-black shadow-sm'
+                          : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Toutes ({ideasList.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFilterIdeaType('PROJECT')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+                        filterIdeaType === 'PROJECT'
+                          ? 'bg-yellow-500 text-black shadow-sm'
+                          : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      📁 Projets ({ideasList.filter(i => i.ideaType !== 'PHOTO').length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFilterIdeaType('PHOTO')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+                        filterIdeaType === 'PHOTO'
+                          ? 'bg-yellow-500 text-black shadow-sm'
+                          : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      📷 Photos ({ideasList.filter(i => i.ideaType === 'PHOTO').length})
+                    </button>
+                  </div>
                 </div>
+
                 {allIdeaTags.length > 0 && (
                   <div className="flex gap-1.5 flex-wrap items-center">
                     <span className={`text-[11px] font-semibold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Tags :</span>
@@ -1318,6 +1381,78 @@ const CarnetRoutesManager: React.FC = () => {
                         placeholder="ex: Brumes d'automne au lever du jour, Portraits contrastés en clair-obscur..."
                         required
                       />
+                    </div>
+
+                    {/* Choix du type d'idée : Projet vs Photo */}
+                    {/* Choix du type d'idée : Radio Cards Prominentes */}
+                    <div className="space-y-2">
+                      <label className={`block text-xs font-bold uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Nature de l'idée *
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIdeaType('PROJECT');
+                            setIdeaParentProjectId('');
+                          }}
+                          className={`p-3 rounded-xl border text-left transition flex items-start gap-3 ${
+                            ideaType === 'PROJECT'
+                              ? 'bg-yellow-500/20 border-yellow-500 text-yellow-600 dark:text-yellow-300 ring-2 ring-yellow-500/50 font-bold'
+                              : isDark
+                              ? 'bg-black/30 border-white/10 text-gray-400 hover:border-white/20'
+                              : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          <span className="text-2xl">📁</span>
+                          <div>
+                            <div className="font-bold text-xs">Idée de Projet</div>
+                            <div className="text-[10px] opacity-75 mt-0.5 font-normal">Un grand projet global, un thème ou une série</div>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setIdeaType('PHOTO')}
+                          className={`p-3 rounded-xl border text-left transition flex items-start gap-3 ${
+                            ideaType === 'PHOTO'
+                              ? 'bg-purple-500/20 border-purple-500 text-purple-600 dark:text-purple-300 ring-2 ring-purple-500/50 font-bold'
+                              : isDark
+                              ? 'bg-black/30 border-white/10 text-gray-400 hover:border-white/20'
+                              : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          <span className="text-2xl">📷</span>
+                          <div>
+                            <div className="font-bold text-xs">Idée de Photo</div>
+                            <div className="text-[10px] opacity-75 mt-0.5 font-normal">Une prise de vue ou shot note (autonome ou dans un projet)</div>
+                          </div>
+                        </button>
+                      </div>
+
+                      {ideaType === 'PHOTO' && (
+                        <div className="pt-2">
+                          <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                            📁 Rattacher cette photo à un projet (optionnel) :
+                          </label>
+                          <select
+                            value={String(ideaParentProjectId || '')}
+                            onChange={e => setIdeaParentProjectId(e.target.value)}
+                            className={`w-full rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500 border ${
+                              isDark
+                                ? 'bg-black/50 border-purple-500/40 text-white'
+                                : 'bg-white border-purple-300 text-gray-900 focus:ring-1 focus:ring-purple-500'
+                            }`}
+                          >
+                            <option value="">-- Autonome (aucun projet rattaché) --</option>
+                            {allMasterProjects.map(p => (
+                              <option key={String(p._id)} value={String(p._id)}>
+                                📁 {p.name} {p.status === 'IDEA' ? '(Idée de projet)' : '(Projet actif)'}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1461,6 +1596,9 @@ const CarnetRoutesManager: React.FC = () => {
               {/* Grille des cartes d'idées */}
               {(() => {
                 const filteredIdeas = ideasList.filter(idea => {
+                  if (filterIdeaType === 'PROJECT' && idea.ideaType === 'PHOTO') return false;
+                  if (filterIdeaType === 'PHOTO' && idea.ideaType !== 'PHOTO') return false;
+
                   if (searchIdeaQuery) {
                     const q = searchIdeaQuery.toLowerCase();
                     const matchName = (idea.name || '').toLowerCase().includes(q);
@@ -1483,7 +1621,7 @@ const CarnetRoutesManager: React.FC = () => {
                     }`}>
                       <div className="text-4xl">💡</div>
                       <p className={`font-semibold ${isDark ? 'text-gray-300' : 'text-gray-800'}`}>
-                        {searchIdeaQuery || filterIdeaTag ? 'Aucune idée ne correspond à votre recherche.' : 'Votre boîte à idées est vide.'}
+                        {searchIdeaQuery || filterIdeaTag || filterIdeaType !== 'ALL' ? 'Aucune idée ne correspond à votre recherche.' : 'Votre boîte à idées est vide.'}
                       </p>
                       <p className={`text-xs max-w-md mx-auto ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
                         Notez vos inspirations dès qu'elles vous viennent à l'esprit, puis transformez-les en projets actifs en un clic.
@@ -1510,14 +1648,34 @@ const CarnetRoutesManager: React.FC = () => {
                             }`}>
                               {idea.name}
                             </h3>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
-                              isDark
-                                ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
-                                : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap flex items-center gap-1 ${
+                              idea.ideaType === 'PHOTO'
+                                ? isDark
+                                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                                  : 'bg-purple-100 text-purple-800 border border-purple-300'
+                                : isDark
+                                  ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                                  : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
                             }`}>
-                              💡 Idée
+                              {idea.ideaType === 'PHOTO' ? '📷 Idée Photo' : '📁 Idée Projet'}
                             </span>
                           </div>
+
+                          {/* Projet parent si rattaché */}
+                          {(idea.ideaType === 'PHOTO' || getParentIdStr(idea.parentProjectId)) && getParentIdStr(idea.parentProjectId) && (() => {
+                            const pId = getParentIdStr(idea.parentProjectId);
+                            const parentName = typeof idea.parentProjectId === 'object' && idea.parentProjectId?.name
+                              ? idea.parentProjectId.name
+                              : projects.find(p => String(p._id) === pId)?.name;
+                            return (
+                              <p className={`text-[11px] font-semibold flex items-center gap-1 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>
+                                <span>📁 Projet :</span>
+                                <span className="font-bold">
+                                  {parentName || 'Projet rattaché'}
+                                </span>
+                              </p>
+                            );
+                          })()}
 
                           {/* Date cible */}
                           {idea.targetDate && (
@@ -2185,9 +2343,67 @@ const CarnetRoutesManager: React.FC = () => {
                           )}
 
                           <p className={`text-xs line-clamp-3 mb-3 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{p.description || 'Aucune description.'}</p>
-                          <div className={`text-[11px] font-mono mb-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                            Slug : {p.slug}
-                          </div>
+                          {/* Section Idées Photo rattachées à ce projet */}
+                          {(() => {
+                            const attachedIdeas = projects.filter(
+                              item => (item.ideaType === 'PHOTO' || getParentIdStr(item.parentProjectId)) &&
+                                      getParentIdStr(item.parentProjectId) === String(p._id)
+                            );
+                            return (
+                              <div className={`mt-3 p-3 rounded-xl border space-y-2 mb-3 ${isDark ? 'bg-purple-950/20 border-purple-500/20' : 'bg-purple-50/70 border-purple-200'}`}>
+                                <div className="flex items-center justify-between text-xs font-bold text-purple-600 dark:text-purple-300">
+                                  <span>📷 Idées photo du projet ({attachedIdeas.length})</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      resetForm();
+                                      setIdeaType('PHOTO');
+                                      setIdeaParentProjectId(String(p._id));
+                                      setShowAddIdea(true);
+                                      switchTab('ideas');
+                                    }}
+                                    className="text-[10px] bg-purple-500/20 hover:bg-purple-500/30 text-purple-700 dark:text-purple-300 font-bold px-2 py-0.5 rounded transition border border-purple-500/30"
+                                    title="Ajouter une nouvelle idée photo à ce projet"
+                                  >
+                                    + Idée photo
+                                  </button>
+                                </div>
+
+                                {attachedIdeas.length === 0 ? (
+                                  <p className="text-[11px] text-gray-500 italic">Aucune idée photo rattachée pour l'instant.</p>
+                                ) : (
+                                  <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                                    {attachedIdeas.map(idea => (
+                                      <div key={idea._id} className={`flex items-center justify-between gap-2 text-xs p-2 rounded border ${isDark ? 'bg-black/30 border-white/5' : 'bg-white border-gray-200'}`}>
+                                        <div className="min-w-0 flex-1 flex items-center gap-1.5">
+                                          <span className="truncate font-medium">{idea.name}</span>
+                                          <span className={`text-[9px] px-1.5 py-0.2 rounded font-semibold shrink-0 ${
+                                            idea.status === 'IDEA'
+                                              ? 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300'
+                                              : idea.status === 'IN_PROGRESS'
+                                              ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+                                              : 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                                          }`}>
+                                            {idea.status === 'IDEA' ? '💡 A faire' : idea.status === 'IN_PROGRESS' ? '📸 En cours' : '✨ Réalisée'}
+                                          </span>
+                                        </div>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            switchTab('ideas');
+                                            handleEditIdea(idea);
+                                          }}
+                                          className="text-[10px] text-yellow-600 dark:text-yellow-400 hover:underline shrink-0"
+                                        >
+                                          Éditer
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
                         </div>
                         <div className={`flex flex-wrap justify-between items-center gap-2 pt-3 border-t ${isDark ? 'border-white/5' : 'border-gray-200'}`}>
                           <div className="flex items-center gap-2">

@@ -115,6 +115,7 @@ export interface BlogArticle {
 
 export type ProjectStatus = 'IDEA' | 'PREPARATION' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
 export type ProjectMedium = 'UNDECIDED' | 'DIGITAL' | 'ANALOG' | 'HYBRID';
+export type IdeaType = 'PROJECT' | 'PHOTO';
 
 export interface Project {
   _id: string;
@@ -124,6 +125,8 @@ export interface Project {
   description?: string;
   status: ProjectStatus;
   medium: ProjectMedium;
+  ideaType?: IdeaType;
+  parentProjectId?: string;
   tags?: string[];
   notesMarkdown?: string;
   targetDate?: string;

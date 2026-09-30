@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export type ProjectStatus = 'IDEA' | 'PREPARATION' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
 export type ProjectMedium = 'UNDECIDED' | 'DIGITAL' | 'ANALOG' | 'HYBRID';
+export type IdeaType = 'PROJECT' | 'PHOTO';
 
 export interface IProject extends Document {
   userId: mongoose.Types.ObjectId;
@@ -10,6 +11,8 @@ export interface IProject extends Document {
   slug: string;
   status: ProjectStatus;
   medium: ProjectMedium;
+  ideaType?: IdeaType;
+  parentProjectId?: mongoose.Types.ObjectId;
   tags: string[];
   notesMarkdown: string;
   targetDate?: Date;
@@ -35,6 +38,16 @@ const ProjectSchema = new Schema<IProject>({
     enum: ['UNDECIDED', 'DIGITAL', 'ANALOG', 'HYBRID'],
     default: 'ANALOG'
   },
+  ideaType: {
+    type: String,
+    enum: ['PROJECT', 'PHOTO'],
+    default: 'PROJECT'
+  },
+  parentProjectId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Project',
+    default: null
+  },
   tags: [{ type: String }],
   notesMarkdown: { type: String, default: '' },
   targetDate: { type: Date },
@@ -47,6 +60,9 @@ const ProjectSchema = new Schema<IProject>({
 ProjectSchema.index({ userId: 1, slug: 1 }, { unique: true });
 ProjectSchema.index({ userId: 1, status: 1 });
 ProjectSchema.index({ userId: 1, medium: 1 });
+ProjectSchema.index({ userId: 1, ideaType: 1 });
+ProjectSchema.index({ userId: 1, parentProjectId: 1 });
 
 export default mongoose.model<IProject>('Project', ProjectSchema);
+
 

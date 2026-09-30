@@ -15,6 +15,7 @@ const ProjectDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [project, setProject] = useState<any | null>(null);
   const [photos, setPhotos] = useState<any[]>([]);
+  const [photoIdeas, setPhotoIdeas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -47,6 +48,7 @@ const ProjectDetailPage: React.FC = () => {
       .then(data => {
         setProject(data.project);
         setPhotos(data.photos || []);
+        setPhotoIdeas(data.photoIdeas || []);
       })
       .catch(err => {
         console.error(err);
@@ -249,6 +251,31 @@ const ProjectDetailPage: React.FC = () => {
             </span>
             <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed">
               <MarkdownRenderer>{project.makingOf}</MarkdownRenderer>
+            </div>
+          </div>
+        )}
+
+        {photoIdeas && photoIdeas.length > 0 && (
+          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-4 shadow-lg">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+              📷 Idées de photos rattachées ({photoIdeas.length})
+            </span>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {photoIdeas.map((photoIdea: any) => (
+                <div key={photoIdea._id} className="p-4 rounded-xl bg-black/30 border border-white/10 space-y-2">
+                  <h4 className="font-bold text-white text-sm">{photoIdea.name}</h4>
+                  {photoIdea.notesMarkdown && (
+                    <div className="text-xs text-gray-300 line-clamp-3 prose prose-invert prose-xs">
+                      <MarkdownRenderer>{photoIdea.notesMarkdown}</MarkdownRenderer>
+                    </div>
+                  )}
+                  {photoIdea.targetDate && (
+                    <span className="text-[10px] text-amber-300 font-semibold block">
+                      📅 Date visée : {new Date(photoIdea.targetDate).toLocaleDateString('fr-FR')}
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}
