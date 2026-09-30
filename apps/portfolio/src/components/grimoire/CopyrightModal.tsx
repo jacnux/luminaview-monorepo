@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShieldAlert } from 'lucide-react';
-import { UserProfile } from '../../types';
+import type { UserProfile } from '../../types';
 
 interface CopyrightModalProps {
   isOpen: boolean;

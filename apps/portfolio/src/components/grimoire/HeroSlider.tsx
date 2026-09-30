@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Album, UserProfile } from '../../types';
+import type { Album, UserProfile } from '../../types';
 import { getThumbUrl, getPhotoUrl } from '@luminaview/utils';
 
 interface HeroSliderProps {

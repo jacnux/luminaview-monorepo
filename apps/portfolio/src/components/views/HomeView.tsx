@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { UserProfile, Album } from '../../types';
+import type { UserProfile, Album } from '../../types';
 import MarkdownRenderer from '../MarkdownRenderer';
 import { pageVariants, containerVariants, itemVariants } from './variants';
-import { Sparkles, ArrowRight, Image as ImageIcon } from 'lucide-react';
+import { Sparkles, Image as ImageIcon } from 'lucide-react';
 
 interface HomeViewProps {
   profile: UserProfile | null;

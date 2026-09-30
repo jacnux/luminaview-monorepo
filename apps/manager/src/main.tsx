@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css'; // Cette ligne doit exister
+import '@luminaview/design-system/src/styles/global.css';
+import './index.css';
 import App from './App';
 
 const rootElement = document.getElementById('root');

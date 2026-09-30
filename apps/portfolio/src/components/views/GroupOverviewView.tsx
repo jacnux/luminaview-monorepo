@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { UserPage } from '../../types';
+import { Home, ChevronRight } from 'lucide-react';
+import type { UserPage } from '../../types';
 import MarkdownRenderer from '../MarkdownRenderer';
 import { pageVariants, containerVariants, itemVariants } from './variants';
 
@@ -48,16 +49,17 @@ const GroupOverviewView: React.FC<GroupOverviewViewProps> = ({
       animate="animate"
       key={title}
     >
-      {/* Fil d'Ariane */}
-      <nav className="portfolio-breadcrumb" aria-label="Fil d'Ariane">
+      {/* Fil d'Ariane Glassmorphism */}
+      <nav className="portfolio-breadcrumb glass-panel" aria-label="Fil d'Ariane">
         <button 
           type="button" 
           onClick={() => navigateTo('home')} 
           className="breadcrumb-link"
         >
+          <Home size={14} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '4px' }} />
           Accueil
         </button>
-        <span className="breadcrumb-sep">/</span>
+        <ChevronRight size={14} className="breadcrumb-sep" />
         <span className="breadcrumb-current">{title}</span>
       </nav>
 

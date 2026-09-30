@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { UserProfile, UserPage, Album } from '../types';
-import { Search, X, ChevronDown, Folder, Image, Newspaper, BookOpen, User, Mail, Sun, Moon } from 'lucide-react';
+import type { UserProfile, UserPage, Album } from '../types';
+import { Search, X, ChevronDown, Folder, Image, Sun, Moon } from 'lucide-react';
 
 interface HeaderProps {
   profile: UserProfile | null;

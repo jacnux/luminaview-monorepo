@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Photo } from '../types';
+import type { Photo } from '../types';
 
 interface CommentModalProps {
   photo: Photo;

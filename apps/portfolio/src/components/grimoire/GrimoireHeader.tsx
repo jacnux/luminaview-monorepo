@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronDown, ChevronUp, Instagram, Mail, Globe } from 'lucide-react';
-import { UserProfile, Album } from '../../types';
+import type { UserProfile, Album } from '../../types';
 
 interface GrimoireHeaderProps {
   profile: UserProfile | null;

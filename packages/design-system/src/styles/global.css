@@ -22,13 +22,16 @@
   --color-cyan-hover: #009D88;
 
   /* Mode Clair (Slate Neutrals) */
-  --color-bg: #F8FAFC;
+  --color-bg: #F1F5F9;
   --color-bg-alt: #FFFFFF;
-  --color-bg-glass: rgba(255, 255, 255, 0.75);
+  --color-bg-glass: rgba(255, 255, 255, 0.92);
   --color-text: #0F172A;
-  --color-text-muted: #64748B;
-  --color-border: rgba(148, 163, 184, 0.25);
-  --color-shadow: rgba(15, 23, 42, 0.08);
+  --color-text-muted: #475569;
+  --color-border: rgba(148, 163, 184, 0.45);
+  --color-border-hover: rgba(212, 175, 55, 0.6);
+  --color-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12);
+  --color-input-bg: #F8FAFC;
+  --color-input-border: #CBD5E1;
 
   /* Bordures et Rayons (Radii) */
   --radius-sm: 0.375rem; /* 6px */
@@ -51,14 +54,18 @@
 
 /* Mode Sombre (Slate Nuancé & Dark Ambient) */
 [data-theme="dark"],
-.dark {
-  --color-bg: #0F172A;
-  --color-bg-alt: #1E293B;
-  --color-bg-glass: rgba(15, 23, 42, 0.75);
+.dark,
+body.theme-portfolio {
+  --color-bg: #07090E;
+  --color-bg-alt: #0F172A;
+  --color-bg-glass: rgba(15, 23, 42, 0.92);
   --color-text: #F8FAFC;
   --color-text-muted: #94A3B8;
-  --color-border: rgba(255, 255, 255, 0.12);
-  --color-shadow: rgba(0, 0, 0, 0.45);
+  --color-border: rgba(255, 255, 255, 0.15);
+  --color-border-hover: rgba(212, 175, 55, 0.6);
+  --color-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+  --color-input-bg: #0B0F19;
+  --color-input-border: rgba(255, 255, 255, 0.18);
 }
 
 /* Thème Grimoire spécifique */

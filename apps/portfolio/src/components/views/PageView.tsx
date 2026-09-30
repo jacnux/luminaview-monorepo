@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { UserPage, Photo } from '../../types';
+import { Home, ChevronRight } from 'lucide-react';
+import type { UserPage, Photo } from '../../types';
 import MarkdownRenderer from '../MarkdownRenderer';
 import { pageVariants, containerVariants, itemVariants } from './variants';
 
@@ -44,17 +45,18 @@ const PageView: React.FC<PageViewProps> = ({
       animate="animate"
       key={pageData.slug}
     >
-      {/* Fil d'Ariane (Breadcrumb) */}
+      {/* Fil d'Ariane Glassmorphism */}
       {navigateTo && (
-        <nav className="portfolio-breadcrumb" aria-label="Fil d'Ariane">
+        <nav className="portfolio-breadcrumb glass-panel" aria-label="Fil d'Ariane">
           <button 
             type="button" 
             onClick={() => navigateTo('home')} 
             className="breadcrumb-link"
           >
+            <Home size={14} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '4px' }} />
             Accueil
           </button>
-          <span className="breadcrumb-sep">/</span>
+          <ChevronRight size={14} className="breadcrumb-sep" />
           {parentPage && (
             <>
               <button 
@@ -64,7 +66,7 @@ const PageView: React.FC<PageViewProps> = ({
               >
                 {parentPage.title}
               </button>
-              <span className="breadcrumb-sep">/</span>
+              <ChevronRight size={14} className="breadcrumb-sep" />
             </>
           )}
           <span className="breadcrumb-current">{pageData.title}</span>

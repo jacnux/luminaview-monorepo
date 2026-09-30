@@ -6,7 +6,7 @@ import ProjectDetailView from './ProjectDetailView';
 import CopyrightModal from './CopyrightModal';
 import AboutModal from './AboutModal';
 import ContactModal from './ContactModal';
-import { UserProfile, Album, Photo } from '../../types';
+import type { UserProfile, Album, Photo } from '../../types';
 
 interface GrimoireViewProps {
   profile: UserProfile | null;
@@ -17,7 +17,7 @@ const GrimoireView: React.FC<GrimoireViewProps> = ({ profile, albums }) => {
   const [viewState, setViewState] = useState<'home' | 'project'>('home');
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
   const [selectedPhotos, setSelectedPhotos] = useState<Photo[]>([]);
-  const [loadingPhotos, setLoadingPhotos] = useState(false);
+  const [_loadingPhotos, setLoadingPhotos] = useState(false);
 
   // Modales distinctes
   const [showCopyrightModal, setShowCopyrightModal] = useState(false);

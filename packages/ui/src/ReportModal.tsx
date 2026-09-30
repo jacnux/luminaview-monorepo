@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Flag, AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react';
-import { Photo } from '@luminaview/types';
+import type { Photo } from '@luminaview/types';
 
 export interface ReportModalProps {
   photo: Photo;

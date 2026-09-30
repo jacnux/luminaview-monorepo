@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Camera } from 'lucide-react';
 import MarkdownRenderer from './MarkdownRenderer';
-import { UserProfile } from '../../types';
+import type { UserProfile } from '../../types';
 
 interface AboutModalProps {
   isOpen: boolean;

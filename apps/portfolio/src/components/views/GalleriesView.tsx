@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Album } from '../../types';
+import type { Album } from '../../types';
 import MarkdownRenderer from '../MarkdownRenderer';
 import { pageVariants, containerVariants, itemVariants } from './variants';
 import { Search, X, Image as ImageIcon } from 'lucide-react';

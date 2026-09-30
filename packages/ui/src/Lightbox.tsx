@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2, Info, MessageSquare, Flag } from 'lucide-react';
-import { Photo } from '@luminaview/types';
+import type { Photo } from '@luminaview/types';
 
 export interface LightboxProps {
   photos: Photo[];

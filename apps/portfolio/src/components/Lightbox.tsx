@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Photo } from '../types';
+import { motion } from 'framer-motion';
+import type { Photo } from '../types';
 import MarkdownRenderer from './MarkdownRenderer';
 
 interface LightboxProps {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Check, Copy, Send, AlertCircle } from 'lucide-react';
-import { UserProfile } from '../../types';
+import type { UserProfile } from '../../types';
 
 interface ContactModalProps {
   isOpen: boolean;

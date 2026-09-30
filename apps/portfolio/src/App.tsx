@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AnimatePresence } from 'framer-motion';
 
 // Types
-import { UserProfile, Album, Photo, UserPage } from './types';
+import type { UserProfile, Album, Photo, UserPage } from './types';
 
 // Components
 import Header from './components/Header';
@@ -21,6 +21,7 @@ import ContactView from './components/views/ContactView';
 import PageView from './components/views/PageView';
 import GroupOverviewView from './components/views/GroupOverviewView';
 import GrimoireView from './components/grimoire/GrimoireView';
+import JsonLdSEO from './components/JsonLdSEO';
 
 // Détection dynamique de l'utilisateur pour le multi-hébergement (multi-tenant)
 const getUsernameFromEnvironment = (): string => {
@@ -357,6 +358,11 @@ const App: React.FC = () => {
 
   return (
     <div className={`page-container ${isEmbedMode ? 'embed-mode' : ''}`}>
+      <JsonLdSEO
+        profile={profile}
+        currentAlbum={albums.find(a => a._id === selectedAlbumId)}
+        photos={photos}
+      />
       {/* Sidebar Navigation */}
       {!isEmbedMode && (
         <Header

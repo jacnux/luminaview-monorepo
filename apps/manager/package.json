@@ -16,6 +16,7 @@
     "react-router-dom": "^6.20.0",
     "@luminaview/types": "file:../../packages/types",
     "@luminaview/utils": "file:../../packages/utils",
+    "@luminaview/design-system": "file:../../packages/design-system",
     "axios": "^1.6.0",
     "framer-motion": "^10.16.0",
     "lucide-react": "^0.294.0",

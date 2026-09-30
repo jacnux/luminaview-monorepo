@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Album, Photo } from '../../types';
+import { Home, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import type { Album, Photo } from '../../types';
 import MarkdownRenderer from '../MarkdownRenderer';
+import SkeletonGrid from '../SkeletonGrid';
 import { pageVariants, containerVariants, itemVariants } from './variants';
+import { Badge } from '@luminaview/design-system';
 
 interface AlbumViewProps {
   selectedAlbumId: string | null;
@@ -30,17 +33,26 @@ const AlbumView: React.FC<AlbumViewProps> = ({
       animate="animate"
       key="album"
     >
-      {/* Fil d'Ariane (Breadcrumb) */}
+      {/* Fil d'Ariane Glassmorphism */}
       {navigateTo && (
-        <nav className="portfolio-breadcrumb" aria-label="Fil d'Ariane">
+        <nav className="portfolio-breadcrumb glass-panel" aria-label="Fil d'Ariane">
           <button 
             type="button" 
             onClick={() => navigateTo('home')} 
             className="breadcrumb-link"
           >
+            <Home size={14} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '4px' }} />
             Accueil
           </button>
-          <span className="breadcrumb-sep">/</span>
+          <ChevronRight size={14} className="breadcrumb-sep" />
+          <button 
+            type="button" 
+            onClick={() => navigateTo('galleries')} 
+            className="breadcrumb-link"
+          >
+            Galeries
+          </button>
+          <ChevronRight size={14} className="breadcrumb-sep" />
           <span className="breadcrumb-current">
             {currentAlbum ? currentAlbum.title : 'Galerie'}
           </span>
@@ -52,25 +64,23 @@ const AlbumView: React.FC<AlbumViewProps> = ({
           {currentAlbum ? currentAlbum.title : 'Galerie'}
         </h2>
         {photos.length > 0 && (
-          <span className="album-count-badge">
-            {photos.length} {photos.length > 1 ? 'photos' : 'photo'}
-          </span>
+          <Badge variant="outline" className="album-count-badge">
+            <ImageIcon size={14} />
+            <span>{photos.length} {photos.length > 1 ? 'photos' : 'photo'}</span>
+          </Badge>
         )}
       </div>
 
       {currentAlbum?.description && (
-        <div style={{ color: '#666', marginTop: '15px', marginBottom: '25px' }}>
+        <div style={{ color: 'var(--color-text-muted)', marginTop: '15px', marginBottom: '25px' }}>
           <MarkdownRenderer>{currentAlbum.description}</MarkdownRenderer>
         </div>
       )}
 
       {loadingPhotos ? (
-        <div className="loader-container">
-          <div className="spinner"></div>
-          <p>Chargement des photos...</p>
-        </div>
+        <SkeletonGrid count={6} />
       ) : photos.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#999', margin: '40px 0' }}>Cette galerie ne contient aucune photo.</p>
+        <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', margin: '40px 0' }}>Cette galerie ne contient aucune photo.</p>
       ) : (
         <motion.div 
           className="masonry-grid"
@@ -105,3 +115,4 @@ const AlbumView: React.FC<AlbumViewProps> = ({
 };
 
 export default AlbumView;
+

@@ -18,7 +18,8 @@
     "paths": {
       "@luminaview/types": ["../../packages/types/src/index.ts"],
       "@luminaview/ui": ["../../packages/ui/src/index.ts"],
-      "@luminaview/utils": ["../../packages/utils/src/index.ts"]
+      "@luminaview/utils": ["../../packages/utils/src/index.ts"],
+      "@luminaview/design-system": ["../../packages/design-system/src/index.ts"]
     },
     "jsx": "react-jsx",
 

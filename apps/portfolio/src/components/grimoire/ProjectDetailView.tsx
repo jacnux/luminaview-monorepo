@@ -4,7 +4,7 @@ import { ArrowLeft, Maximize2 } from 'lucide-react';
 import MarkdownRenderer from './MarkdownRenderer';
 import axios from 'axios';
 import { Lightbox, CommentModal, ReportModal } from '@luminaview/ui';
-import { Album, Photo } from '../../types';
+import type { Album, Photo } from '../../types';
 import { getPhotoUrl, getThumbUrl } from '@luminaview/utils';
 
 interface ProjectDetailViewProps {
