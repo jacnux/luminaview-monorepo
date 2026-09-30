@@ -22,6 +22,7 @@ export interface IPhoto extends Document {
 
   // --- Carnet de route / Prise de vue ---
   projectId?: mongoose.Types.ObjectId;
+  ideaId?: mongoose.Types.ObjectId;
   isAnalog?: boolean;
   gearCameraId?: mongoose.Types.ObjectId;
   gearLensId?: mongoose.Types.ObjectId;
@@ -76,6 +77,7 @@ const PhotoSchema = new Schema<IPhoto>({
 
   // --- Nouveaux attributs ---
   projectId: { type: Schema.Types.ObjectId, ref: 'Project', default: null },
+  ideaId: { type: Schema.Types.ObjectId, ref: 'Project', default: null },
   isAnalog: { type: Boolean, default: false },
   gearCameraId: { type: Schema.Types.ObjectId, ref: 'Gear', default: null },
   gearLensId: { type: Schema.Types.ObjectId, ref: 'Gear', default: null },

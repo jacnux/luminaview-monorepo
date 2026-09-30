@@ -309,6 +309,44 @@ const ProjectDetailPage: React.FC = () => {
                       <MarkdownRenderer>{photoIdea.notesMarkdown}</MarkdownRenderer>
                     </div>
                   )}
+
+                  {/* Photographies concrétisant cette idée */}
+                  {(() => {
+                    const realizedPhotos = photos.filter(p => {
+                      const pIdeaId = typeof p.ideaId === 'object' && p.ideaId?._id ? p.ideaId._id : p.ideaId;
+                      return String(pIdeaId) === String(photoIdea._id);
+                    });
+
+                    if (realizedPhotos.length === 0) return null;
+
+                    return (
+                      <div className="mt-3 pt-3 border-t border-purple-500/20 space-y-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
+                          <span>✨</span> Concrétisée par ({realizedPhotos.length} photo{realizedPhotos.length > 1 ? 's' : ''})
+                        </span>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {realizedPhotos.map((rp) => (
+                            <Link
+                              key={rp._id}
+                              to={`/photo/${rp._id}`}
+                              className="group block relative rounded-lg overflow-hidden border border-white/10 bg-black/60 hover:border-purple-400 transition shadow-sm"
+                            >
+                              <img
+                                src={`/uploads/${rp.filename}`}
+                                alt={rp.title || photoIdea.name}
+                                className="w-full h-20 object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-1">
+                                <span className="text-[10px] text-white font-medium truncate w-full">
+                                  {rp.title || 'Voir la photo'}
+                                </span>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               ))}
             </div>
@@ -403,9 +441,24 @@ const ProjectDetailPage: React.FC = () => {
 
                 {/* Titre & Infos */}
                 <div className="space-y-2 pt-1">
-                  <h3 className="text-2xl font-bold text-white tracking-tight">
-                    {photo.title || `Photo #${idx + 1}`}
-                  </h3>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-2xl font-bold text-white tracking-tight">
+                      {photo.title || `Photo #${idx + 1}`}
+                    </h3>
+
+                    {/* Badge si rattachée à une idée photo */}
+                    {(() => {
+                      const pIdeaId = typeof photo.ideaId === 'object' && photo.ideaId?._id ? photo.ideaId._id : photo.ideaId;
+                      const matchedIdea = photoIdeas.find(pi => String(pi._id) === String(pIdeaId));
+                      if (!matchedIdea) return null;
+                      return (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-300 bg-purple-950/40 border border-purple-500/30 px-2.5 py-0.5 rounded-full shadow-sm">
+                          <span>💡 Idée :</span>
+                          <strong className="text-white">{matchedIdea.name}</strong>
+                        </span>
+                      );
+                    })()}
+                  </div>
 
                   {(photo.location || photo.captureDate) && (
                     <p className="text-xs text-amber-400/90 font-medium flex items-center gap-1.5 flex-wrap">

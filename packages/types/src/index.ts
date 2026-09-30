@@ -18,6 +18,8 @@ export interface Photo {
   description?: string;
   category?: string;
   tags?: string[];
+  projectId?: string;
+  ideaId?: any;
   exif?: PhotoExif;
   createdAt?: string;
 }

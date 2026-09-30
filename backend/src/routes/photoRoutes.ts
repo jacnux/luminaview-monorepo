@@ -168,7 +168,9 @@ router.get('/public/:id', async (req: Request, res: Response) => {
     })
       .populate('gearCameraId')
       .populate('gearLensId')
-      .populate('filmId');
+      .populate('filmId')
+      .populate('ideaId')
+      .populate('projectId', 'name slug');
 
     if (!photo) {
       return res.status(404).json({ error: 'Photo introuvable' });
@@ -582,6 +584,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       description,
       tags,
       projectId,
+      ideaId,
       isAnalog,
       gearCameraId,
       gearLensId,
@@ -605,6 +608,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
         description: description !== undefined ? normalizeStringField(description) : photo.description,
         tags: normalizedTags,
         projectId: projectId !== undefined ? projectId : photo.projectId,
+        ideaId: ideaId !== undefined ? (ideaId || null) : photo.ideaId,
         isAnalog: isAnalog !== undefined ? isAnalog : photo.isAnalog,
         gearCameraId: gearCameraId !== undefined ? gearCameraId : photo.gearCameraId,
         gearLensId: gearLensId !== undefined ? gearLensId : photo.gearLensId,
