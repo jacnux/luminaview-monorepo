@@ -66,6 +66,9 @@ const PhotoDetailPage: React.FC = () => {
           <Breadcrumb 
             items={[
               { label: 'Carnet de Routes', to: '/' },
+              ...(photo.projectId?.name && photo.projectId?.slug
+                ? [{ label: photo.projectId.name, to: `/project/${photo.projectId.slug}` }]
+                : []),
               { label: photo.title || 'Photo', isCurrent: true }
             ]} 
             className="mb-0" 
@@ -113,6 +116,72 @@ const PhotoDetailPage: React.FC = () => {
               {photo.isAnalog ? '🎞️ Argentique' : '⚡ Numérique'}
             </span>
           </div>
+
+          {/* Cartouche Idée concrétisée (si rattachée) */}
+          {photo.ideaId && (
+            <div className="bg-gradient-to-r from-purple-950/40 via-purple-900/30 to-black/40 border border-purple-500/30 p-6 sm:p-7 rounded-3xl shadow-xl space-y-4 backdrop-blur-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-purple-500/20 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">💡</span>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block">
+                      Concrétisation de l'idée photo
+                    </span>
+                    <h3 className="text-lg font-bold text-white">
+                      {photo.ideaId.name}
+                    </h3>
+                  </div>
+                </div>
+
+                {photo.projectId?.slug && (
+                  <Link
+                    to={`/project/${photo.projectId.slug}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-300 hover:text-white bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 px-3 py-1.5 rounded-full transition"
+                  >
+                    <span>📁 Projet : {photo.projectId.name || 'Voir le projet'}</span>
+                    <span>&rarr;</span>
+                  </Link>
+                )}
+              </div>
+
+              {(photo.ideaId.description || photo.ideaId.referencesMarkdown || photo.ideaId.suggestedKeywordsMarkdown) && (
+                <div className="rounded-xl overflow-hidden border border-purple-500/20 bg-black/40 text-xs">
+                  <table className="w-full text-left border-collapse">
+                    <tbody>
+                      {photo.ideaId.description && (
+                        <tr className="border-b border-purple-500/20">
+                          <td className="py-2.5 px-3.5 font-bold text-purple-300 w-32 align-top shrink-0">Idée initiale</td>
+                          <td className="py-2.5 px-3.5 text-gray-200">{photo.ideaId.description}</td>
+                        </tr>
+                      )}
+                      {photo.ideaId.referencesMarkdown && (
+                        <tr className="border-b border-purple-500/20">
+                          <td className="py-2.5 px-3.5 font-bold text-purple-300 w-32 align-top shrink-0">Références</td>
+                          <td className="py-2.5 px-3.5 text-gray-200 prose prose-invert prose-xs max-w-none">
+                            <MarkdownRenderer>{photo.ideaId.referencesMarkdown}</MarkdownRenderer>
+                          </td>
+                        </tr>
+                      )}
+                      {photo.ideaId.suggestedKeywordsMarkdown && (
+                        <tr>
+                          <td className="py-2.5 px-3.5 font-bold text-purple-300 w-32 align-top shrink-0">Mots-clés</td>
+                          <td className="py-2.5 px-3.5 text-gray-200 prose prose-invert prose-xs max-w-none">
+                            <MarkdownRenderer>{photo.ideaId.suggestedKeywordsMarkdown}</MarkdownRenderer>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {photo.ideaId.notesMarkdown && (
+                <div className="text-xs text-gray-300 prose prose-invert prose-xs max-w-none bg-black/30 p-3.5 rounded-xl border border-purple-500/20">
+                  <MarkdownRenderer>{photo.ideaId.notesMarkdown}</MarkdownRenderer>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Description & Intentions (si présents) */}
           {(photo.description || photo.shootingIntent) && (

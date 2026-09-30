@@ -17,6 +17,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
 
   // --- Carnet de route States ---
   const [projectId, setProjectId] = useState('');
+  const [ideaId, setIdeaId] = useState('');
   const [isAnalog, setIsAnalog] = useState(false);
   const [gearCameraId, setGearCameraId] = useState('');
   const [gearLensId, setGearLensId] = useState('');
@@ -62,7 +63,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
   const [makingOfUploading, setMakingOfUploading] = useState(false);
 
   // Listes de métadonnées issues de la base
-  const [projects, setProjects] = useState<any[]>([]);
+  const [allProjects, setAllProjects] = useState<any[]>([]);
   const [gear, setGear] = useState<any[]>([]);
   const [films, setFilms] = useState<any[]>([]);
 
@@ -77,7 +78,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
           api.get('/gears'),
           api.get('/films')
         ]);
-        setProjects(projRes.data);
+        setAllProjects(projRes.data);
         setGear(gearRes.data);
         setFilms(filmRes.data);
       } catch (err) {
@@ -86,6 +87,22 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
     };
     fetchModalData();
   }, []);
+
+  // Projets maîtres (exclure les sous-idées)
+  const masterProjects = useMemo(() => {
+    return allProjects.filter(p => !p.parentProjectId && p.ideaType !== 'PHOTO');
+  }, [allProjects]);
+
+  // Idées photo rattachées au projet sélectionné
+  const availablePhotoIdeas = useMemo(() => {
+    if (!projectId) return [];
+    return allProjects.filter(p => {
+      const parentId = typeof p.parentProjectId === 'object' && p.parentProjectId?._id
+        ? p.parentProjectId._id
+        : p.parentProjectId;
+      return String(parentId) === String(projectId) && (p.ideaType === 'PHOTO' || p.ideaType === 'PROJECT');
+    });
+  }, [allProjects, projectId]);
 
   // Détecter les changements de sélection de pellicule
   useEffect(() => {
@@ -145,7 +162,16 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
       setTags(Array.isArray(photo.tags) ? photo.tags.join(', ') : '');
       setIndex(photo.index || 0);
 
-      setProjectId(photo.projectId || '');
+      setProjectId(
+        typeof photo.projectId === 'object' && photo.projectId?._id
+          ? photo.projectId._id
+          : photo.projectId || ''
+      );
+      setIdeaId(
+        typeof photo.ideaId === 'object' && photo.ideaId?._id
+          ? photo.ideaId._id
+          : photo.ideaId || ''
+      );
       setIsAnalog(photo.isAnalog || false);
       setGearCameraId(
         typeof photo.gearCameraId === 'object' && photo.gearCameraId?._id
@@ -242,6 +268,7 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
       tags: tagsArray,
       index: Number(index),
       projectId: projectId || null,
+      ideaId: ideaId || null,
       isAnalog: isPhotoAnalog,
       gearCameraId: gearCameraId || null,
       gearLensId: gearLensId || null,
@@ -340,20 +367,54 @@ const EditPhotoModal: React.FC<EditPhotoModalProps> = ({ photo, onClose, onSave 
               </div>
 
               {user?.hasCarnet && (
-                <div>
-                  <label className="block text-xs text-gray-400 mb-1">Projet de Prise de vue (Optionnel)</label>
-                  <select
-                    value={projectId}
-                    onChange={e => setProjectId(e.target.value)}
-                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-white text-sm"
-                  >
-                    <option value="">Aucun projet</option>
-                    {projects.map(p => (
-                      <option key={p._id} value={p._id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
+                <div className="space-y-3 sm:col-span-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Projet de Prise de vue (Optionnel)</label>
+                      <select
+                        value={projectId}
+                        onChange={e => {
+                          const newProjId = e.target.value;
+                          setProjectId(newProjId);
+                          // Si on change de projet ou désélectionne, réinitialiser l'idée associée
+                          setIdeaId('');
+                        }}
+                        className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-white text-sm"
+                      >
+                        <option value="">Aucun projet</option>
+                        {masterProjects.map(p => (
+                          <option key={p._id} value={p._id}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {projectId ? (
+                      <div>
+                        <label className="block text-xs text-purple-400 font-semibold mb-1 flex items-center justify-between">
+                          <span>💡 Idée concrétisée (Optionnel)</span>
+                          {availablePhotoIdeas.length > 0 && (
+                            <span className="text-[10px] text-gray-400 font-normal">
+                              {availablePhotoIdeas.length} idée{availablePhotoIdeas.length > 1 ? 's' : ''} dispo.
+                            </span>
+                          )}
+                        </label>
+                        <select
+                          value={ideaId}
+                          onChange={e => setIdeaId(e.target.value)}
+                          className="w-full bg-purple-950/20 border border-purple-500/30 rounded-lg p-2 text-white text-sm focus:border-purple-400 focus:outline-none"
+                        >
+                          <option value="">Aucune idée spécifique</option>
+                          {availablePhotoIdeas.map(idea => (
+                            <option key={idea._id} value={idea._id}>
+                              📷 {idea.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               )}
 
