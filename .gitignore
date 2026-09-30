@@ -31,8 +31,6 @@ caddy_config/
 *.tsbuildinfo
 AGENTS.md
 copy_data.sh
-deploy.sh
-backup.sh
 captures_ecran/
 
 # Test reports & Dev folders
