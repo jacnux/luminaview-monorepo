@@ -260,6 +260,7 @@ const CarnetRoutesManager: React.FC = () => {
     setIdeaTargetDate(idea.targetDate ? idea.targetDate.split('T')[0] : '');
     setIdeaCover(idea.coverImage || '');
     setShowAddIdea(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteIdea = async (id: string) => {
@@ -349,6 +350,7 @@ const CarnetRoutesManager: React.FC = () => {
     setProjectCover(project.coverImage || '');
     setProjectMakingOf(project.makingOf || '');
     setShowAddProject(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDeleteProject = async (id: string) => {
@@ -1279,7 +1281,7 @@ const CarnetRoutesManager: React.FC = () => {
                 </div>
                 {!showAddIdea && (
                   <button
-                    onClick={() => { resetForm(); setShowAddIdea(true); }}
+                    onClick={() => { resetForm(); setShowAddIdea(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     className="w-full sm:w-auto shrink-0 whitespace-nowrap justify-center sm:justify-start bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-yellow-950/20 flex items-center gap-1.5"
                   >
                     + Nouvelle Idée
@@ -1939,7 +1941,7 @@ const CarnetRoutesManager: React.FC = () => {
                 </div>
                 {!showAddProject && (
                   <button
-                    onClick={() => { resetForm(); setShowAddProject(true); }}
+                    onClick={() => { resetForm(); setShowAddProject(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     className="w-full sm:w-auto shrink-0 whitespace-nowrap justify-center sm:justify-start bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-yellow-950/20 flex items-center gap-1.5"
                   >
                     + Nouveau Projet
