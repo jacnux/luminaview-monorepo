@@ -142,278 +142,10 @@ const ProjectDetailPage: React.FC = () => {
 
   const isEmbedded = window.location.pathname.startsWith('/embed/');
 
-  return (
-    <>
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-12 animate-fade-in text-white">
-      {/* Fil d'Ariane & Navigation */}
-      {!isEmbedded && (
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <Breadcrumb
-            items={[
-              { label: 'Carnet de Routes', to: '/' },
-              { label: project.name, isCurrent: true },
-            ]}
-            className="mb-0"
-          />
-          {renderBackLink("inline-flex items-center text-xs font-semibold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm")}
-        </div>
-      )}
 
-      {/* En-tête du Projet */}
-      <div className="space-y-6">
-        <div className="flex flex-wrap items-center gap-2">
-          {project.medium && (
-            <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md ${
-              project.medium === 'DIGITAL'
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                : project.medium === 'ANALOG'
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-            }`}>
-              {project.medium === 'DIGITAL' ? '⚡ Projet Numérique' : project.medium === 'ANALOG' ? '🎞️ Projet Argentique' : '🔀 Projet Hybride'}
-            </span>
-          )}
-
-          {project.status && (
-            <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${
-              project.status === 'PREPARATION'
-                ? 'bg-orange-500/20 text-orange-300 border-orange-500/30'
-                : project.status === 'IN_PROGRESS'
-                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                : project.status === 'COMPLETED'
-                ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-                : 'bg-gray-500/20 text-gray-300 border-gray-500/30'
-            }`}>
-              {project.status === 'PREPARATION' ? '📋 En préparation' : project.status === 'IN_PROGRESS' ? '📸 Prises de vue actives' : project.status === 'COMPLETED' ? '✨ Projet abouti' : '📦 Archivé'}
-            </span>
-          )}
-        </div>
-
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
-          {project.name}
-        </h1>
-
-        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
-          <span>
-            Publié le {new Date(project.createdAt).toLocaleDateString('fr-FR', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </span>
-          {project.targetDate && (
-            <span>
-              • 📅 Échéance : {new Date(project.targetDate).toLocaleDateString('fr-FR')}
-            </span>
-          )}
-          {Array.isArray(project.tags) && project.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {project.tags.map((t: string, i: number) => (
-                <span key={i} className="bg-white/10 text-gray-300 px-2 py-0.5 rounded text-[10px]">
-                  #{t}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {project.coverImage && (
-          <div className="rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 bg-black/40 flex items-center justify-center">
-            <img
-              src={`/uploads/${project.coverImage}`}
-              alt={project.name}
-              className="w-full h-auto max-h-[600px] object-contain rounded-3xl"
-            />
-          </div>
-        )}
-
-        {project.description && (
-          <div className="prose dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed font-light text-lg">
-            <MarkdownRenderer>{project.description}</MarkdownRenderer>
-          </div>
-        )}
-
-        {project.notesMarkdown && (
-          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3 shadow-lg">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
-              💡 Notes, intentions & inspirations
-            </span>
-            <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed">
-              <MarkdownRenderer>{project.notesMarkdown}</MarkdownRenderer>
-            </div>
-          </div>
-        )}
-
-        {project.makingOf && (
-          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3 shadow-lg">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
-              🎬 Secret de fabrication & Démarche artistique
-            </span>
-            <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed">
-              <MarkdownRenderer>{project.makingOf}</MarkdownRenderer>
-            </div>
-          </div>
-        )}
-
-        {photoIdeas && photoIdeas.length > 0 && (
-          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-4 shadow-lg">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-              📷 Idées de photos rattachées ({photoIdeas.length})
-            </span>
-            <div className="grid gap-6 md:grid-cols-2">
-              {photoIdeas.map((photoIdea: any) => (
-                <div key={photoIdea._id} className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-3 shadow-md">
-                  <div className="flex justify-between items-start gap-2 border-b border-white/10 pb-2">
-                    <h4 className="font-bold text-white text-base">{photoIdea.name}</h4>
-                    {photoIdea.targetDate && (
-                      <span className="text-[10px] text-amber-400 font-semibold shrink-0 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
-                        📅 {new Date(photoIdea.targetDate).toLocaleDateString('fr-FR')}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Tableau Cartouche Synthétique */}
-                  {(photoIdea.description || photoIdea.referencesMarkdown || photoIdea.suggestedKeywordsMarkdown) && (
-                    <div className="rounded-xl overflow-hidden border border-white/10 bg-black/30 text-xs">
-                      <table className="w-full text-left border-collapse">
-                        <tbody>
-                          {photoIdea.description && (
-                            <tr className="border-b border-white/10">
-                              <td className="py-2 px-3 font-bold text-amber-300/90 w-32 align-top shrink-0">Description</td>
-                              <td className="py-2 px-3 text-gray-200">{photoIdea.description}</td>
-                            </tr>
-                          )}
-                          {photoIdea.referencesMarkdown && (
-                            <tr className="border-b border-white/10">
-                              <td className="py-2 px-3 font-bold text-amber-300/90 w-32 align-top shrink-0">Références</td>
-                              <td className="py-2 px-3 text-gray-200 prose prose-invert prose-xs max-w-none">
-                                <MarkdownRenderer>{photoIdea.referencesMarkdown}</MarkdownRenderer>
-                              </td>
-                            </tr>
-                          )}
-                          {photoIdea.suggestedKeywordsMarkdown && (
-                            <tr>
-                              <td className="py-2 px-3 font-bold text-amber-300/90 w-32 align-top shrink-0">Mots-suggérés</td>
-                              <td className="py-2 px-3 text-gray-200 prose prose-invert prose-xs max-w-none">
-                                <MarkdownRenderer>{photoIdea.suggestedKeywordsMarkdown}</MarkdownRenderer>
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-
-                  {photoIdea.notesMarkdown && (
-                    <div className="text-xs text-gray-300 prose prose-invert prose-xs max-w-none bg-white/5 p-3 rounded-xl border border-white/5">
-                      <MarkdownRenderer>{photoIdea.notesMarkdown}</MarkdownRenderer>
-                    </div>
-                  )}
-
-                  {/* Photographies concrétisant cette idée */}
-                  {(() => {
-                    const realizedPhotos = photos.filter(p => {
-                      const pIdeaId = typeof p.ideaId === 'object' && p.ideaId?._id ? p.ideaId._id : p.ideaId;
-                      return String(pIdeaId) === String(photoIdea._id);
-                    });
-
-                    if (realizedPhotos.length === 0) return null;
-
-                    return (
-                      <div className="mt-3 pt-3 border-t border-purple-500/20 space-y-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
-                          <span>✨</span> Concrétisée par ({realizedPhotos.length} photo{realizedPhotos.length > 1 ? 's' : ''})
-                        </span>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                          {realizedPhotos.map((rp) => (
-                            <Link
-                              key={rp._id}
-                              to={`/photo/${rp._id}`}
-                              className="group block relative rounded-lg overflow-hidden border border-white/10 bg-black/60 hover:border-purple-400 transition shadow-sm"
-                            >
-                              <img
-                                src={`/uploads/${rp.filename}`}
-                                alt={rp.title || photoIdea.name}
-                                className="w-full h-20 object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-1">
-                                <span className="text-[10px] text-white font-medium truncate w-full">
-                                  {rp.title || 'Voir la photo'}
-                                </span>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── BARRE DE RECHERCHE DES PHOTOS DU PROJET ── */}
-      {photos.length > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-gray-900/80 border border-white/10 backdrop-blur-md">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-white">Photographies associées</span>
-            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">
-              {filteredPhotos.length} / {photos.length}
-            </span>
-          </div>
-
-          <div className="relative w-full sm:w-72">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">🔍</span>
-            <input
-              type="text"
-              placeholder="Rechercher dans ce projet..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-7 py-1.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-amber-400 transition"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Flux de Photos (Carnet de voyage) */}
-      <div className="space-y-16">
-        {photos.length === 0 && (
-          <div className="text-center py-16 rounded-3xl bg-black/20 border border-white/5 space-y-2">
-            <span className="text-3xl">📸</span>
-            <p className="text-white text-sm font-medium">Séance de prise de vue en cours de réalisation</p>
-            <p className="text-gray-400 text-xs">Les photographies associées à ce projet apparaîtront ici dès leur ajout.</p>
-          </div>
-        )}
-
-        {searchQuery && filteredPhotos.length === 0 && (
-          <div className="text-center py-12 bg-white/[0.02] border border-white/[0.06] rounded-3xl p-6 space-y-3">
-            <p className="text-gray-400 text-sm">
-              Aucune photo de ce projet ne correspond à « <strong className="text-amber-400">{searchQuery}</strong> ».
-            </p>
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="px-4 py-2 rounded-xl bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 transition"
-            >
-              Effacer la recherche
-            </button>
-          </div>
-        )}
-
-        {filteredPhotos.map((photo, idx) => (
+  const renderPhotoCard = (photo: any, globalIdx: number) => (
           <div
-            key={photo._id || idx}
+            key={photo._id || globalIdx}
             className="bg-gray-900/70 border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl backdrop-blur-sm"
           >
             {/* LIGNE 1 : Photo & Fiche Technique */}
@@ -422,11 +154,11 @@ const ProjectDetailPage: React.FC = () => {
               <div className="lg:col-span-7 space-y-4">
                 <div
                   className="bg-black/60 rounded-2xl overflow-hidden shadow-md relative group border border-white/10 flex items-center justify-center cursor-pointer"
-                  onClick={() => setLightboxIndex(idx)}
+                  onClick={() => setLightboxIndex(globalIdx)}
                 >
                   <img
                     src={`/uploads/${photo.filename}`}
-                    alt={photo.title || `Photo ${idx + 1}`}
+                    alt={photo.title || `Photo ${globalIdx + 1}`}
                     className="w-full h-auto max-h-[75vh] object-contain rounded-2xl transition-transform duration-500 group-hover:scale-[1.01]"
                   />
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
@@ -435,7 +167,7 @@ const ProjectDetailPage: React.FC = () => {
                     </span>
                   </div>
                   <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-black/80 text-white px-2.5 py-1 rounded-full border border-white/20 backdrop-blur-md">
-                    {idx + 1} / {filteredPhotos.length}
+                    {globalIdx + 1} / {filteredPhotos.length}
                   </span>
                 </div>
 
@@ -443,7 +175,7 @@ const ProjectDetailPage: React.FC = () => {
                 <div className="space-y-2 pt-1">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h3 className="text-2xl font-bold text-white tracking-tight">
-                      {photo.title || `Photo #${idx + 1}`}
+                      {photo.title || `Photo #${globalIdx + 1}`}
                     </h3>
 
                     {/* Badge si rattachée à une idée photo */}
@@ -727,8 +459,206 @@ const ProjectDetailPage: React.FC = () => {
               </div>
             )}
           </div>
-        ))}
+  );
+
+  return (
+    <>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-12 animate-fade-in text-white">
+      {/* Fil d'Ariane & Navigation */}
+      {!isEmbedded && (
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <Breadcrumb
+            items={[
+              { label: 'Carnet de Routes', to: '/' },
+              { label: project.name, isCurrent: true },
+            ]}
+            className="mb-0"
+          />
+          {renderBackLink("inline-flex items-center text-xs font-semibold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 px-3.5 py-1.5 rounded-full transition-all duration-200 shadow-sm")}
+        </div>
+      )}
+
+      {/* En-tête du Projet */}
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-center gap-2">
+          {project.medium && (
+            <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md ${
+              project.medium === 'DIGITAL'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                : project.medium === 'ANALOG'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+            }`}>
+              {project.medium === 'DIGITAL' ? '⚡ Projet Numérique' : project.medium === 'ANALOG' ? '🎞️ Projet Argentique' : '🔀 Projet Hybride'}
+            </span>
+          )}
+
+          {project.status && (
+            <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${
+              project.status === 'PREPARATION'
+                ? 'bg-orange-500/20 text-orange-300 border-orange-500/30'
+                : project.status === 'IN_PROGRESS'
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                : project.status === 'COMPLETED'
+                ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                : 'bg-gray-500/20 text-gray-300 border-gray-500/30'
+            }`}>
+              {project.status === 'PREPARATION' ? '📋 En préparation' : project.status === 'IN_PROGRESS' ? '📸 Prises de vue actives' : project.status === 'COMPLETED' ? '✨ Projet abouti' : '📦 Archivé'}
+            </span>
+          )}
+        </div>
+
+        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
+          {project.name}
+        </h1>
+
+        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+          <span>
+            Publié le {new Date(project.createdAt).toLocaleDateString('fr-FR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </span>
+          {project.targetDate && (
+            <span>
+              • 📅 Échéance : {new Date(project.targetDate).toLocaleDateString('fr-FR')}
+            </span>
+          )}
+          {Array.isArray(project.tags) && project.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {project.tags.map((t: string, i: number) => (
+                <span key={i} className="bg-white/10 text-gray-300 px-2 py-0.5 rounded text-[10px]">
+                  #{t}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {project.coverImage && (
+          <div className="rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 bg-black/40 flex items-center justify-center">
+            <img
+              src={`/uploads/${project.coverImage}`}
+              alt={project.name}
+              className="w-full h-auto max-h-[600px] object-contain rounded-3xl"
+            />
+          </div>
+        )}
+
+        {project.description && (
+          <div className="prose dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed font-light text-lg">
+            <MarkdownRenderer>{project.description}</MarkdownRenderer>
+          </div>
+        )}
+
+        {project.notesMarkdown && (
+          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3 shadow-lg">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+              💡 Notes, intentions & inspirations
+            </span>
+            <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed">
+              <MarkdownRenderer>{project.notesMarkdown}</MarkdownRenderer>
+            </div>
+          </div>
+        )}
+
+        {project.makingOf && (
+          <div className="bg-white/[0.04] border border-white/15 rounded-2xl p-6 space-y-3 shadow-lg">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+              🎬 Secret de fabrication & Démarche artistique
+            </span>
+            <div className="prose prose-sm dark:prose-invert prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-li:text-gray-200 text-gray-200 max-w-none leading-relaxed">
+              <MarkdownRenderer>{project.makingOf}</MarkdownRenderer>
+            </div>
+          </div>
+        )}
       </div>
+
+        {/* NOUVEAU FLUX UNIFIÉ : IDÉES & PHOTOS */}
+        <div className="space-y-16">
+          {(() => {
+            const orphanPhotos = filteredPhotos.filter(photo => {
+              const pIdeaId = typeof photo.ideaId === 'object' && photo.ideaId?._id ? photo.ideaId._id : photo.ideaId;
+              return !photoIdeas.some((idea: any) => String(idea._id) === String(pIdeaId));
+            });
+
+            return (
+              <>
+                {photoIdeas.map((idea: any) => {
+                  const ideaPhotos = filteredPhotos.filter(p => {
+                    const pIdeaId = typeof p.ideaId === 'object' && p.ideaId?._id ? p.ideaId._id : p.ideaId;
+                    return String(pIdeaId) === String(idea._id);
+                  });
+
+                  return (
+                    <div key={idea._id} className="space-y-6 pb-12 border-b border-white/[0.05] last:border-0 mb-8">
+                      {/* Encart de l'idée */}
+                      <div className="bg-gradient-to-br from-purple-950/20 via-black/40 to-black/60 border border-purple-500/30 rounded-3xl p-6 sm:p-8 shadow-lg">
+                        <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4 mb-4">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                💡 Idée Photo
+                              </span>
+                            </div>
+                            <h3 className="text-2xl font-bold text-white tracking-tight">{idea.name}</h3>
+                          </div>
+                          {idea.targetDate && (
+                            <span className="text-xs text-amber-400 font-semibold bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-full whitespace-nowrap">
+                              📅 {new Date(idea.targetDate).toLocaleDateString('fr-FR')}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm">
+                          {idea.description && (
+                            <div className="space-y-1.5">
+                              <h4 className="text-amber-400/90 font-bold uppercase tracking-wider text-[10px]">Description</h4>
+                              <p className="text-gray-200 leading-relaxed">{idea.description}</p>
+                            </div>
+                          )}
+                          {idea.notesMarkdown && (
+                            <div className="space-y-1.5">
+                              <h4 className="text-amber-400/90 font-bold uppercase tracking-wider text-[10px]">Notes & Démarche</h4>
+                              <div className="prose prose-invert prose-xs text-gray-200"><MarkdownRenderer>{idea.notesMarkdown}</MarkdownRenderer></div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Photos concrétisant cette idée */}
+                      {ideaPhotos.length > 0 ? (
+                        <div className="space-y-8 pl-0 lg:pl-8 border-l-2 border-purple-500/20">
+                          {ideaPhotos.map((photo) => {
+                            const globalIdx = filteredPhotos.findIndex(p => String(p._id) === String(photo._id));
+                            return renderPhotoCard(photo, globalIdx);
+                          })}
+                        </div>
+                      ) : (
+                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center italic text-gray-400 text-sm ml-0 lg:ml-8">
+                          ⏳ Cette idée n'a pas encore été concrétisée.
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {/* Photos orphelines */}
+                {orphanPhotos.length > 0 && (
+                  <div className="space-y-8 pt-12">
+                    <h3 className="text-xl font-bold text-white mb-6">📷 Autres photographies du projet</h3>
+                    {orphanPhotos.map((photo) => {
+                      const globalIdx = filteredPhotos.findIndex(p => String(p._id) === String(photo._id));
+                      return renderPhotoCard(photo, globalIdx);
+                    })}
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </div>
+
 
       {/* Bouton Back to Top */}
       <BackToTop />
