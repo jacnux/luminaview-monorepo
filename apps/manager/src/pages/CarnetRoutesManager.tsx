@@ -2504,11 +2504,10 @@ const CarnetRoutesManager: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      resetForm();
+                                      switchTab('ideas');
                                       setIdeaType('PHOTO');
                                       setIdeaParentProjectId(String(p._id));
                                       setShowAddIdea(true);
-                                      switchTab('ideas');
                                     }}
                                     className="text-[10px] bg-purple-500/20 hover:bg-purple-500/30 text-purple-700 dark:text-purple-300 font-bold px-2 py-0.5 rounded transition border border-purple-500/30"
                                     title="Ajouter une nouvelle idée photo à ce projet"
