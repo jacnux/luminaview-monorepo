@@ -28,10 +28,12 @@ const CarnetRoutesManager: React.FC = () => {
     }
   }, [searchParams]);
 
-  const switchTab = (tab: TabType) => {
+  const switchTab = (tab: TabType, shouldReset = true) => {
     setActiveTab(tab);
     setSearchParams({ tab });
-    resetForm();
+    if (shouldReset) {
+      resetForm();
+    }
     setSelectedFilmRoll(null);
   };
   const [loading, setLoading] = useState(true);
@@ -2504,7 +2506,8 @@ const CarnetRoutesManager: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      switchTab('ideas');
+                                      resetForm();
+                                      switchTab('ideas', false);
                                       setIdeaType('PHOTO');
                                       setIdeaParentProjectId(String(p._id));
                                       setShowAddIdea(true);
