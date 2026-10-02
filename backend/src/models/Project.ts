@@ -17,6 +17,7 @@ export interface IProject extends Document {
   notesMarkdown: string;
   targetDate?: Date;
   isPublished: boolean;
+  orderIndex?: number;
   coverImage?: string;
   makingOf?: string; // Contenu Markdown du secret de fabrication du projet
   referencesMarkdown?: string;
@@ -54,6 +55,7 @@ const ProjectSchema = new Schema<IProject>({
   notesMarkdown: { type: String, default: '' },
   targetDate: { type: Date },
   isPublished: { type: Boolean, default: false },
+  orderIndex: { type: Number, default: 0 },
   coverImage: { type: String },
   makingOf: { type: String, default: '' },
   referencesMarkdown: { type: String, default: '' },

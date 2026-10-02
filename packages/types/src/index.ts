@@ -133,6 +133,7 @@ export interface Project {
   notesMarkdown?: string;
   targetDate?: string;
   isPublished?: boolean;
+  orderIndex?: number;
   coverImage?: string;
   makingOf?: string;
   referencesMarkdown?: string;

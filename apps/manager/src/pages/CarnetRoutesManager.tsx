@@ -85,6 +85,7 @@ const CarnetRoutesManager: React.FC = () => {
   const [ideaPreviewReferences, setIdeaPreviewReferences] = useState(false);
   const [ideaPreviewSuggestedKeywords, setIdeaPreviewSuggestedKeywords] = useState(false);
   const [ideaTags, setIdeaTags] = useState('');
+  const [ideaOrderIndex, setIdeaOrderIndex] = useState<number | ''>('');
   const [ideaTargetDate, setIdeaTargetDate] = useState('');
   const [ideaCover, setIdeaCover] = useState('');
   const [ideaPreviewMarkdown, setIdeaPreviewMarkdown] = useState(false);
@@ -229,6 +230,7 @@ const CarnetRoutesManager: React.FC = () => {
         referencesMarkdown: ideaReferencesMarkdown,
         suggestedKeywordsMarkdown: ideaSuggestedKeywordsMarkdown,
         targetDate: ideaTargetDate ? ideaTargetDate : undefined,
+        orderIndex: ideaOrderIndex !== '' ? Number(ideaOrderIndex) : 0,
         coverImage: ideaCover,
         isPublished: false
       };
@@ -257,6 +259,7 @@ const CarnetRoutesManager: React.FC = () => {
     setIdeaReferencesMarkdown(idea.referencesMarkdown || '');
     setIdeaSuggestedKeywordsMarkdown(idea.suggestedKeywordsMarkdown || '');
     setIdeaTags(Array.isArray(idea.tags) ? idea.tags.join(', ') : '');
+    setIdeaOrderIndex(idea.orderIndex ?? '');
     setIdeaTargetDate(idea.targetDate ? idea.targetDate.split('T')[0] : '');
     setIdeaCover(idea.coverImage || '');
     setShowAddIdea(true);
@@ -728,6 +731,7 @@ const CarnetRoutesManager: React.FC = () => {
     setIdeaReferencesMarkdown('');
     setIdeaSuggestedKeywordsMarkdown('');
     setIdeaTags('');
+    setIdeaOrderIndex('');
     setIdeaTargetDate('');
     setIdeaCover('');
     setIdeaPreviewMarkdown(false);
@@ -1475,6 +1479,26 @@ const CarnetRoutesManager: React.FC = () => {
                                 </option>
                               ))}
                             </select>
+                          </div>
+
+                          <div className="pt-4">
+                            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                              🔢 Ordre d'affichage (Index de tri)
+                            </label>
+                            <input
+                              type="number"
+                              value={ideaOrderIndex}
+                              onChange={e => setIdeaOrderIndex(e.target.value ? Number(e.target.value) : '')}
+                              placeholder="0"
+                              className={`w-full rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500 border ${
+                                isDark
+                                  ? 'bg-black/50 border-purple-500/40 text-white placeholder-gray-500'
+                                  : 'bg-white border-purple-300 text-gray-900 focus:ring-1 focus:ring-purple-500 placeholder-gray-400'
+                              }`}
+                            />
+                            <p className="text-[10px] opacity-60 mt-1">
+                              Permet de trier les idées (0, 1, 2...). Les plus petits chiffres s'affichent en premier.
+                            </p>
                           </div>
                         )}
                       </div>

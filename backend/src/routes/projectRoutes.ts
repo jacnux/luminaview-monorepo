@@ -108,7 +108,7 @@ router.get('/public/project/:slug', async (req: Request, res: Response) => {
     const photoIdeas = await Project.find({
       userId: project.userId,
       parentProjectId: project._id
-    }).sort({ createdAt: -1 });
+    }).sort({ orderIndex: 1, createdAt: -1 });
 
     res.json({ project, photos, photoIdeas });
   } catch (error) {
@@ -169,7 +169,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     const photoIdeas = await Project.find({
       userId: req.user.userId,
       parentProjectId: project._id
-    }).sort({ createdAt: -1 });
+    }).sort({ orderIndex: 1, createdAt: -1 });
 
     res.json({ project, photos, photoIdeas });
   } catch (error) {
@@ -191,6 +191,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       notesMarkdown,
       targetDate,
       isPublished,
+      orderIndex,
       coverImage,
       makingOf,
       referencesMarkdown,
@@ -224,6 +225,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       notesMarkdown: notesMarkdown || '',
       targetDate: targetDate ? new Date(targetDate) : undefined,
       isPublished: isPublished ?? false,
+      orderIndex: orderIndex !== undefined ? Number(orderIndex) : 0,
       coverImage,
       makingOf: makingOf || '',
       referencesMarkdown: referencesMarkdown || '',
@@ -284,6 +286,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       notesMarkdown,
       targetDate,
       isPublished,
+      orderIndex,
       coverImage,
       makingOf,
       referencesMarkdown,
@@ -312,6 +315,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     if (notesMarkdown !== undefined) project.notesMarkdown = notesMarkdown;
     if (targetDate !== undefined) project.targetDate = targetDate ? new Date(targetDate) : undefined;
     project.isPublished = isPublished ?? project.isPublished;
+    if (orderIndex !== undefined) project.orderIndex = Number(orderIndex);
     project.coverImage = coverImage !== undefined ? coverImage : project.coverImage;
     if (makingOf !== undefined) project.makingOf = makingOf;
     if (referencesMarkdown !== undefined) project.referencesMarkdown = referencesMarkdown;
