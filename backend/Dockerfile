@@ -1,12 +1,12 @@
 # ==============================================================================
 # Étape 1 — Build : compilation TypeScript → JavaScript
 # ==============================================================================
-FROM node:18-alpine AS builder
+FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
 
 # Outils natifs nécessaires à Sharp
-RUN apk add --no-cache python3 make g++
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 # Installation de toutes les dépendances (y compris devDeps pour tsc)
 COPY package*.json ./
@@ -19,12 +19,12 @@ RUN npm run build
 # ==============================================================================
 # Étape 2 — Production : image légère sans devDependencies ni code source TS
 # ==============================================================================
-FROM node:18-alpine AS production
+FROM node:22-bookworm-slim AS production
 
 WORKDIR /app
 
 # Outils natifs pour Sharp + polices pour le filigrane
-RUN apk add --no-cache python3 make g++ fontconfig ttf-dejavu
+RUN apt-get update && apt-get install -y python3 make g++ fontconfig fonts-dejavu && rm -rf /var/lib/apt/lists/*
 
 # Uniquement les dépendances de production
 COPY package*.json ./
