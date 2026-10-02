@@ -1459,29 +1459,30 @@ const CarnetRoutesManager: React.FC = () => {
                         </div>
 
                         {ideaType === 'PHOTO' && (
-                          <div className="pt-2">
-                            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                              📁 Rattacher cette photo à un projet (optionnel) :
-                            </label>
-                            <select
-                              value={String(ideaParentProjectId || '')}
-                              onChange={e => setIdeaParentProjectId(e.target.value)}
-                              className={`w-full rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500 border ${
-                                isDark
-                                  ? 'bg-black/50 border-purple-500/40 text-white'
-                                  : 'bg-white border-purple-300 text-gray-900 focus:ring-1 focus:ring-purple-500'
-                              }`}
-                            >
-                              <option value="">-- Autonome (aucun projet rattaché) --</option>
-                              {allMasterProjects.map(p => (
-                                <option key={String(p._id)} value={String(p._id)}>
-                                  📁 {p.name} {p.status === 'IDEA' ? '(Idée de projet)' : '(Projet actif)'}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+                          <>
+                            <div className="pt-2">
+                              <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                📁 Rattacher cette photo à un projet (optionnel) :
+                              </label>
+                              <select
+                                value={String(ideaParentProjectId || '')}
+                                onChange={e => setIdeaParentProjectId(e.target.value)}
+                                className={`w-full rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500 border ${
+                                  isDark
+                                    ? 'bg-black/50 border-purple-500/40 text-white'
+                                    : 'bg-white border-purple-300 text-gray-900 focus:ring-1 focus:ring-purple-500'
+                                }`}
+                              >
+                                <option value="">-- Autonome (aucun projet rattaché) --</option>
+                                {allMasterProjects.map(p => (
+                                  <option key={String(p._id)} value={String(p._id)}>
+                                    📁 {p.name} {p.status === 'IDEA' ? '(Idée de projet)' : '(Projet actif)'}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
 
-                          <div className="pt-4">
+                            <div className="pt-4">
                             <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                               🔢 Ordre d'affichage (Index de tri)
                             </label>
@@ -1500,6 +1501,7 @@ const CarnetRoutesManager: React.FC = () => {
                               Permet de trier les idées (0, 1, 2...). Les plus petits chiffres s'affichent en premier.
                             </p>
                           </div>
+                          </>
                         )}
                       </div>
 
