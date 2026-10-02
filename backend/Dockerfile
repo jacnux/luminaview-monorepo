@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt
 
 # Installation de toutes les dépendances (y compris devDeps pour tsc)
 COPY package*.json ./
-RUN npm install
+RUN npm install && npm install --os=linux --cpu=x64 sharp
 
 # Copie des sources et compilation
 COPY . .
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y python3 make g++ fontconfig fonts-dejav
 
 # Uniquement les dépendances de production
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install --omit=dev && npm install --os=linux --cpu=x64 sharp
 
 # Copie du build compilé depuis l'étape builder
 COPY --from=builder /app/dist ./dist
