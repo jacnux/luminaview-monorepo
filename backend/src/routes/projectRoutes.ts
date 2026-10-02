@@ -56,7 +56,7 @@ router.get('/public/all', async (req: Request, res: Response) => {
       query.userId = user._id;
     }
 
-    const projects = await Project.find(query).sort({ createdAt: -1 });
+    const projects = await Project.find(query).sort({ orderIndex: 1, createdAt: 1 });
     res.json(projects);
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération des projets publics' });
@@ -108,7 +108,7 @@ router.get('/public/project/:slug', async (req: Request, res: Response) => {
     const photoIdeas = await Project.find({
       userId: project.userId,
       parentProjectId: project._id
-    }).sort({ orderIndex: 1, createdAt: -1 });
+    }).sort({ orderIndex: 1, createdAt: 1 });
 
     res.json({ project, photos, photoIdeas });
   } catch (error) {
@@ -144,7 +144,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 
     const projects = await Project.find(query)
       .populate('parentProjectId', 'name slug')
-      .sort({ createdAt: -1 });
+      .sort({ orderIndex: 1, createdAt: 1 });
     res.json(projects);
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération des projets' });
@@ -169,7 +169,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     const photoIdeas = await Project.find({
       userId: req.user.userId,
       parentProjectId: project._id
-    }).sort({ orderIndex: 1, createdAt: -1 });
+    }).sort({ orderIndex: 1, createdAt: 1 });
 
     res.json({ project, photos, photoIdeas });
   } catch (error) {
